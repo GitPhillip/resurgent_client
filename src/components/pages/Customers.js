@@ -1,6 +1,126 @@
-import React from 'react'
+import React from 'react';
+import { MDBDataTable } from 'mdbreact';
 
 export default function Customers() {
+
+    const data = {
+
+        columns: [
+          {
+            label: 'Customer Name',
+            field: 'customerName',
+            sort: 'asc',
+          },
+          {
+            label: 'Email',
+            field: 'email',
+            sort: 'asc',
+          },
+          {
+            label: 'Telephone',
+            field: 'telephone',
+            sort: 'asc',
+          },
+          {
+            label: 'API Key',
+            field: 'apiKey',
+            sort: 'asc',
+          },
+          {
+            label: 'Action',
+            field: 'action'
+          },
+          
+        ],
+        rows: [
+          {
+            customerName: 'Tiger Nixon',
+            email: 'System Architect',
+            telephone: 'Edinburgh',
+            apiKey: '61',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            customerName: 'Cedric Kelly',
+            email: 'Senior Javascript Developer',
+            telephone: 'Edinburgh',
+            apiKey: '22',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            customerName: 'Airi Satou',
+            email: 'Accountant',
+            telephone: 'Tokyo',
+            apiKey: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+
+          {
+            customerName: 'Charde Marshall',
+            email: 'Regional Director',
+            telephone: 'San Francisco',
+            apiKey: '36',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            customerName: 'Haley Kennedy',
+            email: 'Senior Marketing Designer',
+            telephone: 'London',
+            apiKey: '43',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            customerName: 'Tatyana Fitzpatrick',
+            email: 'Regional Director',
+            telephone: 'London',
+            apiKey: '19',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+        ]
+      };
+
     return (
 
         <React.Fragment>
@@ -14,148 +134,7 @@ export default function Customers() {
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Customer Name</th>
-                                    <th>Email</th>
-                                    <th>Telephone</th>
-                                    <th>API Key</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th>Customer Name</th>
-                                    <th>Email</th>
-                                    <th>Telephone</th>
-                                    <th>API Key</th>
-                                    <th>Action</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                
-                                <tr>
-                                    <td>Suki Burks</td>
-                                    <td>Developer</td>
-                                    <td>London</td>
-                                    <td>53</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Prescott Bartlett</td>
-                                    <td>Technical Author</td>
-                                    <td>London</td>
-                                    <td>27</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Lael Greer</td>
-                                    <td>Systems Administrator</td>
-                                    <td>London</td>
-                                    <td>21</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Jonas Alexander</td>
-                                    <td>Developer</td>
-                                    <td>San Francisco</td>
-                                    <td>30</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Shad Decker</td>
-                                    <td>Regional Director</td>
-                                    <td>Edinburgh</td>
-                                    <td>51</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Michael Bruce</td>
-                                    <td>Javascript Developer</td>
-                                    <td>Singapore</td>
-                                    <td>29</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Donna Snider</td>
-                                    <td>Customer Support</td>
-                                    <td>New York</td>
-                                    <td>27</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#customerDetailsModal">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                        View Details
-                                        </button>
-                                        {' '}<br/>
-                                        <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#customerAdminModal">
-                                        <i class="fas fa-users fa-sm fa-fw mr-2"></i>
-                                        View Admins
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <MDBDataTable striped bordered data={data} />
                     </div>
                 </div>
             </div>

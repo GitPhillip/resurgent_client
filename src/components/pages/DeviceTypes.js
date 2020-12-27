@@ -1,6 +1,126 @@
 import React from 'react'
+import { MDBDataTable } from 'mdbreact';
 
 export default function DeviceTypes() {
+
+    const data = {
+
+        columns: [
+          {
+            label: 'Device Type Alias',
+            field: 'deviceTypeAlias',
+            sort: 'asc',
+          },
+          {
+            label: 'Conversion',
+            field: 'conversion',
+            sort: 'asc',
+          },
+          {
+            label: 'Packet Structure',
+            field: 'packetStructure',
+            sort: 'asc',
+          },
+          {
+            label: 'Sigfox ID',
+            field: 'sigfoxID',
+            sort: 'asc',
+          },
+          {
+            label: 'Action',
+            field: 'action'
+          },
+          
+        ],
+        rows: [
+          {
+            deviceTypeAlias: 'Tiger Nixon',
+            conversion: 'System Architect',
+            packetStructure: 'Edinburgh',
+            sigfoxID: '61',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            deviceTypeAlias: 'Cedric Kelly',
+            conversion: 'Senior Javascript Developer',
+            packetStructure: 'Edinburgh',
+            sigfoxID: '22',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            deviceTypeAlias: 'Airi Satou',
+            conversion: 'Accountant',
+            packetStructure: 'Tokyo',
+            sigfoxID: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+
+          {
+            deviceTypeAlias: 'Charde Marshall',
+            conversion: 'Regional Director',
+            packetStructure: 'San Francisco',
+            sigfoxID: '36',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            deviceTypeAlias: 'Haley Kennedy',
+            conversion: 'Senior Marketing Designer',
+            packetStructure: 'London',
+            sigfoxID: '43',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            deviceTypeAlias: 'Tatyana Fitzpatrick',
+            conversion: 'Regional Director',
+            packetStructure: 'London',
+            sigfoxID: '19',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+        ]
+      };
+
     return (
         <React.Fragment>
 
@@ -78,113 +198,7 @@ export default function DeviceTypes() {
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Device Alias</th>
-                                                    <th>Conversion</th>
-                                                    <th>Packet Structure</th>
-                                                    <th>Sigfox ID</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Device Alias</th>
-                                                    <th>Conversion</th>
-                                                    <th>Packet Structure</th>
-                                                    <th>Sigfox ID</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </tfoot>
-                                            <tbody>
-                                                
-                                                <tr>
-                                                    <td>Suki Burks</td>
-                                                    <td>Developer</td>
-                                                    <td>London</td>
-                                                    <td>53</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Prescott Bartlett</td>
-                                                    <td>Technical Author</td>
-                                                    <td>London</td>
-                                                    <td>27</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Lael Greer</td>
-                                                    <td>Systems Administrator</td>
-                                                    <td>London</td>
-                                                    <td>21</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Jonas Alexander</td>
-                                                    <td>Developer</td>
-                                                    <td>San Francisco</td>
-                                                    <td>30</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Shad Decker</td>
-                                                    <td>Regional Director</td>
-                                                    <td>Edinburgh</td>
-                                                    <td>51</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Michael Bruce</td>
-                                                    <td>Javascript Developer</td>
-                                                    <td>Singapore</td>
-                                                    <td>29</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Donna Snider</td>
-                                                    <td>Customer Support</td>
-                                                    <td>New York</td>
-                                                    <td>27</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#deviceTypeModal">
-                                                            <i class="fas fa-cog "></i>{" "}
-                                                            View Details
-                                                            </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <MDBDataTable striped bordered data={data} />
                                     </div>
                                 </div>
                             </div>

@@ -1,6 +1,136 @@
 import React from 'react'
+import { MDBDataTable } from 'mdbreact';
 
 export default function AssetManagement() {
+
+    const data = {
+
+        columns: [
+          {
+            label: 'Asset ID',
+            field: 'assetID',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Name',
+            field: 'assetName',
+            sort: 'asc',
+          },
+          {
+            label: 'Customer Name',
+            field: 'customerName',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Type',
+            field: 'assetTypeID',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Device',
+            field: 'assetDeviceID',
+            sort: 'asc',
+          },
+          {
+            label: 'Action',
+            field: 'action'
+          },
+          
+        ],
+        rows: [
+          {
+            assetID: 'Tiger Nixon',
+            assetName: 'System Architect',
+            customerName: 'Edinburgh',
+            assetTypeID: '61',
+            assetDeviceID: '61',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            assetID: 'Cedric Kelly',
+            assetName: 'Senior Javascript Developer',
+            customerName: 'Edinburgh',
+            assetTypeID: '22',
+            assetDeviceID: '22',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            assetID: 'Airi Satou',
+            assetName: 'Accountant',
+            customerName: 'Tokyo',
+            assetTypeID: '33',
+            assetDeviceID: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+
+          {
+            assetID: 'Charde Marshall',
+            assetName: 'Regional Director',
+            customerName: 'San Francisco',
+            assetTypeID: '36',
+            assetDeviceID: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            assetID: 'Haley Kennedy',
+            assetName: 'Senior Marketing Designer',
+            customerName: 'London',
+            assetTypeID: '43',
+            assetDeviceID: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+          {
+            assetID: 'Tatyana Fitzpatrick',
+            assetName: 'Regional Director',
+            customerName: 'London',
+            assetTypeID: '19',
+            assetDeviceID: '33',
+            action: (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+          },
+        ]
+      };
     
     return (
 
@@ -101,122 +231,7 @@ export default function AssetManagement() {
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Asset ID</th>
-                                                    <th>Asset Name</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Asset Type</th>
-                                                    <th>Asset Device(s)</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Asset ID</th>
-                                                    <th>Asset Name</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Asset Type</th>
-                                                    <th>Asset Device(s)</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </tfoot>
-                                            <tbody>
-                                                
-                                                <tr>
-                                                    <td>Suki Burks</td>
-                                                    <td>Suki Burks</td>
-                                                    <td>Developer</td>
-                                                    <td>Developer</td>
-                                                    <td>London</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Prescott Bartlett</td>
-                                                    <td>Technical Author</td>
-                                                    <td>Prescott Bartlett</td>
-                                                    <td>Technical Author</td>
-                                                    <td>London</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Lael Greer</td>
-                                                    <td>Systems Administrator</td>
-                                                    <td>Lael Greer</td>
-                                                    <td>Systems Administrator</td>
-                                                    <td>London</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Jonas Alexander</td>
-                                                    <td>Developer</td>
-                                                    <td>Jonas Alexander</td>
-                                                    <td>Developer</td>
-                                                    <td>San Francisco</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Shad Decker</td>
-                                                    <td>Regional Director</td>
-                                                    <td>Shad Decker</td>
-                                                    <td>Regional Director</td>
-                                                    <td>Edinburgh</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Michael Bruce</td>
-                                                    <td>Javascript Developer</td>
-                                                    <td>Michael Bruce</td>
-                                                    <td>Javascript Developer</td>
-                                                    <td>Singapore</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Michael Bruce</td>
-                                                    <td>Javascript Developer</td>
-                                                    <td>Michael Bruce</td>
-                                                    <td>Javascript Developer</td>
-                                                    <td>New York</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#assetDetailsModal">
-                                                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                        View Details
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <MDBDataTable striped bordered data={data} />
                                     </div>
                                 </div>
                             </div>
@@ -337,7 +352,12 @@ export default function AssetManagement() {
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label class='label'>Devices Attached</label>
-                                            <input class='form-control' id='deviceAttachedModal' name='deviceAttachedModal' />
+                                            <select class='form-control' id='deviceAttachedModal' name='deviceAttachedModal'>
+                                                <option hidden selected disabled>Please choose a device.</option>
+                                                <option value='1'>Device 1</option>
+                                                <option value='2'>Device 2</option>
+                                                <option value='3'>Device 3</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
