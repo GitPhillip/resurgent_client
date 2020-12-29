@@ -1,9 +1,60 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
+import Swal from 'sweetalert2'
 
 export default function AssetManagement() {
 
-    const data = {
+    let data;
+    //***********Functions************ */
+
+    //Register Asset Function
+    let registerAsset = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Register Asset?',
+            text: 'Are you sure you want to register the asset?',
+            showCancelButton: true,
+            confirmButtonText: `Register Asset`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              Swal.fire('Asset Registered!', '', 'success');
+
+            } else if (result.isDismissed) {
+
+              Swal.fire('Asset was not registered.', '', 'info')
+            }
+          });
+    }
+
+    //Update Asset Function
+    let updateAsset = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Update Asset?',
+            text: 'Are you sure you want to update the asset?',
+            showCancelButton: true,
+            confirmButtonText: `Update Asset`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              Swal.fire('Asst updated!', '', 'success');
+
+            } 
+          });
+    }
+
+    data = {
 
         columns: [
           {
@@ -47,7 +98,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -62,7 +113,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -77,7 +128,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -93,7 +144,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -108,7 +159,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -123,7 +174,7 @@ export default function AssetManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -153,69 +204,70 @@ export default function AssetManagement() {
                             <br/>
                             <h3 class="register-heading">Register Asset</h3>
                             <br/>
-                            <div class="row register-form">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class='label'>Asset Name</label>
-                                                <input type="text" class="form-control" id="assetName" name="assetName" placeholder="Asset Name *" value="" />
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class='label'>Asset Type</label>
-                                                <select class='form-control' id='assetType' name='assetType'>
-                                                    <option hidden selected disabled>Please select a asset type.</option>
-                                                    <option value='1'>Truck</option>
-                                                    <option value='2'>Trailer</option>
-                                                    <option value='3'>Car</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label class='label'>Customer Name</label>
-                                                <select class='form-control' id='customerID' name='customerID'>
-                                                    <option hidden selected disabled>Please choose a customer.</option>
-                                                    <option value='1'>Shoprite</option>
-                                                    <option value='2'>Coca Cola</option>
-                                                    <option value='3'>Checkers</option>
-                                                </select>
+                            <form method='post' onSubmit={registerAsset}>
+                                <div class="row register-form">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class='label'>Asset Name</label>
+                                                    <input required='required' type="text" class="form-control" id="assetName" name="assetName" placeholder="Asset Name *" />
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class='label'>Asset Type</label>
+                                                    <select required='required' class='form-control' id='assetType' name='assetType'>
+                                                        <option hidden selected disabled>Please select a asset type.</option>
+                                                        <option value='1'>Truck</option>
+                                                        <option value='2'>Trailer</option>
+                                                        <option value='3'>Car</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label class='label'>Asset Description</label>
-                                                <textarea rows='4' type="text" class="form-control" id="assetDescription" name="assetDescription" placeholder="Asset Description *" value="" ></textarea>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label class='label'>Customer Name</label>
+                                                    <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                        <option hidden selected disabled>Please choose a customer.</option>
+                                                        <option value='1'>Shoprite</option>
+                                                        <option value='2'>Coca Cola</option>
+                                                        <option value='3'>Checkers</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <br/><br/>
-                                <div class="col-md-2"></div>
-                                <div class="col-md-3"></div>
-                                <div class="col-md-7"><br/>
-                                    <div className='row'>
-                                        <a href="/admin" class="btn btn-success btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-check"></i>
-                                                </span>
-                                                <span class="text">Save Changes</span>
-                                        </a>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label class='label'>Asset Description</label>
+                                                    <textarea required='required' rows='4' type="text" class="form-control" id="assetDescription" name="assetDescription" placeholder="Asset Description *" ></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br/><br/>
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-7"><br/>
+                                        <div class='row'>
+                                            <button type='submit' class="btn btn-success btn-icon-split">
+                                                    <span class="icon text-white-50">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
+                                                    <span class="text">Register Asset</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            
-                            </div>
+                            </form>
                             <br/> <br/>
                         </div>
 
@@ -238,61 +290,6 @@ export default function AssetManagement() {
                             
                         </div>
 
-                        <div class="tab-pane fade show" id="technician" role="tabpanel" aria-labelledby="technician-tab">
-                            <br/>
-                            <h3  class="register-heading">Register Technician</h3>
-                            <br/>
-                            <div class="row register-form">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="First Name *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="Last Name *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="email" class="form-control" placeholder="Email *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" maxlength="10" minlength="10" class="form-control" placeholder="Phone *" value="" />
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Password *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Confirm Password *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <select class="form-control">
-                                            <option class="hidden"  selected disabled>Please select your Sequrity Question</option>
-                                            <option>What is your Birthdate?</option>
-                                            <option>What is Your old Phone Number</option>
-                                            <option>What is your Pet Name?</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="`Answer *" value="" />
-                                    </div>
-                                    
-                                </div>
-                                <div class="row col-md-12">
-                                    <div class="col-md-2"></div>
-                                    <div class="col-md-3"></div>
-                                    <div className='row'>
-                                        <a href="/admin" class="btn btn-success btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-check"></i>
-                                                </span>
-                                                <span class="text">Save Changes</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <br/> <br/>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -309,86 +306,88 @@ export default function AssetManagement() {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="row register-form">
-                            
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class='label'>Asset Name</label>
-                                            <input type="text" class="form-control" id="assetNameModal" name="assetNameModal" placeholder="Asset Name *" value="" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class='label'>Asset Type</label>
-                                            <select class='form-control' id='assetTypeModal' name='assetTypeModal'>
-                                                <option hidden selected disabled>Please select a asset type.</option>
-                                                <option value='1'>Truck</option>
-                                                <option value='2'>Trailer</option>
-                                                <option value='3'>Car</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Customer Name</label>
-                                            <select class='form-control' id='customerIDModal' name='customerIDModal'>
-                                                <option hidden selected disabled>Please choose a customer.</option>
-                                                <option value='1'>Shoprite</option>
-                                                <option value='2'>Coca Cola</option>
-                                                <option value='3'>Checkers</option>
-                                            </select>
+                        <form method='post' onSubmit={updateAsset}>
+                            <div class="row register-form">
+                                
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class='label'>Asset Name</label>
+                                                <input required='required' type="text" class="form-control" id="assetNameModal" name="assetNameModal" placeholder="Asset Name *"  />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class='label'>Asset Type</label>
+                                                <select required='required' class='form-control' id='assetTypeModal' name='assetTypeModal'>
+                                                    <option hidden selected disabled>Please select a asset type.</option>
+                                                    <option value='1'>Truck</option>
+                                                    <option value='2'>Trailer</option>
+                                                    <option value='3'>Car</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Devices Attached</label>
-                                            <select class='form-control' id='deviceAttachedModal' name='deviceAttachedModal'>
-                                                <option hidden selected disabled>Please choose a device.</option>
-                                                <option value='1'>Device 1</option>
-                                                <option value='2'>Device 2</option>
-                                                <option value='3'>Device 3</option>
-                                            </select>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Customer Name</label>
+                                                <select required='required' class='form-control' id='customerNameModal' name='customerNameModal'>
+                                                    <option hidden selected disabled>Please choose a customer.</option>
+                                                    <option value='1'>Shoprite</option>
+                                                    <option value='2'>Coca Cola</option>
+                                                    <option value='3'>Checkers</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Asset Description</label>
-                                            <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *" value="" ></textarea>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Device Attached</label>
+                                                <select class='form-control' id='deviceAttachedModal' name='deviceAttachedModal'>
+                                                    <option hidden selected disabled>Please choose a device.</option>
+                                                    <option value='1'>Device 1</option>
+                                                    <option value='2'>Device 2</option>
+                                                    <option value='3'>Device 3</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <br/><br/>
-                            <div class="col-md-2"></div>
-                            <div class="col-md-3"></div>
-                            <div class="col-md-7"><br/>
-                                <div className='row'>
-                                    <a href="/admin" class="btn btn-success btn-icon-split">
-                                            <span class="icon text-white-50">
-                                                <i class="fas fa-check"></i>
-                                            </span>
-                                            <span class="text">Save Changes</span>
-                                    </a>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Asset Description</label>
+                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <br/><br/>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-7"><br/>
+                                    <div className='row'>
+                                        <button type='submit' class="btn btn-success btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                                <span class="text">Save Changes</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
                             </div>
-                            
-                        </div>
+                        </form>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>

@@ -1,9 +1,58 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
+import Swal from 'sweetalert2'
 
 export default function DeviceTypes() {
 
-    const data = {
+    let data;
+
+    //***********Functions************* */
+
+    //Register Device Type Function
+    let registerDeviceType = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Register Device Type?',
+            text: 'Are you sure you want to register the device type?',
+            showCancelButton: true,
+            confirmButtonText: `Register`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              Swal.fire('Device Type Registered!', '', 'success');
+
+            } 
+          });
+    }
+
+    //Update Device Type Function
+    let updateDeviceType = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Update Device Type?',
+            text: 'Are you sure you want to update the device type?',
+            showCancelButton: true,
+            confirmButtonText: `Update`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              Swal.fire('Device Type Updated!', '', 'success');
+
+            } 
+          });
+    }
+
+    data = {
 
         columns: [
           {
@@ -133,9 +182,6 @@ export default function DeviceTypes() {
                         <li class="nav-item">
                             <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Device Types</a>
                         </li>
-                        {/* <!--<li class="nav-item">--> 
-                            <a class="nav-link" id="technician-tab" data-toggle="tab" href="#technician" role="tab" aria-controls="technician" aria-selected="false">Register Technician</a>
-                        </li>*/}
                     </ul>
 
                     <div class="tab-content" id="myTabContent">
@@ -143,46 +189,47 @@ export default function DeviceTypes() {
                             <br/>
                             <h3 class="register-heading">Register Device Type</h3>
                             <br/>
-                            <div class="row register-form">
+                            <form method='post' onSubmit={registerDeviceType}>
+                                <div class="row register-form">
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label class='label'>Device Type Alias</label>
-                                                <input class='form-control' id='deviceTypeAlias' name='deviceTypeAlias' placeholder="Device Type Alias*" value="" />
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label class='label'>Device Type Alias</label>
+                                                    <input required='required' class='form-control' id='deviceTypeAlias' name='deviceTypeAlias' placeholder="Device Type Alias*" />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row col-md-1"></div>
-                                        <div class="row col-md-11">
-                                            <label class='label'>Device Type description</label>
-                                            <textarea type='text' class='form-control' rows='4' id='deviceTypeDescription' name='deviceTypeDescription'>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row col-md-12">
+                                                <label class='label'>Device Type description</label>
+                                                <textarea type='text' class='form-control' rows='4' id='deviceTypeDescription' name='deviceTypeDescription'>
 
-                                            </textarea>
+                                                </textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <br/><br/>
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-7"><br/>
+                                        <div className='row'>
+                                            <button type='submit' class="btn btn-success btn-icon-split">
+                                                    <span class="icon text-white-50">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
+                                                    <span class="text">Register Asset</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <br/><br/>
-                                <div class="col-md-2"></div>
-                                <div class="col-md-3"></div>
-                                <div class="col-md-7"><br/>
-                                    <div className='row'>
-                                        <a href="/admin" class="btn btn-success btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-check"></i>
-                                                </span>
-                                                <span class="text">Save Changes</span>
-                                        </a>
-                                    </div>
-                                </div>
+                            </form>
                             
-                            </div>
                             <br/> <br/>
                         </div>
 
@@ -205,61 +252,6 @@ export default function DeviceTypes() {
                             
                         </div>
 
-                        <div class="tab-pane fade show" id="technician" role="tabpanel" aria-labelledby="technician-tab">
-                            <br/>
-                            <h3  class="register-heading">Register Technician</h3>
-                            <br/>
-                            <div class="row register-form">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="First Name *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="Last Name *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="email" class="form-control" placeholder="Email *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" maxlength="10" minlength="10" class="form-control" placeholder="Phone *" value="" />
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Password *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Confirm Password *" value="" />
-                                    </div>
-                                    <div class="form-group">
-                                        <select class="form-control">
-                                            <option class="hidden"  selected disabled>Please select your Sequrity Question</option>
-                                            <option>What is your Birthdate?</option>
-                                            <option>What is Your old Phone Number</option>
-                                            <option>What is your Pet Name?</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="`Answer *" value="" />
-                                    </div>
-                                    
-                                </div>
-                                <div class="row col-md-12">
-                                    <div class="col-md-2"></div>
-                                    <div class="col-md-3"></div>
-                                    <div className='row'>
-                                        <a href="/admin" class="btn btn-success btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-check"></i>
-                                                </span>
-                                                <span class="text">Save Changes</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <br/> <br/>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -276,71 +268,72 @@ export default function DeviceTypes() {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="row register-form">
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Device Type Alias</label>
-                                            <input class='form-control' id='deviceTypeAliasModal' name='deviceTypeAliasModal' placeholder="Device Type Alias*" value="" />
+                        <form method='post' onSubmit={updateDeviceType}>
+                            <div class="row register-form">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Device Type Alias</label>
+                                                <input required='required' class='form-control' id='deviceTypeAliasModal' name='deviceTypeAliasModal' placeholder="Device Type Alias*" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                        <label class='label'>Device Type Conversion</label>
-                                            <input class='form-control' id='deviceTypeConversionModal' name='deviceTypeConversionModal' placeholder="Device Type Conversion *" value="" />
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class='label'>Packet Structure</label>
-                                            <input type="text" class="form-control" id="packetStructureModal" name="packetStructureModal" placeholder="Packet Structure *" value="" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Sigfox ID</label>
-                                            <input class='form-control' id='sigfoxIDModal' name='sigfoxIDModal' placeholder="Sigfox ID *" value="" />
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                            <label class='label'>Device Type Conversion</label>
+                                                <input required='required' readonly='readonly' type='text' class='form-control' id='deviceTypeConversionModal' name='deviceTypeConversionModal' placeholder="Device Type Conversion *" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class='label'>Packet Structure</label>
+                                                <input required='required' readonly='readonly' type="text" class="form-control" id="packetStructureModal" name="packetStructureModal" placeholder="Packet Structure *"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <label class='label'>Device Type Description</label>
-                                            <textarea rows='4' type="text" class="form-control" id="deviceTypeDescriptionModal" name="deviceTypeDescriptionModal" placeholder="Device Type Description *" value="" ></textarea>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Sigfox ID</label>
+                                                <input required='required' readonly='readonly' type='text' class='form-control' id='sigfoxIDModal' name='sigfoxIDModal' placeholder="Sigfox ID *" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <br/><br/>
-                            <div class="col-md-2"></div>
-                            <div class="col-md-3"></div>
-                            <div class="col-md-7"><br/>
-                                <div className='row'>
-                                    <a href="/admin" class="btn btn-success btn-icon-split">
-                                            <span class="icon text-white-50">
-                                                <i class="fas fa-check"></i>
-                                            </span>
-                                            <span class="text">Save Changes</span>
-                                    </a>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class='label'>Device Type Description</label>
+                                                <textarea rows='4' type="text" class="form-control" id="deviceTypeDescriptionModal" name="deviceTypeDescriptionModal" placeholder="Device Type Description *"  ></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <br/><br/>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-7"><br/>
+                                    <div className='row'>
+                                        <button type='submit' class="btn btn-success btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-check"></i>
+                                                </span>
+                                                <span class="text">Save Changes</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
                             </div>
-                            
-                        </div>
+                        </form>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>

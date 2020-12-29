@@ -1,9 +1,33 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
+import Swal from 'sweetalert2'
 
 export default function UserManagement() {
 
-    const data = {
+    let data;
+
+    //**************Functions************ */
+    //Delete Admin
+    let deleteAdmin = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Admin?',
+            text: 'Are you sure you want to delete the admin account?',
+            showCancelButton: true,
+            confirmButtonText: `Delete Admin`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+              Swal.fire('Saved!', '', 'success');
+
+            }
+          });
+    }
+    data = {
 
         columns: [
           {
@@ -43,6 +67,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -57,6 +85,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -71,6 +103,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -86,6 +122,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -100,6 +140,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -114,6 +158,10 @@ export default function UserManagement() {
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                    </button> {' '}
+                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
                     </button>
                 </div>
             )
@@ -165,11 +213,11 @@ export default function UserManagement() {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>First Name</label>
-                                                    <input type="text" readonly='readonly' class="form-control" id="firstName" name="firstName" placeholder="First Name *" value="" />
+                                                    <input type="text" readonly='readonly' class="form-control" id="firstName" name="firstName" placeholder="First Name *"  />
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Surname</label>
-                                                    <input type="text" readonly='readonly' class="form-control" id="surname" name="surname" placeholder="Surname *" value="" />
+                                                    <input type="text" readonly='readonly' class="form-control" id="surname" name="surname" placeholder="Surname *" />
                                                 </div>
                                             </div>
                                         </div>
@@ -180,11 +228,11 @@ export default function UserManagement() {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>Email</label>
-                                                    <input type="email" readonly='readonly' class="form-control" id="email" name="email" placeholder="Email *" value="" />
+                                                    <input type="email" readonly='readonly' class="form-control" id="email" name="email" placeholder="Email *" />
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Cellphone</label>
-                                                    <input type="text" readonly='readonly' maxlength="10" minlength="10" class="form-control" id="cellphone" name="cellphone" placeholder="Cellphone *" value="" />
+                                                    <input type="text" readonly='readonly' maxlength="10" minlength="10" class="form-control" id="cellphone" name="cellphone" placeholder="Cellphone *" />
                                                 </div>
                                             </div>
                                         </div>
@@ -192,9 +240,8 @@ export default function UserManagement() {
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                        <div class="row col-md-1"></div>
-                                            <div class="row col-md-11">
-                                                <label class='label'>User Type description</label>
+                                            <div class="row col-md-12">
+                                                <label class='label'>User Type Description</label>
                                                 <textarea type='text' readonly='readonly' class='form-control' rows='4' id='userTypeDescription' name='userTypeDescription'>
 
                                                 </textarea>

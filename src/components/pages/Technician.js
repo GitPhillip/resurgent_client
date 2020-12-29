@@ -5,29 +5,25 @@ import {Route, Switch} from 'react-router-dom';
 //components
 import Header from '../layout/Header';
 import Footer from '../layout/Footer';
-import SideBar from '../layout/SideBar';
+import TechnicianSideBar from '../layout/TechnicianSideBar';
 
 //Admin UI
 import Dashboard from './Dashboard';
-import UserManagement from './UserManagement';
-import Customers from './Customers';
-import Registration from './Registration.js';
-import AdminProfile from './AdminProfile';
+import TechnicianProfile from './TechnicianProfile';
 import AssetManagement from './AssetManagement';
 import DeviceTypes from './DeviceTypes';
-import DeviceManagement from './DeviceManagement';
-import LogHistory from './LogHistory';
+import TechnicianDeviceManagement from './TechnicianDeviceManagement';
 
 //Error UI
 import Page404 from './Page404';
 
-export default function Admin() {
+export default function Technician() {
 
     return (
         
         <div id="wrapper">
                 
-            <SideBar/>
+            <TechnicianSideBar/>
 
             {/*<!-- Content Wrapper -->*/}
             <div id="content-wrapper" className="d-flex flex-column">
@@ -44,40 +40,24 @@ export default function Admin() {
                             <Switch>
 
                                 {/* Dashboard */}
-                                <Route exact path='/admin/dashboard' component = {Dashboard} />
+                                <Route exact path='/technician/dashboard' component = {Dashboard} />
                                 {/* End Dashboard */}
 
                                 {/* Profile */}
-                                <Route exact path='/admin/profile' component = {AdminProfile} />
+                                <Route exact path='/technician/profile' component = {TechnicianProfile} />
                                 {/* End Profile */}
-
-                                {/* UserManagement */}
-                                <Route exact path='/admin/user_management' component = {UserManagement} />
-                                {/* End Profile */}
-
-                                {/* Register Customers */}
-                                <Route exact path='/admin/registrations' component = {Registration} />
-                                {/* End Register Customers */}
-
-                                {/* Customers */}
-                                <Route exact path='/admin/customers' component = {Customers} />
-                                {/* End Customers */}
 
                                 {/* Asset Management */}
-                                <Route exact path='/admin/asset_management' component = {AssetManagement} />
+                                <Route exact path='/technician/asset_management' component = {AssetManagement} />
                                 {/* End Asset Management */}
 
                                 {/* Device Types */}
-                                <Route exact path='/admin/device_types' component = {DeviceTypes} />
+                                <Route exact path='/technician/device_types' component = {DeviceTypes} />
                                 {/* End Device Types */}
 
                                 {/* Device Management */}
-                                 <Route exact path='/admin/device_management' component = {DeviceManagement} />
+                                 <Route exact path='/technician/device_management' component = {TechnicianDeviceManagement} />
                                 {/* End Device Management */}
-
-                                {/* Log History */}
-                                <Route exact path='/admin/log_history' component = {LogHistory} />
-                                {/* End Log History */}
 
                                 {/* Catch Wrong Route */}
                                 <Route component = {Page404} />

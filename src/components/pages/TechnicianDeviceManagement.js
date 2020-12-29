@@ -2,7 +2,7 @@ import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
-export default function DeviceManagement() {
+export default function TechnicianDeviceManagement() {
     
     let data;
 
@@ -90,7 +90,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -104,7 +104,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -118,7 +118,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -133,7 +133,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -147,7 +147,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -161,7 +161,7 @@ export default function DeviceManagement() {
             action: (
                 <div>
                     <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
                 </div>
@@ -349,7 +349,12 @@ export default function DeviceManagement() {
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label class='label'>Device Status</label>
-                                                    <input type="text" readonly='readonly' class="form-control" id="deviceStatusModal" name="deviceStatusModal" placeholder="Device Status *"/>
+                                                    <select class='form-control' id='deviceStatusModal' name='deviceStatusModal'>
+                                                        <option hidden selected disabled>Please choose a device status.</option>
+                                                        <option value='In use'>In use</option>
+                                                        <option value='Being repaired'>Being repaired</option>
+                                                        <option value='Decommissioned'>Decommissioned</option>
+                                                    </select>
                                                         
                                                 </div>
                                             </div>

@@ -6252,7 +6252,7 @@ a.close.disabled {
   margin-left: 3px;
   text-indent: -999px;
   cursor: pointer;
-  background-color: #fff;
+  background-color: #000;
   background-clip: padding-box;
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
@@ -10824,9 +10824,10 @@ a:focus {
 }
 
 .bg-login-image {
-  background: url("https://source.unsplash.com/K4mSJ7kc0As/600x800");
+  background: url("/images/logo.png");
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 80% 96%;
 }
 
 .bg-register-image {
@@ -10836,9 +10837,10 @@ a:focus {
 }
 
 .bg-password-image {
-  background: url("https://source.unsplash.com/oWTW-jNGl9I/600x800");
+  background: url("/images/logo.png");
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
+  background-size: 75% 96%;
 }
 
 form.user .custom-checkbox.small label {
