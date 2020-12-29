@@ -1,11 +1,32 @@
 import React from 'react'
+import {useSelector} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
+//import the slices with the reducers
+import { selectAdmins} from '../slices/adminSlice'
+
 export default function UserManagement() {
 
-    let data;
 
+    const sup = useSelector(selectAdmins);
+
+    var count = 0;
+    for(var i in sup){
+        if(sup.hasOwnProperty(i))
+        count++
+    }
+    
+
+    let data;// = useSelector(getAllAdmins);
+
+    //alert(JSON.stringify(data.toString()))
+
+    //const dispatch = useDispatch();
+
+    const onChange = () =>{
+        console.log('hi')
+    }
     //**************Functions************ */
     //Delete Admin
     let deleteAdmin = (e) =>{
@@ -173,7 +194,8 @@ export default function UserManagement() {
 
         <React.Fragment>
             {/*<!-- Page Heading -->*/}
-            <h1 class="h3 mb-2 text-gray-800">All Users</h1>
+            <h1 class="h3 mb-2 text-gray-800">All Users </h1>
+            <textarea class='form-control' onChange={onChange} value={count[0].user_type_id} ></textarea>
             <br/>
             {/*<!-- DataTales Example -->*/}
             <div class="card shadow mb-4">
