@@ -2,10 +2,14 @@ import React from 'react';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
-export default function Customers() {
+export default function Customers({customerState}) {
 
     let data;
     let adminData;
+
+    //Get the state
+    let customersState = customerState.customers;
+    
     //*************Functions**************** */
 
     //Register Admin Function
@@ -103,27 +107,63 @@ export default function Customers() {
           });
     }
 
+    //Register Admin Function
+    let viewCompanyDetails = (e) =>{
+        
+        alert('Hi there!')
+        var modal = document.getElementById('customerDetailsModal');
+
+        modal.style.display = "block";
+
+
+    }
+
+    let dataRows = JSON.parse(JSON.stringify(customersState));
+
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
+
+        //append the action key value pair to the end of each object
+        dataRows[i]['action'] = (
+            <div>
+                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].customer_id}  onClick={viewCompanyDetails} data-toggle="modal" data-target="#customerDetailsModal">
+                    <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Details 
+                </button> {' '}
+                <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
+                    <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Admins
+                </button> {' '}
+                <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
+                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Add
+                </button>
+            </div>
+        )
+       
+    }
+
     data = {
 
         columns: [
           {
             label: 'Customer Name',
-            field: 'customerName',
+            field: 'customer_name',
             sort: 'asc',
           },
           {
             label: 'Email',
-            field: 'email',
+            field: 'customer_email',
             sort: 'asc',
           },
           {
             label: 'Telephone',
-            field: 'telephone',
+            field: 'customer_telephone',
             sort: 'asc',
           },
           {
             label: 'API Key',
-            field: 'apiKey',
+            field: 'api_key',
             sort: 'asc',
           },
           {
@@ -132,141 +172,7 @@ export default function Customers() {
           },
           
         ],
-        rows: [
-          {
-            customerName: 'Tiger Nixon',
-            email: 'System Architect',
-            telephone: 'Edinburgh',
-            apiKey: '61',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-          {
-            customerName: 'Cedric Kelly',
-            email: 'Senior Javascript Developer',
-            telephone: 'Edinburgh',
-            apiKey: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-          {
-            customerName: 'Airi Satou',
-            email: 'Accountant',
-            telephone: 'Tokyo',
-            apiKey: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            customerName: 'Charde Marshall',
-            email: 'Regional Director',
-            telephone: 'San Francisco',
-            apiKey: '36',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-          {
-            customerName: 'Haley Kennedy',
-            email: 'Senior Marketing Designer',
-            telephone: 'London',
-            apiKey: '43',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-          {
-            customerName: 'Tatyana Fitzpatrick',
-            email: 'Regional Director',
-            telephone: 'London',
-            apiKey: '19',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#customerDetailsModal">
-                        <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                    </button> {' '}
-                    <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
-                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Admins
-                    </button> {' '}
-                    <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
-                        <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Add
-                    </button>
-                </div>
-            )
-          },
-        ]
+        rows: dataRows
       };
 
     adminData = {
@@ -410,10 +316,6 @@ export default function Customers() {
           },
         ]
       };
-
-    
-
-
 
     return (
 

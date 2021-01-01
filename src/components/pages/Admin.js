@@ -14,6 +14,7 @@ import Customers from './Customers';
 import Registration from './Registration.js';
 import AdminProfile from './AdminProfile';
 import AssetManagement from './AssetManagement';
+import AssetTypes from './AssetTypes';
 import DeviceTypes from './DeviceTypes';
 import DeviceManagement from './DeviceManagement';
 import LogHistory from './LogHistory';
@@ -21,7 +22,13 @@ import LogHistory from './LogHistory';
 //Error UI
 import Page404 from './Page404';
 
-export default function Admin() {
+export default function Admin({customerState, assetState, assetTypeState, deviceState,deviceTypeState}) {
+
+    let customersState = customerState;
+    let assetTypesState = assetTypeState;
+    let assetsState = assetState;
+    let deviceTypesState = deviceTypeState;
+    let devicesState = deviceState;
 
     return (
         
@@ -30,7 +37,7 @@ export default function Admin() {
             <SideBar/>
 
             {/*<!-- Content Wrapper -->*/}
-            <div id="content-wrapper" className="d-flex flex-column">
+            <div id="content-wrapper" class="d-flex flex-column">
 
                     {/*<!-- Main Content -->*/}
                     <div id="content">
@@ -59,20 +66,46 @@ export default function Admin() {
                                 <Route exact path='/admin/registrations' component = {Registration} />
                                 {/* End Register Customers */}
 
-                                {/* Customers */}
-                                <Route exact path='/admin/customers' component = {Customers} />
+                                {/* Customers {customersState[0].customer_id}*/}
+                                <Route exact path='/admin/customers' render = {props => (
+                                                                        <Customers {...props} customerState={customersState} 
+                                                                                              assetState={assetsState} /> 
+                                                                        )} 
+                                />
                                 {/* End Customers */}
 
                                 {/* Asset Management */}
-                                <Route exact path='/admin/asset_management' component = {AssetManagement} />
+                                <Route exact path='/admin/asset_management' render = {props => (
+                                                                        <AssetManagement {...props} customerState={customersState} 
+                                                                                                    assetState={assetsState} 
+                                                                                                    assetTypeState={assetTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Asset Management */}
 
+                                {/* Asset Types */}
+                                <Route exact path='/admin/asset_types' render = {props => (
+                                                                        <AssetTypes {...props} assetTypeState={assetTypesState}/> 
+                                                                        )} 
+                                />
+                                {/* End Asset Types */}
+
+
                                 {/* Device Types */}
-                                <Route exact path='/admin/device_types' component = {DeviceTypes} />
+                                <Route exact path='/admin/device_types' render = {props => (
+                                                                        <DeviceTypes {...props} deviceTypeState={deviceTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Device Types */}
 
                                 {/* Device Management */}
-                                 <Route exact path='/admin/device_management' component = {DeviceManagement} />
+                                 <Route exact path='/admin/device_management' render = {props => (
+                                                                        <DeviceManagement {...props} customerState={customersState} 
+                                                                                                     assetState={assetsState}
+                                                                                                     deviceState={devicesState} 
+                                                                                                     deviceTypeState={deviceTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Device Management */}
 
                                 {/* Log History */}

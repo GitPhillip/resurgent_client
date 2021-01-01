@@ -49,7 +49,7 @@ export default function SideBar() {
                     </Link>
                     <div id="collapseUserManagement" class="collapse" aria-labelledby="headingUserManagement" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <h6 class="collapse-header">Custom Components:</h6>
+                            <h6 class="collapse-header">Manage users:</h6>
                             <Link class="collapse-item" to="/admin/registrations">Registrations</Link>
                             <Link class="collapse-item" to="/admin/user_management">User Management</Link>
                         </div>
@@ -65,11 +65,21 @@ export default function SideBar() {
                     Assets & Devices
                 </div>
 
-                {/*<!-- Nav Item - Charts -->*/}
+                {/*<!-- Nav Item - Assets -->*/}
                 <li class="nav-item">
-                    <Link class="nav-link" to="/admin/asset_management">
+                    <Link class="nav-link collapsed" to="#" data-toggle="collapse" data-target="#collapseAssets"
+                        aria-expanded="true" aria-controls="collapseAssets">
                         <i class="fas fa-fw fa-truck"></i>
-                        <span>Asset Management</span></Link>
+                        <span>Asset Management</span>
+                    </Link>
+                    <div id="collapseAssets" class="collapse" aria-labelledby="headingTwoAssets" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Devices:</h6>
+                            <Link class="collapse-item" to="/admin/asset_types">Asset Types</Link>
+                            <Link class="collapse-item" to="/admin/asset_management">Asset Management</Link>
+                        </div>
+                    </div>
+
                 </li>
 
                 {/*<!-- Nav Item - Pages Collapse Menu -->*/}

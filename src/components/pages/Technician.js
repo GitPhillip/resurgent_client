@@ -12,12 +12,19 @@ import Dashboard from './Dashboard';
 import TechnicianProfile from './TechnicianProfile';
 import AssetManagement from './AssetManagement';
 import DeviceTypes from './DeviceTypes';
-import TechnicianDeviceManagement from './TechnicianDeviceManagement';
+import DeviceManagement from './DeviceManagement';
+import AssetTypes from './AssetTypes';
 
 //Error UI
 import Page404 from './Page404';
 
-export default function Technician() {
+export default function Technician({customerState, assetState, assetTypeState, deviceState,deviceTypeState}) {
+
+    let customersState = customerState;
+    let assetTypesState = assetTypeState;
+    let assetsState = assetState;
+    let deviceTypesState = deviceTypeState;
+    let devicesState = deviceState;
 
     return (
         
@@ -26,7 +33,7 @@ export default function Technician() {
             <TechnicianSideBar/>
 
             {/*<!-- Content Wrapper -->*/}
-            <div id="content-wrapper" className="d-flex flex-column">
+            <div id="content-wrapper" class="d-flex flex-column">
 
                     {/*<!-- Main Content -->*/}
                     <div id="content">
@@ -48,15 +55,36 @@ export default function Technician() {
                                 {/* End Profile */}
 
                                 {/* Asset Management */}
-                                <Route exact path='/technician/asset_management' component = {AssetManagement} />
+                                <Route exact path='/technician/asset_management' render = {props => (
+                                                                        <AssetManagement {...props} customerState={customersState} 
+                                                                                                    assetState={assetsState} 
+                                                                                                    assetTypeState={assetTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Asset Management */}
 
+                                {/* Asset Types */}
+                                <Route exact path='/technician/asset_types' render = {props => (
+                                                                        <AssetTypes {...props} assetTypeState={assetTypesState}/> 
+                                                                        )} 
+                                />
+                                {/* End Asset Types */}
+
                                 {/* Device Types */}
-                                <Route exact path='/technician/device_types' component = {DeviceTypes} />
+                                <Route exact path='/technician/device_types' render = {props => (
+                                                                        <DeviceTypes {...props} deviceTypeState={deviceTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Device Types */}
 
                                 {/* Device Management */}
-                                 <Route exact path='/technician/device_management' component = {TechnicianDeviceManagement} />
+                                <Route exact path='/technician/device_management' render = {props => (
+                                                                        <DeviceManagement {...props} customerState={customersState} 
+                                                                                                     assetState={assetsState}
+                                                                                                     deviceState={devicesState} 
+                                                                                                     deviceTypeState={deviceTypesState}/> 
+                                                                        )} 
+                                />
                                 {/* End Device Management */}
 
                                 {/* Catch Wrong Route */}

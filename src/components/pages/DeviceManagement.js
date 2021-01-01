@@ -2,9 +2,22 @@ import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
-export default function DeviceManagement() {
+export default function DeviceManagement({customerState,assetState,deviceState,deviceTypeState}) {
     
     let data;
+
+    //Get the state
+    let customersState = customerState.customers;
+    let isLoading = customerState.isLoading;
+
+    let assetsState = assetState.assets;
+    let isAssetLoading = assetState.isLoading;
+
+    let devicesState = deviceState.devices;
+    //let isDevicesLoading = deviceState.isLoading;
+
+    let deviceTypesState = deviceTypeState.deviceTypes;
+    let isDeviceTypesLoading = deviceTypeState.isLoading;
 
     //***********Functions************* */
 
@@ -30,6 +43,12 @@ export default function DeviceManagement() {
           });
     }
 
+    //View Device Details Function
+    let viewDeviceDetails = (e) =>{
+        //Prevent form from submitting to the actual file
+       
+    }
+
     //Update Device Function
     let updateDevice = (e) =>{
         //Prevent form from submitting to the actual file
@@ -52,27 +71,54 @@ export default function DeviceManagement() {
           });
     }
 
+    let dataRows = JSON.parse(JSON.stringify(devicesState));
+    let deviceTypeRows = JSON.parse(JSON.stringify(deviceTypesState));
+
+
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
+
+        
+        //loop through all the device types
+        for(var k = 0; k <deviceTypeRows.length; k++ ){
+
+            if(deviceTypeRows[k]['type_id']===dataRows[i]['device_type_id'] )
+                dataRows[i]['device_type_id'] = deviceTypeRows[k]['type_alias'];
+            
+        }
+        
+        //append the action key value pair to the end of each object
+        dataRows[i]['action'] = (
+            <div>
+                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
+                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                </button>
+            </div>
+        )
+    }
+
     data = {
 
         columns: [
           {
             label: 'Device ID',
-            field: 'deviceID',
+            field: 'device_id',
             sort: 'asc',
           },
           {
             label: 'Device Type Alias',
-            field: 'deviceTypeID',
-            sort: 'asc',
-          },
-          {
-            label: 'Asset ID',
-            field: 'assetID',
+            field: 'device_type_id',
             sort: 'asc',
           },
           {
             label: 'Sigfox ID',
-            field: 'sigfoxID',
+            field: 'sigfox_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Device Status',
+            field: 'device_status',
             sort: 'asc',
           },
           {
@@ -81,93 +127,7 @@ export default function DeviceManagement() {
           },
           
         ],
-        rows: [
-          {
-            deviceID: 'Tiger Nixon',
-            deviceTypeID: 'System Architect',
-            assetID: 'Edinburgh',
-            sigfoxID: '61',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            deviceID: 'Cedric Kelly',
-            deviceTypeID: 'Senior Javascript Developer',
-            assetID: 'Edinburgh',
-            sigfoxID: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            deviceID: 'Airi Satou',
-            deviceTypeID: 'Accountant',
-            assetID: 'Tokyo',
-            sigfoxID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            deviceID: 'Charde Marshall',
-            deviceTypeID: 'Regional Director',
-            assetID: 'San Francisco',
-            sigfoxID: '36',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            deviceID: 'Haley Kennedy',
-            deviceTypeID: 'Senior Marketing Designer',
-            assetID: 'London',
-            sigfoxID: '43',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            deviceID: 'Tatyana Fitzpatrick',
-            deviceTypeID: 'Regional Director',
-            assetID: 'London',
-            sigfoxID: '19',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-        ]
+        rows: dataRows
       };
 
     return (
@@ -197,21 +157,25 @@ export default function DeviceManagement() {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Type</label>
-                                                    <select required='required' class='form-control' id='deviceTypeAlias' name='deviceTypeAlias'>
-                                                        <option hidden selected disabled>Please select a device type.</option>
-                                                        <option value='1'>Type 1</option>
-                                                        <option value='2'>Type 2</option>
-                                                        <option value='3'>Type 3</option>
-                                                    </select>
+                                                    {!isDeviceTypesLoading ? (
+                                                        <select required='required' class='form-control' id='deviceTypeID' name='deviceTypeID'>
+                                                            <option hidden selected disabled>Please choose a asset type.</option>
+                                                            {deviceTypesState.map(deviceType => <option value={deviceType.type_id} >{deviceType.type_alias}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Asset</label>
-                                                    <select class='form-control' id='assetID' name='assetID'>
-                                                        <option hidden selected disabled>Please select an asset.</option>
-                                                        <option value='1'>Truck</option>
-                                                        <option value='2'>Trailer</option>
-                                                        <option value='3'>Car</option>
-                                                    </select>
+                                                    {!isAssetLoading ? (
+                                                        <select required='required' class='form-control' id='assetID' name='assetID'>
+                                                            <option hidden selected disabled>Please choose an asset.</option>
+                                                                {assetsState.map(asset => <option value={asset.asset_id} >{asset.asset_name}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -222,12 +186,14 @@ export default function DeviceManagement() {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Customer Name</label>
-                                                    <select class='form-control' id='customerID' name='customerID'>
-                                                        <option hidden selected disabled>Please choose a customer.</option>
-                                                        <option value='1'>Shoprite</option>
-                                                        <option value='2'>Coca Cola</option>
-                                                        <option value='3'>Checkers</option>
-                                                    </select>
+                                                    {!isLoading ? (
+                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                            <option hidden selected disabled>Please choose a customer.</option>
+                                                            {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                                 </div>
                                             </div>
                                         </div>

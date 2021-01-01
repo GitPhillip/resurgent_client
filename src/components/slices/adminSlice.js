@@ -1,28 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from './api'
 
-/*The outside thunk creator function
-export const getAdmins = () =>{
-    //The inside 'thunk function'
-    return async(dispatch, getState) => {
-        try{
-            let admins = await axios.get('http://localhost:3000/api/users/usertype/1')
-            .then(res => {
-                admins = res.data;
-                console.log(admins);
-                //dispatch an action when we get the response back
-               // dispatch(getAllAdmins())
-            });
-        }catch(err){
-            console.log('Something went wrong: '+err)
-        }
-    }
-}*/
 
-export const adminSlice = createSlice({
+
+export const  adminSlice = createSlice({
+
     name: 'admins',
     initialState: {
-        admins: {}
+        admins: [{
+                    user_id:'placeholder',
+                    username:"placeholder",
+                    user_email:"phill@placeholder.com",
+                    user_firstname:"placeholder",
+                    user_surname:"placeholder",
+                    user_cellphone:"placeholder",
+                    user_type_id:1,
+                    isActive:true,
+                    deleted:false
+                }
+                
+        ],
+        isLoading: false,
+        error: false
+        
     },
     reducers: {
         //Recuducer to add an admin
@@ -46,20 +46,45 @@ export const adminSlice = createSlice({
             }
         },
         //Reducer to get all admins
-        getAllAdmins: state =>{
-            axios.get('http://localhost:3000/api/users/usertype/1')
-            .then(res => {
-                state.admins = res.data;
-                console.log(state.admins.admins);
-            });
-        } 
+        getAdmins: (state,action) =>{
+           
+            state.admins = action.payload; //
+            state.isLoading = false;
+            
+        },
+        startLoading: state =>{
+            state.isLoading = true;
+        },
+        hasError: (state,action) =>{
+            state.error = action.payload;
+            state.isLoading = false;
+        }
+        
     }
 
 }); 
 
-export const {addAdmin, deleteAdmin, getAllAdmins} = adminSlice.actions;
+
+export default adminSlice.reducer
 
 //Selctors
 export const selectAdmins = state => state.admins;
+export const selectIsLoading = state => state.isLoading;
 
-export default adminSlice.reducer
+export const {addAdmin, deleteAdmin, getAdmins, hasError,startLoading} = adminSlice.actions;
+
+//***********************Actions*******************8
+export const fetchAdmins = () => async dispatch => {
+
+    dispatch(startLoading());
+    try{
+
+        await api
+        .get('/users/usertype/1')
+        .then(response => dispatch(getAdmins(response.data.data))
+        );
+
+    }catch(error){
+        dispatch(hasError(error.message))
+    }
+}

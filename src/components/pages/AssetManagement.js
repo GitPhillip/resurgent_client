@@ -2,9 +2,19 @@ import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
-export default function AssetManagement() {
+export default function AssetManagement({customerState,assetState, assetTypeState}) {
 
     let data;
+
+    //Get the state
+    let customersState = customerState.customers;
+    let isLoading = customerState.isLoading
+
+    let assetsState = assetState.assets;
+
+    let assetTypesState = assetTypeState.assetTypes;
+    let IsLoadingAssestTypes = assetTypeState.isLoading;
+
     //***********Functions************ */
 
     //Register Asset Function
@@ -54,32 +64,66 @@ export default function AssetManagement() {
           });
     }
 
+    //Make deep copies of the states
+    let dataRows = JSON.parse(JSON.stringify(assetsState));
+    let customerRows = JSON.parse(JSON.stringify(customersState));
+    let assetTypeRows = JSON.parse(JSON.stringify(assetTypesState))
+    
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
+
+        //Replace the customer id with the customer name
+
+        //loop through all the customers
+        for(var k = 0; k <customerRows.length; k++ ){
+
+            if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
+                dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
+            
+        }
+        
+        //Replace the asset type id with the asset type alias
+
+        //loop through all the asset types
+        for(var j = 0; j <assetTypeRows.length; j++ ){
+
+            if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
+                dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+            
+        }
+
+        //append the action key value pair to the end of each object
+        dataRows[i]['action'] = (
+            <div>
+                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
+                    <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
+                    View Details 
+                </button>
+            </div>
+        )
+    }
+
     data = {
 
         columns: [
           {
             label: 'Asset ID',
-            field: 'assetID',
+            field: 'asset_id',
             sort: 'asc',
           },
           {
             label: 'Asset Name',
-            field: 'assetName',
+            field: 'asset_name',
             sort: 'asc',
           },
           {
             label: 'Customer Name',
-            field: 'customerName',
+            field: 'customer_id',
             sort: 'asc',
           },
           {
             label: 'Asset Type',
-            field: 'assetTypeID',
-            sort: 'asc',
-          },
-          {
-            label: 'Asset Device',
-            field: 'assetDeviceID',
+            field: 'asset_type_id',
             sort: 'asc',
           },
           {
@@ -88,99 +132,7 @@ export default function AssetManagement() {
           },
           
         ],
-        rows: [
-          {
-            assetID: 'Tiger Nixon',
-            assetName: 'System Architect',
-            customerName: 'Edinburgh',
-            assetTypeID: '61',
-            assetDeviceID: '61',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Cedric Kelly',
-            assetName: 'Senior Javascript Developer',
-            customerName: 'Edinburgh',
-            assetTypeID: '22',
-            assetDeviceID: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Airi Satou',
-            assetName: 'Accountant',
-            customerName: 'Tokyo',
-            assetTypeID: '33',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            assetID: 'Charde Marshall',
-            assetName: 'Regional Director',
-            customerName: 'San Francisco',
-            assetTypeID: '36',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Haley Kennedy',
-            assetName: 'Senior Marketing Designer',
-            customerName: 'London',
-            assetTypeID: '43',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Tatyana Fitzpatrick',
-            assetName: 'Regional Director',
-            customerName: 'London',
-            assetTypeID: '19',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-        ]
+        rows: dataRows
       };
     
     return (
@@ -199,6 +151,7 @@ export default function AssetManagement() {
                         
                     </ul>
 
+                
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
@@ -215,12 +168,14 @@ export default function AssetManagement() {
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Asset Type</label>
-                                                    <select required='required' class='form-control' id='assetType' name='assetType'>
-                                                        <option hidden selected disabled>Please select a asset type.</option>
-                                                        <option value='1'>Truck</option>
-                                                        <option value='2'>Trailer</option>
-                                                        <option value='3'>Car</option>
-                                                    </select>
+                                                    {!IsLoadingAssestTypes ? (
+                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                            <option hidden selected disabled>Please choose a asset type.</option>
+                                                            {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -231,12 +186,14 @@ export default function AssetManagement() {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Customer Name</label>
-                                                    <select required='required' class='form-control' id='customerID' name='customerID'>
-                                                        <option hidden selected disabled>Please choose a customer.</option>
-                                                        <option value='1'>Shoprite</option>
-                                                        <option value='2'>Coca Cola</option>
-                                                        <option value='3'>Checkers</option>
-                                                    </select>
+                                                    {!isLoading ? (
+                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                            <option hidden selected disabled>Please choose a customer.</option>
+                                                            {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -296,7 +253,7 @@ export default function AssetManagement() {
 
             {/* Asset Details Modal */}
             <div class="modal fade" id="assetDetailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
+                aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -334,12 +291,14 @@ export default function AssetManagement() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Customer Name</label>
-                                                <select required='required' class='form-control' id='customerNameModal' name='customerNameModal'>
-                                                    <option hidden selected disabled>Please choose a customer.</option>
-                                                    <option value='1'>Shoprite</option>
-                                                    <option value='2'>Coca Cola</option>
-                                                    <option value='3'>Checkers</option>
-                                                </select>
+                                                {!isLoading ? (
+                                                        <select required='required' class='form-control' id='customerIDModal' name='customerIDModal'>
+                                                            <option hidden selected disabled>Please choose a customer.</option>
+                                                            {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -350,12 +309,7 @@ export default function AssetManagement() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Device Attached</label>
-                                                <select class='form-control' id='deviceAttachedModal' name='deviceAttachedModal'>
-                                                    <option hidden selected disabled>Please choose a device.</option>
-                                                    <option value='1'>Device 1</option>
-                                                    <option value='2'>Device 2</option>
-                                                    <option value='3'>Device 3</option>
-                                                </select>
+                                                <input class='form-control' id='deviceIDModal' name='deviceIDModal' placeholder='Device Attached *'/>
                                             </div>
                                         </div>
                                     </div>
@@ -392,7 +346,7 @@ export default function AssetManagement() {
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
         {/* End Asset Details Modal */}

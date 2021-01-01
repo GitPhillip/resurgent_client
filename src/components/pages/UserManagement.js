@@ -1,34 +1,47 @@
-import React from 'react'
-import {useSelector} from 'react-redux'
+import React, {useEffect} from 'react'
+import {useSelector, useDispatch} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
-import Swal from 'sweetalert2'
+//import Swal from 'sweetalert2'
 
 //import the slices with the reducers
-import { selectAdmins} from '../slices/adminSlice'
+import { selectAdmins, /*selectIsLoading,*/ fetchAdmins} from '../slices/adminSlice'
 
 export default function UserManagement() {
 
+    const admins = useSelector(selectAdmins); 
+    //const isLoading = useSelector(selectIsLoading); 
 
-    const sup = useSelector(selectAdmins);
+    const dispatch = useDispatch();
 
-    var count = 0;
-    for(var i in sup){
-        if(sup.hasOwnProperty(i))
-        count++
+    //React will perform tasks here after DOM  updates
+    useEffect(() =>{
+        
+        dispatch(fetchAdmins());
+       
+    }, [dispatch]);
+    
+    let data;  
+
+    let dataRows = JSON.parse(JSON.stringify(admins.admins));
+
+    
+    for(var i = 0; i<dataRows.length;i++){
+
+        for(var j = 0; j < Object.keys(dataRows[i]).length;j++){
+            dataRows[i]['action'] = (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button>
+                </div>
+            )
+        }
     }
     
-
-    let data;// = useSelector(getAllAdmins);
-
-    //alert(JSON.stringify(data.toString()))
-
-    //const dispatch = useDispatch();
-
-    const onChange = () =>{
-        console.log('hi')
-    }
+    
     //**************Functions************ */
-    //Delete Admin
+    /*Delete Admin
     let deleteAdmin = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
@@ -48,159 +61,64 @@ export default function UserManagement() {
             }
           });
     }
+    */
     data = {
 
         columns: [
           {
-            label: 'Name',
-            field: 'name',
+            label: 'User ID',
+            field: 'user_id',
             sort: 'asc',
           },
           {
-            label: 'Email',
-            field: 'email',
+            label: 'Username',
+            field: 'username',
+            sort: 'asc',
+          },
+          {
+            label: 'First Name',
+            field: 'user_firstname',
+            sort: 'asc',
+          },
+          {
+            label: 'Surname',
+            field: 'user_surname',
             sort: 'asc',
           },
           {
             label: 'Cellphone',
-            field: 'cellphone',
+            field: 'user_cellphone',
             sort: 'asc',
           },
           {
             label: 'User Type',
-            field: 'userType',
+            field: 'user_type_id',
             sort: 'asc',
           },
           {
             label: 'Action',
-            field: 'action'
+            field: 'action',
+
           },
           
-        ],
-        rows: [
-          {
-            name: 'Tiger Nixon',
-            email: 'System Architect',
-            cellphone: 'Edinburgh',
-            userType: '61',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-          {
-            name: 'Cedric Kelly',
-            email: 'Senior Javascript Developer',
-            cellphone: 'Edinburgh',
-            userType: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-          {
-            name: 'Airi Satou',
-            email: 'Accountant',
-            cellphone: 'Tokyo',
-            userType: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            name: 'Charde Marshall',
-            email: 'Regional Director',
-            cellphone: 'San Francisco',
-            userType: '36',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-          {
-            name: 'Haley Kennedy',
-            email: 'Senior Marketing Designer',
-            cellphone: 'London',
-            userType: '43',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-          {
-            name: 'Tatyana Fitzpatrick',
-            email: 'Regional Director',
-            cellphone: 'London',
-            userType: '19',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button> {' '}
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>
-                </div>
-            )
-          },
-        ]
+        ], 
+        rows: dataRows
       };
+      
+
+      //columns
 
     return (
 
         <React.Fragment>
             {/*<!-- Page Heading -->*/}
             <h1 class="h3 mb-2 text-gray-800">All Users </h1>
-            <textarea class='form-control' onChange={onChange} value={count[0].user_type_id} ></textarea>
+            
             <br/>
             {/*<!-- DataTales Example -->*/}
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">All Resurgent Users</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">All Resurgent Employees</h6>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

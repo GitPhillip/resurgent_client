@@ -1,5 +1,5 @@
 //Imports
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 //components
@@ -11,12 +11,66 @@ import Technician from './components/pages/Technician';
 import Customer from './components/pages/Customer';
 import Page404 from './components/pages/Page404';
 
+//Import selector to get the global state
+import {useSelector, useDispatch} from 'react-redux'
+
+//************Import reducers****************
+//***************************************** */
+
+//Customer Slice
+import {/*selectCustomers, selectIsLoading,*/ fetchCustomers} from './components/slices/customerSlice'
+
+//Asset Slice
+import { fetchAssets } from './components/slices/assetSlice';
+
+//Asset Type Slice
+import { fetchAssetTypes } from './components/slices/typeSlice';
+
+//Devices
+import { fetchDevices } from './components/slices/deviceSlice';
+
+//Device Types
+import { fetchDeviceTypes } from './components/slices/deviceTypeSlice';
+
+
+//import { fetchAdmins } from './components/slices/adminSlice';
+
 export default function App() {
+
+    //Get the different parts of the state
+    const customers = useSelector(state => state.customers); 
+    const assetTypes = useSelector(state => state.assetTypes);
+    const assets = useSelector(state => state.assets);
+    const deviceTypes = useSelector(state => state.deviceTypes);
+    const devices = useSelector(state => state.devices);
+
+    const dispatch = useDispatch();
+
+    useEffect(() =>{
+        
+        //Fetch all the customers
+        dispatch(fetchCustomers());
+
+        //fetch all the asset types
+        dispatch(fetchAssetTypes());
+
+        //fetch all the assets
+        dispatch(fetchAssets());
+
+        //fetch all the device types
+        dispatch(fetchDeviceTypes());
+
+        //fetch all the devices
+        dispatch(fetchDevices());
+
+       
+    }, [dispatch]);
 
     return (
 
       <Router>
 
+        
           {/* Can only put Routes in switch component */}
           <Switch> 
 
@@ -29,15 +83,29 @@ export default function App() {
               {/* End ForgotPassword */}
               
               {/* Admin screens */}
-              <Route path='/admin' component = {Admin} />
+              <Route path='/admin' render = {props => (
+                                            <Admin {...props} customerState={customers} 
+                                                              assetState={assets} 
+                                                              assetTypeState={assetTypes}
+                                                              deviceState={devices} 
+                                                              deviceTypeState={deviceTypes}/> 
+                                            )} 
+              />
               {/* End Admin screens */}
 
               {/* Technician screens */}
-              <Route path='/technician' component = {Technician} />
+              <Route path='/technician'  render = {props => (
+                                            <Technician {...props} customerState={customers} 
+                                                                   assetState={assets} 
+                                                                   assetTypeState={assetTypes}
+                                                                   deviceState={devices}
+                                                                   deviceTypeState={deviceTypes} /> 
+                                            )} 
+              />
               {/* End Admin screens */}
 
               {/* Customer screens */}
-              <Route path='/customer' component = {Customer} />
+              <Route path='/customer' component = {Customer} state={customers}/>
               {/* End Customer screens */}
 
               {/* Catch Wrong Route */}

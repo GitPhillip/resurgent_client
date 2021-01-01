@@ -49,11 +49,21 @@ export default function TechnicianSideBar() {
                     Assets & Devices
                 </div>
 
-                {/*<!-- Nav Item - Charts -->*/}
+                {/*<!-- Nav Item - Assets -->*/}
                 <li class="nav-item">
-                    <Link class="nav-link" to="/technician/asset_management">
+                    <Link class="nav-link collapsed" to="#" data-toggle="collapse" data-target="#collapseAssets"
+                        aria-expanded="true" aria-controls="collapseAssets">
                         <i class="fas fa-fw fa-truck"></i>
-                        <span>Asset Management</span></Link>
+                        <span>Asset Management</span>
+                    </Link>
+                    <div id="collapseAssets" class="collapse" aria-labelledby="headingTwoAssets" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Devices:</h6>
+                            <Link class="collapse-item" to="/technician/asset_types">Asset Types</Link>
+                            <Link class="collapse-item" to="/technician/asset_management">Asset Management</Link>
+                        </div>
+                    </div>
+
                 </li>
 
                 {/*<!-- Nav Item - Pages Collapse Menu -->*/}

@@ -2,97 +2,89 @@ import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
-export default function DeviceTypes({deviceTypeState}) {
+export default function AssetTypes({assetTypeState}) {
 
     let data;
 
     //Get the state
-    let deviceTypesState = deviceTypeState.deviceTypes;
+    let assetTypesState = assetTypeState.assetTypes;
 
-    //***********Functions************* */
+    //***********Functions************ */
 
-    //Register Device Type Function
-    let registerDeviceType = (e) =>{
+    //Register Asset Function
+    let registerAssetType = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
         //Trigger the SWAL
         Swal.fire({
             icon: 'question',
-            title: 'Register Device Type?',
-            text: 'Are you sure you want to register the device type?',
+            title: 'Register Asset?',
+            text: 'Are you sure you want to register the asset type?',
             showCancelButton: true,
-            confirmButtonText: `Register`,
+            confirmButtonText: `Register Asset Type`,
           }).then((result) => {
             if (result.isConfirmed) {
               //Handle axios request
 
-              Swal.fire('Device Type Registered!', '', 'success');
+              Swal.fire('Asset Type Registered!', '', 'success');
 
             } 
           });
     }
 
-    //Update Device Type Function
-    let updateDeviceType = (e) =>{
+    //Update Asset Function
+    let updateAssetType = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
         //Trigger the SWAL
         Swal.fire({
             icon: 'question',
-            title: 'Update Device Type?',
-            text: 'Are you sure you want to update the device type?',
+            title: 'Update Asset?',
+            text: 'Are you sure you want to update the asset?',
             showCancelButton: true,
-            confirmButtonText: `Update`,
+            confirmButtonText: `Update Asset`,
           }).then((result) => {
             if (result.isConfirmed) {
               //Handle axios request
 
-              Swal.fire('Device Type Updated!', '', 'success');
+              Swal.fire('Asst updated!', '', 'success');
 
             } 
           });
     }
 
-    let dataRows = JSON.parse(JSON.stringify(deviceTypesState));
+    //Make deep copies of the states
+    let dataRows = JSON.parse(JSON.stringify(assetTypesState));
 
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
+        
+        //Replace the asset type id with the asset type alias
 
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    View Details
+                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i]['type_id']} data-toggle="modal" data-target="#assetTypeDetailsModal">
+                    <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
+                    View Details 
                 </button>
             </div>
         )
-       
     }
 
     data = {
 
         columns: [
           {
-            label: 'Device Type Alias',
+            label: 'Asset Type ID',
+            field: 'type_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Type Alias',
             field: 'type_alias',
-            sort: 'asc',
-          },
-          {
-            label: 'Conversion',
-            field: 'type_conversion',
-            sort: 'asc',
-          },
-          {
-            label: 'Packet Structure',
-            field: 'packet_structure',
-            sort: 'asc',
-          },
-          {
-            label: 'Sigfox ID',
-            field: 'sigfox_id',
             sort: 'asc',
           },
           {
@@ -103,47 +95,50 @@ export default function DeviceTypes({deviceTypeState}) {
         ],
         rows: dataRows
       };
-
+    
     return (
+
         <React.Fragment>
 
             <div class="row">
                 <div class="col-md-12 ">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Device Type</a>
+                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Asset Type</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Device Types</a>
+                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Asset Types</a>
                         </li>
+                        
                     </ul>
 
+                
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
-                            <h3 class="register-heading">Register Device Type</h3>
+                            <h3 class="register-heading">Register Asset Type</h3>
                             <br/>
-                            <form method='post' onSubmit={registerDeviceType}>
+                            <form method='post' onSubmit={registerAssetType}>
                                 <div class="row register-form">
-
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <label class='label'>Device Type Alias</label>
-                                                    <input required='required' class='form-control' id='deviceTypeAlias' name='deviceTypeAlias' placeholder="Device Type Alias*" />
+                                                    <label class='label'>Asset Type Alias</label>
+                                                    <input required='required' type="text" class="form-control" id="assetAlias" name="assetAlias" placeholder="Asset Type Alias *" />
                                                 </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <div class="row col-md-12">
-                                                <label class='label'>Device Type description</label>
-                                                <textarea type='text' class='form-control' rows='4' id='deviceTypeDescription' name='deviceTypeDescription'>
-
-                                                </textarea>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label class='label'>Asset Type Description</label>
+                                                    <textarea required='required' rows='4' type="text" class="form-control" id="assetTypeDescription" name="assetTypeDescription" placeholder="Asset Type Description *" ></textarea>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -152,30 +147,29 @@ export default function DeviceTypes({deviceTypeState}) {
                                     <div class="col-md-2"></div>
                                     <div class="col-md-3"></div>
                                     <div class="col-md-7"><br/>
-                                        <div className='row'>
+                                        <div class='row'>
                                             <button type='submit' class="btn btn-success btn-icon-split">
                                                     <span class="icon text-white-50">
                                                         <i class="fas fa-check"></i>
                                                     </span>
-                                                    <span class="text">Register Asset</span>
+                                                    <span class="text">Register Asset Type</span>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </form>
-                            
                             <br/> <br/>
                         </div>
 
                         <div class="tab-pane fade show" id="manage" role="tabpanel" aria-labelledby="manage-tab">
                             <br/>
-                            <h3  class="register-heading">Manage Device Types</h3>
+                            <h3  class="register-heading">Manage Asset Types</h3>
                             <br/>
                             
                             {/*<!-- DataTales Example -->*/}
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Device Types Table</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">All Asset Types</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -190,41 +184,27 @@ export default function DeviceTypes({deviceTypeState}) {
                 </div>
             </div>
 
-            {/* Device Type Details Modal */}
-            <div class="modal fade" id="deviceTypeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            {/* Asset Details Modal */}
+            <div class="modal fade" id="assetTypeDetailsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Device Type Details</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Asset Details</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method='post' onSubmit={updateDeviceType}>
+                        <form method='post' onSubmit={updateAssetType}>
                             <div class="row register-form">
+                                
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Device Type Alias</label>
-                                                <input required='required' class='form-control' id='deviceTypeAliasModal' name='deviceTypeAliasModal' placeholder="Device Type Alias*" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                            <label class='label'>Device Type Conversion</label>
-                                                <input required='required' readonly='readonly' type='text' class='form-control' id='deviceTypeConversionModal' name='deviceTypeConversionModal' placeholder="Device Type Conversion *" />
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class='label'>Packet Structure</label>
-                                                <input required='required' readonly='readonly' type="text" class="form-control" id="packetStructureModal" name="packetStructureModal" placeholder="Packet Structure *"/>
+                                                <label class='label'>Asset Type Alias</label>
+                                                <input required='required' type="text" class="form-control" id="assetTypeAliasModal" name="assetTypeAliasModal" placeholder="Asset Type Alias *"  />
                                             </div>
                                         </div>
                                     </div>
@@ -234,8 +214,8 @@ export default function DeviceTypes({deviceTypeState}) {
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Sigfox ID</label>
-                                                <input required='required' readonly='readonly' type='text' class='form-control' id='sigfoxIDModal' name='sigfoxIDModal' placeholder="Sigfox ID *" />
+                                                <label class='label'>Asset Description</label>
+                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -245,8 +225,8 @@ export default function DeviceTypes({deviceTypeState}) {
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Device Type Description</label>
-                                                <textarea rows='4' type="text" class="form-control" id="deviceTypeDescriptionModal" name="deviceTypeDescriptionModal" placeholder="Device Type Description *"  ></textarea>
+                                                <label class='label'>Asset Type Device(s)</label>
+                                                <textarea rows='4' type="text" readonly='readonly' class="form-control" id="assetTypeDevices" name="assetTypeDevices" placeholder="Asset Type Devices *"  ></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -275,7 +255,7 @@ export default function DeviceTypes({deviceTypeState}) {
                     </div>
             </div>
         </div>
-        {/* Device Type Details Modal */}
+        {/* End Asset Details Modal */}
 
     </React.Fragment>
     )
