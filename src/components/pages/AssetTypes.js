@@ -1,6 +1,7 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import api from '../../api/api';
 
 export default function AssetTypes({assetTypeState}) {
 
@@ -31,6 +32,21 @@ export default function AssetTypes({assetTypeState}) {
 
             } 
           });
+    }
+
+    let viewAssetTypeDetails = (e) =>{
+        
+        //Get the customer id
+        var assetTypeId = e.target.getAttribute('data-id');
+
+        //Send the axios request
+        api.get('/assettypes/'+assetTypeId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('assetTypeAliasModal').value = response.data.data.type_alias;
+            document.getElementById('assetDescriptionModal').value = response.data.data.type_description;
+
+        });
     }
 
     //Update Asset Function
@@ -66,7 +82,7 @@ export default function AssetTypes({assetTypeState}) {
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i]['type_id']} data-toggle="modal" data-target="#assetTypeDetailsModal">
+                <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetTypeDetails} data-id={dataRows[i]['type_id']} data-toggle="modal" data-target="#assetTypeDetailsModal">
                     <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details 
                 </button>
@@ -190,7 +206,7 @@ export default function AssetTypes({assetTypeState}) {
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Asset Details</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Asset Type Details</h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -216,17 +232,6 @@ export default function AssetTypes({assetTypeState}) {
                                             <div class="col-md-12">
                                                 <label class='label'>Asset Description</label>
                                                 <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label class='label'>Asset Type Device(s)</label>
-                                                <textarea rows='4' type="text" readonly='readonly' class="form-control" id="assetTypeDevices" name="assetTypeDevices" placeholder="Asset Type Devices *"  ></textarea>
                                             </div>
                                         </div>
                                     </div>

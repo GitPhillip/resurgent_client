@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { MDBDataTable } from 'mdbreact';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import api from '../../api/api';
 
 export default function Customers({customerState}) {
 
     let data;
     let adminData;
 
-    //Get the state
+    //Get the global state
     let customersState = customerState.customers;
+
+     //Get your state
+     const [customerAdmins, setCustomerAdmins] = useState([]);//The initial state of admins is empty
+
     
     //*************Functions**************** */
 
@@ -41,7 +46,8 @@ export default function Customers({customerState}) {
     //Delete Admin
     let deleteAdmin = (e) =>{
         //Prevent form from submitting to the actual file
-        e.preventDefault();
+        //Get the customer user id
+        var customerUserId = e.target.getAttribute('data-id');
 
         //Trigger the SWAL
         Swal.fire({
@@ -52,8 +58,30 @@ export default function Customers({customerState}) {
             confirmButtonText: `Delete Admin`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Admin deleted!', '', 'success');
+              
+                //Send the axios request
+                api.delete(`/customerusers/${customerUserId}`)
+                .then(function (response) {
+                    //update the state
+                    setCustomerAdmins(customerAdmins.filter(customerAdmin => customerAdmin.user.user_id !==customerUserId));
+                    //display a msg
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted',
+                        text: `${response.data.message}`,
+                    });
+
+                    //close the modal
+                   document.getElementById('customerAdminsModal').click();
+
+                }).catch(function(error){
+                     //display a msg
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: `${error}`,
+                    });
+                })
 
             } 
           });
@@ -83,39 +111,37 @@ export default function Customers({customerState}) {
           });
     }
 
-    //Disable API Access
-    let disableAPIAccess = (e) =>{
-        //Prevent form from submitting to the actual file
-        e.preventDefault();
-
-        //Trigger the SWAL
-        Swal.fire({
-            icon: 'question',
-            title: 'Disable Access?',
-            text: 'Are you sure you want to disable API access for this account?',
-            showCancelButton: true,
-            confirmButtonText: `Disable Access`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Saved!', '', 'success');
-
-            } else if (result.isDismissed) {
-
-              Swal.fire('Access not disabled.', '', 'info')
-            }
-          });
-    }
-
-    //Register Admin Function
+    //View company details Function
     let viewCompanyDetails = (e) =>{
         
-        alert('Hi there!')
-        var modal = document.getElementById('customerDetailsModal');
+        //Get the customer id
+        var customerId = e.target.getAttribute('data-id');
 
-        modal.style.display = "block";
+        //Send the axios request
+        api.get('/customers/'+customerId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('customerName').value = response.data.data.customer_name;
+            document.getElementById('customerEmail').value = response.data.data.customer_email;
+            document.getElementById('customerTelephone').value = response.data.data.customer_telephone;
+            document.getElementById('customerNotes').value = response.data.data.customer_notes;
 
+        });
+    }
 
+    //Function to view the company admins
+    let viewCompanyAdmins = (e) =>{
+        
+        //Get the customer id
+        e.preventDefault();
+        var customerId = e.target.getAttribute('data-id');
+
+        //Send the axios request
+        api.get('/customerusers/customer/'+customerId)
+        .then(response => {
+            //update the state
+            setCustomerAdmins(response.data.data);
+        });
     }
 
     let dataRows = JSON.parse(JSON.stringify(customersState));
@@ -126,21 +152,20 @@ export default function Customers({customerState}) {
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].customer_id}  onClick={viewCompanyDetails} data-toggle="modal" data-target="#customerDetailsModal">
+                <button type="button" class="btn btn-success btn-sm"  data-id={dataRows[i].customer_id}  onClick={viewCompanyDetails} data-toggle="modal" data-target="#customerDetailsModal">
                     <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
                     Details 
                 </button> {' '}
-                <button  type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#customerAdminsModal">
+                <button  type="button" class="btn btn-info btn-sm" data-id={dataRows[i].customer_id}  onClick={viewCompanyAdmins} data-toggle="modal" data-target="#customerAdminsModal">
                     <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
                     Admins
                 </button> {' '}
-                <button  type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registerCustomerAdminModal">
+                <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id} data-toggle="modal" data-target="#registerCustomerAdminModal">
                     <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
                     Add
                 </button>
             </div>
         )
-       
     }
 
     data = {
@@ -175,27 +200,57 @@ export default function Customers({customerState}) {
         rows: dataRows
       };
 
+    let customerAdminRows = JSON.parse(JSON.stringify(customerAdmins));
+
+    //For Every object in the JSON object
+    for(var j = 0; j<customerAdminRows.length;j++){
+
+        //get the user id of each customer user
+        const userId= customerAdminRows[j].user['user_id'];
+
+        //append the action key value pair to the end of each object
+        customerAdminRows[j]['action'] = (
+            <div>
+                <button type="button" data-id={userId} onClick={deleteAdmin} class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete
+                </button>{' '}
+                <button type="button" data-id={userId} onClick={enableAPIAccess} class="btn btn-info btn-sm">
+                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Enable API Access
+                </button>
+            </div>
+        );
+
+        //Add the user details to the outer object
+        customerAdminRows[j]['user_names'] = customerAdminRows[j].user['user_firstname'] +" " +customerAdminRows[j].user['user_surname'];
+        customerAdminRows[j]['user_email'] = customerAdminRows[j].user['user_email'];
+        customerAdminRows[j]['user_cellphone'] = customerAdminRows[j].user['user_cellphone'];
+
+        
+    }
+
     adminData = {
 
         columns: [
           {
-            label: 'Admin Name',
-            field: 'adminName',
+            label: 'Admin Names',
+            field: 'user_names',
             sort: 'asc',
           },
           {
             label: 'Email',
-            field: 'email',
+            field: 'user_email',
             sort: 'asc',
           },
           {
             label: 'Cellphone',
-            field: 'cellphone',
+            field: 'user_cellphone',
             sort: 'asc',
           },
           {
             label: 'Role',
-            field: 'role',
+            field: 'user_role',
             sort: 'asc',
           },
           {
@@ -204,117 +259,7 @@ export default function Customers({customerState}) {
           },
           
         ],
-        rows: [
-          {
-            adminName: 'Tiger Nixon',
-            email: 'System Architect',
-            cellphone: 'Edinburgh',
-            role: '61',
-            action: (
-                <div>
-                    <button  type="button" onClick={deleteAdmin} class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" onClick={enableAPIAccess} class="btn btn-info btn-sm">
-                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Enable API Access
-                    </button>
-                </div>
-            )
-          },
-          {
-            adminName: 'Cedric Kelly',
-            email: 'Senior Javascript Developer',
-            cellphone: 'Edinburgh',
-            role: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-danger btn-sm ">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" onClick={disableAPIAccess} class="btn btn-warning btn-sm ">
-                        <i class="fas fa-times fa-sm fa-fw mr-2 "></i>
-                        Disable API Access
-                    </button>
-                </div>
-            )
-          },
-          {
-            adminName: 'Airi Satou',
-            email: 'Accountant',
-            cellphone: 'Tokyo',
-            role: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-danger btn-sm deleteCustomerAdmin">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" class="btn btn-info btn-sm">
-                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Enable API Access
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            adminName: 'Charde Marshall',
-            email: 'Regional Director',
-            cellphone: 'San Francisco',
-            role: '36',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-danger btn-sm deleteCustomerAdmin">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" class="btn btn-warning btn-sm">
-                        <i class="fas fa-times fa-sm fa-fw mr-2 "></i>
-                        Disable API Access
-                    </button>
-                </div>
-            )
-          },
-          {
-            adminName: 'Haley Kennedy',
-            email: 'Senior Marketing Designer',
-            cellphone: 'London',
-            role: '43',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-danger btn-sm deleteCustomerAdmin">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" class="btn btn-info btn-sm ">
-                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Enable API Access
-                    </button>
-                </div>
-            )
-          },
-          {
-            adminName: 'Tatyana Fitzpatrick',
-            email: 'Regional Director',
-            cellphone: 'London',
-            role: '19',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-danger btn-sm deleteCustomerAdmin">
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Delete
-                    </button>{' '}
-                    <button  type="button" class="btn btn-info btn-sm">
-                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Enable API Access
-                    </button>
-                </div>
-            )
-          },
-        ]
+        rows: customerAdminRows
       };
 
     return (

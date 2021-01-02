@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import api from './api'
+import api from '../../api/api'
 
 export const assetSlice = createSlice({
     name: 'assets',//This will also be the name of our r

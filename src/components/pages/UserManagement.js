@@ -1,36 +1,71 @@
-import React, {useEffect} from 'react'
-import {useSelector, useDispatch} from 'react-redux'
+import React, {useEffect,useState} from 'react'
 import { MDBDataTable } from 'mdbreact';
-//import Swal from 'sweetalert2'
+import Swal from 'sweetalert2'
 
-//import the slices with the reducers
-import { selectAdmins, /*selectIsLoading,*/ fetchAdmins} from '../slices/adminSlice'
+import api from '../../api/api';
 
 export default function UserManagement() {
 
-    const admins = useSelector(selectAdmins); 
-    //const isLoading = useSelector(selectIsLoading); 
+    //Get your state
+    const [admins, setAdmins] = useState([]);//The initial state of admins is empty
 
-    const dispatch = useDispatch();
+    //On page load
+    useEffect(()=>{
 
-    //React will perform tasks here after DOM  updates
-    useEffect(() =>{
-        
-        dispatch(fetchAdmins());
-       
-    }, [dispatch]);
+        //Make the request to the API and update the state
+        api.get('/users/usertype/1')
+        .then(response => {
+            //update the state
+            setAdmins(response.data.data);
+        }).catch(function(error){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: `${error}`
+            });
+        });
+
+    },[admins]);//only rerender if the admins change
     
     let data;  
 
-    let dataRows = JSON.parse(JSON.stringify(admins.admins));
+    //*************Functions ********************/
 
-    
+    let viewEmployeeDetails = (e) =>{
+        
+        //Get the customer id
+        var employeeId = e.target.getAttribute('data-id');
+        let userTypeDescription ='';
+
+        //get the specific user type
+        //Send the axios request
+        api.get('/usertypes/1')
+        .then(response =>{
+            userTypeDescription = response.data.data.user_type_description;
+        });
+
+        //Send the axios request
+        api.get('/users/'+employeeId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('usernameHeading').innerText = response.data.data.username;
+            document.getElementById('firstName').value = response.data.data.user_firstname;
+            document.getElementById('surname').value = response.data.data.user_surname;
+            document.getElementById('email').value = response.data.data.user_email;
+            document.getElementById('cellphone').value = response.data.data.user_cellphone;
+            document.getElementById('userTypeDescription').value = userTypeDescription;
+
+        });
+    }
+
+    let dataRows = JSON.parse(JSON.stringify(admins));
+
     for(var i = 0; i<dataRows.length;i++){
 
         for(var j = 0; j < Object.keys(dataRows[i]).length;j++){
             dataRows[i]['action'] = (
                 <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
+                    <button  type="button" data-id={dataRows[i]['user_id']} class="btn btn-success btn-sm" onClick={viewEmployeeDetails} data-toggle="modal" data-target="#detailsModal">
                         <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
                     </button>
@@ -91,11 +126,6 @@ export default function UserManagement() {
             sort: 'asc',
           },
           {
-            label: 'User Type',
-            field: 'user_type_id',
-            sort: 'asc',
-          },
-          {
             label: 'Action',
             field: 'action',
 
@@ -105,8 +135,6 @@ export default function UserManagement() {
         rows: dataRows
       };
       
-
-      //columns
 
     return (
 
@@ -144,7 +172,10 @@ export default function UserManagement() {
 
                             <div class="col-md-12 ">
 
-                                <h3 id="userName" name="userName" class="register-heading" >Douglas' profile:</h3>
+                                <div class='row'>
+                                    <h3 id="usernameHeading" name="usernameHeading" class="register-heading">Loading...</h3> <h3>'s profile:</h3>
+                                </div>
+                                
                                 <br/>
                                 <div class="row register-form">
 

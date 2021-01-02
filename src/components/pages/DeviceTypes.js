@@ -1,6 +1,7 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import api from '../../api/api';
 
 export default function DeviceTypes({deviceTypeState}) {
 
@@ -33,6 +34,28 @@ export default function DeviceTypes({deviceTypeState}) {
           });
     }
 
+    //View Device Type Function
+    let viewDeviceType = (e) =>{
+    
+        //Get the id of the device type
+        let deviceTypeId = e.target.getAttribute('data-id');
+
+        //Send the axios request to the API
+        //Send the axios request
+        api.get('/devicetypes/'+deviceTypeId)
+        .then(response =>{
+            
+            //Populate the correct html
+            document.getElementById('deviceTypeAliasModal').value =response.data.data.type_alias;
+            document.getElementById('deviceTypeConversionModal').value =response.data.data.type_conversion;
+            document.getElementById('packetStructureModal').value =response.data.data.packet_structure;
+            document.getElementById('sigfoxIDModal').value =response.data.data.sigfox_id;
+            document.getElementById('deviceTypeDescriptionModal').value =response.data.data.type_description;
+
+        });
+
+    }
+
     //Update Device Type Function
     let updateDeviceType = (e) =>{
         //Prevent form from submitting to the actual file
@@ -63,7 +86,7 @@ export default function DeviceTypes({deviceTypeState}) {
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#deviceTypeModal">
+                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].type_id} onClick={viewDeviceType} data-toggle="modal" data-target="#deviceTypeModal">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details
                 </button>

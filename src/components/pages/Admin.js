@@ -78,6 +78,7 @@ export default function Admin({customerState, assetState, assetTypeState, device
                                 <Route exact path='/admin/asset_management' render = {props => (
                                                                         <AssetManagement {...props} customerState={customersState} 
                                                                                                     assetState={assetsState} 
+                                                                                                    deviceState={devicesState} 
                                                                                                     assetTypeState={assetTypesState}/> 
                                                                         )} 
                                 />

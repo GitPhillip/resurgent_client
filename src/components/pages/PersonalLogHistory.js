@@ -1,9 +1,8 @@
 import React,{useState, useEffect} from 'react'
 import { MDBDataTable } from 'mdbreact';
-import api from '../../api/api';
-import Swal from 'sweetalert2';
+import api from '../../api/api'
 
-export default function LogHistory() {
+export default function PersonalLogHistory() {
 
     //Create a local state here
     const [systemLogs, setSystemLog] = useState([]);//The initial state of systemLog is empty
@@ -18,12 +17,6 @@ export default function LogHistory() {
         .then(response => {
             //update the state
             setSystemLog(response.data.data);
-        }).catch(function(error){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error',
-                text: `${error}`
-            });
         });
 
         //Get all the users

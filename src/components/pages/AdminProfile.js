@@ -1,9 +1,14 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Swal from 'sweetalert2'
 
 export default function AdminProfile() {
 
     //*************Functions**************** */
+
+    //To load the admin details
+    useEffect(() =>{
+       
+    }, []);
 
     //Update Admin Function
     let updateAdmin = (e) =>{

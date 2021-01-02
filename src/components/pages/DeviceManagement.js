@@ -1,6 +1,7 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
+import api from '../../api/api';
 
 export default function DeviceManagement({customerState,assetState,deviceState,deviceTypeState}) {
     
@@ -14,7 +15,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     let isAssetLoading = assetState.isLoading;
 
     let devicesState = deviceState.devices;
-    //let isDevicesLoading = deviceState.isLoading;
 
     let deviceTypesState = deviceTypeState.deviceTypes;
     let isDeviceTypesLoading = deviceTypeState.isLoading;
@@ -46,6 +46,52 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     //View Device Details Function
     let viewDeviceDetails = (e) =>{
         //Prevent form from submitting to the actual file
+        //Get the customer id
+        var deviceId = e.target.getAttribute('data-id');
+
+        let assetId;
+        let deviceHistory;
+        let strDeviceHistory = "";
+
+        //Will need to get this specific device history
+        //Send the axios request
+        api.get('/devicehistory/device/'+deviceId)
+        .then(response =>{
+            deviceHistory = response.data.data;
+            deviceHistory.map(history =>{
+               return strDeviceHistory += history.entry_content +'\n';
+            })
+            document.getElementById('deviceHistoryModal').value = strDeviceHistory;
+        });
+        
+        //Send the axios request
+        api.get('/devices/'+deviceId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('deviceIDModal').value = `Device pac: ${response.data.data.device_pac}`;
+            document.getElementById('assetIdModal').value =  response.data.data.asset_id;
+            document.getElementById('deviceTypeIdModal').value = response.data.data.device_type_id;
+            document.getElementById('sigfoxIDModal').value = response.data.data.sigfox_id;
+            document.getElementById('deviceStatusModal').value = response.data.data.device_status;
+            document.getElementById('packetDataModal').value = response.data.data.device_pac;
+
+            //Sort out the customer name and device match
+            assetId = response.data.data.asset_id;
+            customersState.map(customer => { 
+
+                assetsState.map(asset =>{
+                    if(asset.asset_id ===assetId)
+                    {
+                        if(asset.customer_id === customer.customer_id){
+                         document.getElementById('customerIdModal').value = customer.customer_name;
+                        }
+                    }return 'success'
+                })
+                return 'success'
+            })
+            
+
+        });
        
     }
 
@@ -158,7 +204,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Type</label>
                                                     {!isDeviceTypesLoading ? (
-                                                        <select required='required' class='form-control' id='deviceTypeID' name='deviceTypeID'>
+                                                        <select required='required' class='form-control' id='deviceTypeId' name='deviceTypeId'>
                                                             <option hidden selected disabled>Please choose a asset type.</option>
                                                             {deviceTypesState.map(deviceType => <option value={deviceType.type_id} >{deviceType.type_alias}</option>)}
                                                         </select>
@@ -169,7 +215,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Asset</label>
                                                     {!isAssetLoading ? (
-                                                        <select required='required' class='form-control' id='assetID' name='assetID'>
+                                                        <select required='required' class='form-control' id='assetId' name='assetId'>
                                                             <option hidden selected disabled>Please choose an asset.</option>
                                                                 {assetsState.map(asset => <option value={asset.asset_id} >{asset.asset_name}</option>)}
                                                         </select>
@@ -187,7 +233,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="col-md-12">
                                                     <label class='label'>Customer Name</label>
                                                     {!isLoading ? (
-                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                        <select required='required' class='form-control' id='customerId' name='customerId'>
                                                             <option hidden selected disabled>Please choose a customer.</option>
                                                             {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
                                                         </select>
@@ -281,12 +327,14 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label class='label'>Device Type</label>
-                                                            <select required='required' class='form-control' id="deviceTypeID" name="deviceTypeID">
+                                                            {!isDeviceTypesLoading ? (
+                                                            <select required='required' class='form-control' id='deviceTypeIdModal' name='deviceTypeIdModal'>
                                                                 <option hidden selected disabled>Please choose a device type.</option>
-                                                                <option value='1'>Asset 1</option>
-                                                                <option value='2'>Asset 2</option>
-                                                                <option value='3'>Asset 3</option>
+                                                                {deviceTypesState.map(deviceType => <option value={deviceType.type_id} >{deviceType.type_alias}</option>)}
                                                             </select>
+                                                        
+                                                            )   : (<option>Loading...</option> )
+                                                             }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -296,13 +344,15 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <label class='label'>Asset ID</label>
-                                                            <select class='form-control' id='assetIDModal' name='assetIDModal'>
-                                                                <option hidden selected disabled>Please choose an asset.</option>
-                                                                <option value='1'>Asset 1</option>
-                                                                <option value='2'>Asset 2</option>
-                                                                <option value='3'>Asset 3</option>
-                                                            </select>
+                                                            <label class='label'>Asset Name</label>
+                                                            {!isAssetLoading ? (
+                                                                <select required='required' class='form-control' id='assetIdModal' name='assetIdModal'>
+                                                                    <option hidden selected disabled>Please choose an asset.</option>
+                                                                        {assetsState.map(asset => <option value={asset.asset_id} >{asset.asset_name}</option>)}
+                                                                </select>
+                                                                
+                                                                ) : (<option>Loading...</option> )
+                                                            }
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label class='label'>Sigfox ID</label>
@@ -315,8 +365,13 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label class='label'>Device Status</label>
-                                                    <input type="text" readonly='readonly' class="form-control" id="deviceStatusModal" name="deviceStatusModal" placeholder="Device Status *"/>
-                                                        
+                                                    <select id='deviceStatusModal' class='form-control'>
+                                                        <option hidden selected disabled>Please choose a asset type.</option>
+                                                        <option value='IN USE'>IN USE</option>
+                                                        <option value='BEING REPAIRED'>BEING REPAIRED</option>
+                                                        <option value='DECOMMISSIONED'>DECOMMISSIONED</option>
+
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -325,12 +380,8 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <label class='label'>Customer Name</label>
-                                                            <select class='form-control' id='customerIDModal' name='customerIDModal'>
-                                                                <option hidden selected disabled>Please choose a customer.</option>
-                                                                <option value='1'>Shoprite</option>
-                                                                <option value='2'>Coca Cola</option>
-                                                                <option value='3'>Checkers</option>
-                                                            </select>
+                                                            <input  readonly='readonly' class='form-control' id='customerIdModal' />
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -345,7 +396,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <label class='label'>Device History</label>
-                                                            <textarea rows='8' readonly='readonly' type="text" class="form-control" id="deviceHistoryModal" name="deviceHistoryModal" placeholder="Device History *" value="" ></textarea>
+                                                            <textarea rows='8' readonly='readonly' class="form-control" id="deviceHistoryModal" name="deviceHistoryModal" placeholder="Device History *"  ></textarea>
                                                         </div>
                                                     </div>
                                                 </div>

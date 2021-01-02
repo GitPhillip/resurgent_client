@@ -1,8 +1,9 @@
 import React from 'react'
 import { MDBDataTable } from 'mdbreact';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import api from '../../api/api';
 
-export default function AssetManagement({customerState,assetState, assetTypeState}) {
+export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
     let data;
 
@@ -14,6 +15,9 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
 
     let assetTypesState = assetTypeState.assetTypes;
     let IsLoadingAssestTypes = assetTypeState.isLoading;
+
+    let devicesState = deviceState.devices;
+    let IsLoadingDevices = deviceState.isLoading;
 
     //***********Functions************ */
 
@@ -39,7 +43,32 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
 
               Swal.fire('Asset was not registered.', '', 'info')
             }
-          });
+          }).catch(function(error){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error',
+                text: `${error}`
+            });
+        });
+    }
+
+    //View Asset details
+    let viewAssetDetails = (e) =>{
+        
+        //Get the customer id
+        var assetId = e.target.getAttribute('data-id');
+
+        //Send the axios request
+        api.get('/assets/'+assetId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('assetNameModal').value = response.data.data.asset_name;
+            document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
+            document.getElementById('customerIDModal').value = response.data.data.customer_id;
+            document.getElementById('deviceIDModal').value = "Can't find the device";
+            document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
+
+        });
     }
 
     //Update Asset Function
@@ -95,7 +124,7 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
+                <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
                     <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details 
                 </button>
@@ -169,7 +198,7 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
                                                 <div class="col-md-6">
                                                     <label class='label'>Asset Type</label>
                                                     {!IsLoadingAssestTypes ? (
-                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                        <select required='required' class='form-control' id='assetTypeId' name='assetTypeId'>
                                                             <option hidden selected disabled>Please choose a asset type.</option>
                                                             {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
                                                         </select>
@@ -275,12 +304,14 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Asset Type</label>
-                                                <select required='required' class='form-control' id='assetTypeModal' name='assetTypeModal'>
-                                                    <option hidden selected disabled>Please select a asset type.</option>
-                                                    <option value='1'>Truck</option>
-                                                    <option value='2'>Trailer</option>
-                                                    <option value='3'>Car</option>
-                                                </select>
+                                                {!IsLoadingAssestTypes ? (
+                                                        <select required='required' class='form-control' id='assetTypeIdModal' name='assetTypeIdModal'>
+                                                            <option hidden selected disabled>Please choose a asset type.</option>
+                                                            {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                             </div>
                                         </div>
                                     </div>
@@ -309,7 +340,14 @@ export default function AssetManagement({customerState,assetState, assetTypeStat
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Device Attached</label>
-                                                <input class='form-control' id='deviceIDModal' name='deviceIDModal' placeholder='Device Attached *'/>
+                                                {!IsLoadingDevices ? (
+                                                        <select required='required' class='form-control' id='deviceIDModal' name='deviceIDModal'>
+                                                            <option hidden selected disabled>Please choose a device.</option>
+                                                            {devicesState.map(device => <option value={device.device_id} >Device pac: {device.device_pac} ~  Sigfox Id: {device.sigfox_id}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                }
                                             </div>
                                         </div>
                                     </div>
