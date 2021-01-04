@@ -70,7 +70,6 @@ export default function App() {
 
       <Router>
 
-        
           {/* Can only put Routes in switch component */}
           <Switch> 
 

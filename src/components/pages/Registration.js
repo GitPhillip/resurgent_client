@@ -1,12 +1,49 @@
-import React from 'react'
-import Swal from 'sweetalert2'
+import React, {useState} from 'react'
+import { useDispatch } from 'react-redux';
+import Swal from 'sweetalert2';
+import api from '../../api/api';
+
+import { addCustomer } from '../slices/customerSlice';
 
 export default function Registration() {
 
+    //Handle the states
+    //----------Customer registration----------------
+    const [customer_name, setCustomerName] = useState('');
+    const [customer_email, setCustomerEmail] = useState('');
+    const [customer_telephone, setCustomerTelephone] = useState('');
+    const [customer_notes, setCustomerNotes] = useState('');
+
+    //on change handlers (Are a must if inputs will be set as states)
+    const onCustomerNameChange = e => setCustomerName(e.target.value);
+    const onCustomerEmailChange = e => setCustomerEmail(e.target.value);
+    const onCustomerTelephoneChange =  e => setCustomerTelephone(e.target.value);
+    const onCustomerNotesChange = e => setCustomerNotes(e.target.value);
+
+    //----------Employee registrations------------------
+    const [username, setUsername] = useState('');
+    const [user_firstname, setFirstName] = useState('');
+    const [user_surname, setSurname] = useState('');
+    const [user_email, setEmail] = useState('');
+    const [user_cellphone, setCellphone] = useState('');
+    const [user_type_id, setUserType] = useState(0);
+
+    //on change handlers 
+    const onUsernameChange = e => setUsername(e.target.value);
+    const onFirstNameChange = e => setFirstName(e.target.value);
+    const onSurnameChange = e => setSurname(e.target.value);
+    const onEmailChange = e  => setEmail(e.target.value);
+    const onCellphoneChange = e => setCellphone(e.target.value);
+    const onEmployeeTypeChange = e => setUserType(e.target.value);
+
+    //dispatch 
+    const dispatch = useDispatch();
+ 
     //*************Functions*************** */
 
     //Register Customer Function
     let registerCustomer = (e) =>{
+
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
@@ -19,13 +56,53 @@ export default function Registration() {
             confirmButtonText: `Register`
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Saved!', '', 'success');
+              //-----------Handle axios request-----------
+              
+              //Send the api request to create the customer
+              api.post('/customer', {
+                customer_name,
+                customer_email,
+                customer_telephone,
+                customer_notes,
+              }).then(response => {
 
-            } else if (result.isDismissed) {
+                //******NB Order is important */
+                //update the state
+                dispatch(
+                    addCustomer({
+                        customer_id: response.data.data.customer_id,
+                        customer_name,
+                        customer_email,
+                        customer_telephone,
+                        customer_notes,
+                        api_key: response.data.data.api_key,
+                        deleted: response.data.data.deleted
+                    })
+                );
 
-              Swal.fire('Admin not registered.', '', 'info')
-            }
+                //Trigger the swal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved!',
+                    text: `Customer has been added with name: ${response.data.data.customer_name}`
+                });
+
+                //Clear all the inputs
+                setCustomerName('');
+                setCustomerEmail('');
+                setCustomerTelephone('');
+                setCustomerNotes('');
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+            } 
           });
     }
 
@@ -40,17 +117,49 @@ export default function Registration() {
             title: 'Register Employee?',
             text: 'Are you sure you want to register the employee?',
             showCancelButton: true,
-            confirmButtonText: `Register Employee`,
+            confirmButtonText: `Register Employee`
           }).then((result) => {
+
             if (result.isConfirmed) {
-              //Handle axios request
+              //-----------Handle axios request-----------
+              
+              //Send the api request to create the customer
+              api.post('/users', {
+                username,
+                user_password: user_email, //passwords
+                user_email,
+                user_firstname,
+                user_surname,
+                user_cellphone,
+                user_type_id: parseInt(user_type_id)
+              }).then(response => {
 
-              Swal.fire('Employee Registered!', '', 'success');
-
-            } else if (result.isDismissed) {
-
-              Swal.fire('Employee was not registered.', '', 'info')
-            }
+                //Trigger the swal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved!',
+                    text: `Employee has been added with username: ${response.data.data.username}`
+                });
+                
+                //Set the states back to null
+                setUsername('');
+                setFirstName('');
+                setSurname('');
+                setEmail('');
+                setCellphone('');
+                setUserType('');
+            
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error[0]}`
+                        });
+                    }
+                    
+                });
+            } 
           });
     }
 
@@ -79,7 +188,10 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Customer Name</label>
-                                                <input type="text" class="form-control" required='true' id="customerName" name="customerName" placeholder="Customer Name *" />
+                                                <input type="text" class="form-control" required='true'
+                                                 id="customerName" name="customerName" placeholder="Customer Name *"
+                                                 value={customer_name}
+                                                 onChange={onCustomerNameChange} />
                                             </div>
                                         </div>
                                     </div>
@@ -90,11 +202,17 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class='label'>Customer Email</label>
-                                                <input type="email" class="form-control" required='true' id="customerEmail" name="customerEmail" placeholder="Customer Email *" />
+                                                <input type="email" class="form-control" required='true'
+                                                 id="customerEmail" name="customerEmail" placeholder="Customer Email *"
+                                                 value={customer_email}
+                                                 onChange={onCustomerEmailChange} />
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Customer Telephone</label>
-                                                <input type="text" maxlength="10" minlength="10" class="form-control" required='true' id="customerTelephone" name="customerTelephone" placeholder="Customer Telephone *"  />
+                                                <input type="text" maxlength="10" minlength="10" class="form-control" required='true' 
+                                                id="customerTelephone" name="customerTelephone" placeholder="Customer Telephone *"
+                                                value={customer_telephone}
+                                                onChange={onCustomerTelephoneChange}  />
                                             </div>
                                         </div>
                                     </div>
@@ -105,8 +223,9 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Customer Notes</label>
-                                                <textarea type='text' class='form-control' rows='3' id='customerNotes' name='customerNotes'>
-
+                                                <textarea type='text' class='form-control' rows='3' id='customerNotes' name='customerNotes'
+                                                 value={customer_notes}
+                                                 onChange={onCustomerNotesChange}>
                                                 </textarea>
                                             </div>
                                         </div>
@@ -144,7 +263,10 @@ export default function Registration() {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Username</label>
-                                                    <input required='required' type="text" class="form-control" id="username" name="username" placeholder="Username *" />
+                                                    <input required='required' type="text" class="form-control" id="username" 
+                                                    name="username" placeholder="Username *" 
+                                                    value={username}
+                                                    onChange={onUsernameChange}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -155,11 +277,17 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class='label'>First Name</label>
-                                                <input required='required' type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name *"  />
+                                                <input required='required' type="text" class="form-control" id="firstName" 
+                                                name="firstName" placeholder="First Name *"  
+                                                value={user_firstname}
+                                                onChange={onFirstNameChange}/>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Surname</label>
-                                                <input required='required' type="text" class="form-control" id="surname" name="surname" placeholder="Surname *" />
+                                                <input required='required' type="text" class="form-control" id="surname" 
+                                                name="surname" placeholder="Surname *" 
+                                                value={user_surname}
+                                                onChange={onSurnameChange}/>
                                             </div>
                                         </div>
                                     </div>
@@ -170,11 +298,17 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class='label'>Email</label>
-                                                <input required='required' type="email" class="form-control" id="email" name="email" placeholder="Email *" />
+                                                <input required='required' type="email" class="form-control" id="email"
+                                                 name="email" placeholder="Email *" 
+                                                 value={user_email}
+                                                 onChange={onEmailChange}/>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Cellphone</label>
-                                                <input required='required' type="text" maxlength="10" minlength="10" class="form-control" id="cellphone" name="cellphone" placeholder="Cellphone *" />
+                                                <input required='required' type="text" maxlength="10" minlength="10" 
+                                                 class="form-control" id="cellphone" name="cellphone" placeholder="Cellphone *" 
+                                                 value={user_cellphone}
+                                                 onChange={onCellphoneChange}/>
                                             </div>
                                         </div>
                                     </div>
@@ -185,10 +319,12 @@ export default function Registration() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Admin User Type</label>
-                                                <select required='required' class="form-control" id='userType' name='userType'>
+                                                <select required='required' class="form-control" id='userType' name='userType'
+                                                 value={user_type_id}
+                                                 onChange={onEmployeeTypeChange}>
                                                     <option hidden selected disabled>Please select the employee type.</option>
-                                                    <option value="ADMIN" >Admin</option>
-                                                    <option value="TECHNICIAN" >Technician</option>
+                                                    <option value="1" >Administrator</option>
+                                                    <option value="2" >Technician</option>
                                                 </select>
                                             </div>
                                         </div>

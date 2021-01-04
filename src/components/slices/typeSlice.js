@@ -25,14 +25,10 @@ export const typeSlice = createSlice({
             console.log('State updated');
             state.isLoading = false;
         },
-        addAssetType: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (assetTypeDetails) =>{
-                return {payload: assetTypeDetails}
-            }
+        addAssetType:(state,action) =>{
+            //update the state
+            state.assetTypes.push(action.payload);
+            console.log('State updated');
         },
         updateAssetType: {
             reducer: (state,action)=> {

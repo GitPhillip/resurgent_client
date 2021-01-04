@@ -29,25 +29,11 @@ export const customerSlice = createSlice({
             console.log('State updated');
             state.isLoading = false;
         },
-        //Reducer to create API key for a customer
-        createAPIKey: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (customerID) =>{
-                return {payload: customerID}
-            }
-        },
         //Reducer to add a customer
-        addCustomer: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (customerDetails) =>{
-                return {payload: customerDetails}
-            }
+        addCustomer: (state,action) =>{
+            //update the state
+            state.customers.push(action.payload);
+            console.log('State updated');
         },
         //Reducer to add update a specific customer
         updateCustomer: {
@@ -83,7 +69,7 @@ export const customerSlice = createSlice({
 });
 
 //Export all the reducers
-export const {getAllCustomers,getCustomer, createAPIKey, addCustomer, updateCustomer,deleteCustomer, startLoading, hasError} = customerSlice.actions;
+export const {getAllCustomers,getCustomer, addCustomer, updateCustomer,deleteCustomer, startLoading, hasError} = customerSlice.actions;
 
 //Export the default slice
 export default customerSlice.reducer

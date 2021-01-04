@@ -1,14 +1,30 @@
-import React from 'react'
+import React, {useState} from 'react';
+import {useDispatch} from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
+import { addDeviceType } from '../slices/deviceTypeSlice';
 
 export default function DeviceTypes({deviceTypeState}) {
 
     let data;
 
-    //Get the state
+    const dispatch = useDispatch();
+
+    //Get the global state
     let deviceTypesState = deviceTypeState.deviceTypes;
+
+    //Local states
+    const [type_alias, setDeviceTypeAlias] = useState('');
+    const [type_description, setDeviceTypeDescription] = useState('');
+    const [packet_structure,setPacketStructure] = useState('');
+    const [type_conversion, setTypeConversion] = useState('');
+
+    //Onchange handlers
+    const onTypeAliasChange = e => setDeviceTypeAlias(e.target.value);
+    const onTypeDescriptionChange = e => setDeviceTypeDescription(e.target.value);
+    const onPacketStructureChange = e => setPacketStructure(e.target.value);
+    const onTypeConversionChange = e => setTypeConversion(e.target.value);
 
     //***********Functions************* */
 
@@ -26,9 +42,56 @@ export default function DeviceTypes({deviceTypeState}) {
             confirmButtonText: `Register`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
+              
+                //Send the api request
+                api.post('/devicetypes',{
+                    type_alias,
+                    type_description,
+                    type_conversion,
+                    packet_structure
+                }).then( response => {
 
-              Swal.fire('Device Type Registered!', '', 'success');
+                    //Dispatch to update the state
+                    dispatch(
+                        addDeviceType({
+                            type_id: response.data.data.type_id,
+                            type_alias,
+                            type_description,
+                            type_conversion,
+                            packet_structure,
+                            sigfox_id: response.data.data.sigfox_id,
+                            deleted: response.data.data.deleted,
+                            type_variables: response.data.data.type_variables,
+                            data_types: response.data.data.data_types
+                        })
+                    )
+
+                     //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Device type has been added with alias: ${response.data.data.type_alias}`
+                    });
+
+                    //Clear all the inputs
+                    setDeviceTypeAlias('');
+                    setPacketStructure('');
+                    setDeviceTypeDescription('');
+                    setTypeConversion('');
+
+                }).catch(error =>{
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: JSON.stringify(error.response.data.error)
+                        });
+                    }
+                });
+
+                
+
+                
 
             } 
           });
@@ -154,8 +217,33 @@ export default function DeviceTypes({deviceTypeState}) {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Device Type Alias</label>
-                                                    <input required='required' class='form-control' id='deviceTypeAlias' name='deviceTypeAlias' placeholder="Device Type Alias*" />
+                                                    <input required='required' class='form-control' id='deviceTypeAlias' 
+                                                     name='deviceTypeAlias' placeholder="Device Type Alias*"
+                                                     value={type_alias}
+                                                     onChange={onTypeAliasChange}/>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class='label'>Device Type Converstion</label>
+                                                    <input required='required' class='form-control' id='deviceTypeConversion' 
+                                                     name='deviceTypeConversion' placeholder="Device Type Conversion*"
+                                                     value={type_conversion}
+                                                     onChange={onTypeConversionChange}/>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class='label'>Packet Structure</label>
+                                                    <input required='required' class='form-control' id='deviceTypePacketStructure' 
+                                                     name='deviceTypePacketStructure' placeholder="Device Type Packet Structure*"
+                                                     value={packet_structure}
+                                                     onChange={onPacketStructureChange}/>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +252,10 @@ export default function DeviceTypes({deviceTypeState}) {
                                         <div class="form-group">
                                             <div class="row col-md-12">
                                                 <label class='label'>Device Type description</label>
-                                                <textarea type='text' class='form-control' rows='4' id='deviceTypeDescription' name='deviceTypeDescription'>
+                                                <textarea type='text' class='form-control' rows='4' id='deviceTypeDescription' 
+                                                 name='deviceTypeDescription'
+                                                 value={type_description}
+                                                 onChange={onTypeDescriptionChange}>
 
                                                 </textarea>
                                             </div>

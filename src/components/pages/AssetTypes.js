@@ -1,14 +1,28 @@
-import React from 'react'
+import React,{useState} from 'react'
+import { useDispatch } from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
+import { addAssetType } from '../slices/typeSlice';
 
 export default function AssetTypes({assetTypeState}) {
 
     let data;
 
-    //Get the state
+    //Get the global state
     let assetTypesState = assetTypeState.assetTypes;
+
+    //Handle the states
+    //----------Asset types registration----------------
+    const [type_alias, setAssetTypeAlias] = useState('');
+    const [type_description, setTypeDescription] = useState('');
+
+    //Onchange handlers
+    const onTypeAliasChange = e => setAssetTypeAlias(e.target.value);
+    const onTypeDescriptionChange = e => setTypeDescription(e.target.value);
+
+    //Dispatch to update the global state
+    const dispatch = useDispatch();
 
     //***********Functions************ */
 
@@ -26,9 +40,45 @@ export default function AssetTypes({assetTypeState}) {
             confirmButtonText: `Register Asset Type`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
+              
+                //Send the api request
+                api.post('/assettypes',{
+                    type_alias,
+                    type_description
+                }).then(function (response){
 
-              Swal.fire('Asset Type Registered!', '', 'success');
+                    //dispatch to update the state
+                    dispatch(
+                        addAssetType({
+                            type_id: response.data.data.type_id,
+                            type_alias,
+                            type_description,
+                            deleted:response.data.data.deleted
+
+                        })
+                    )
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Asset type has been added with alias: ${response.data.data.type_alias}`
+                    });
+
+                    //clear all the input fields
+                    setAssetTypeAlias('');
+                    setTypeDescription('');
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                    
+                });
 
             } 
           });
@@ -141,7 +191,10 @@ export default function AssetTypes({assetTypeState}) {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Asset Type Alias</label>
-                                                    <input required='required' type="text" class="form-control" id="assetAlias" name="assetAlias" placeholder="Asset Type Alias *" />
+                                                    <input required='required' type="text" class="form-control" id="assetAlias" 
+                                                     name="assetAlias" placeholder="Asset Type Alias *"
+                                                     value={type_alias}
+                                                     onChange={onTypeAliasChange} />
                                                 </div>
                                                 
                                             </div>
@@ -153,7 +206,11 @@ export default function AssetTypes({assetTypeState}) {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Asset Type Description</label>
-                                                    <textarea required='required' rows='4' type="text" class="form-control" id="assetTypeDescription" name="assetTypeDescription" placeholder="Asset Type Description *" ></textarea>
+                                                    <textarea required='required' rows='4' type="text" class="form-control" id="assetTypeDescription" 
+                                                     name="assetTypeDescription" placeholder="Asset Type Description *" 
+                                                     value={type_description}
+                                                     onChange={onTypeDescriptionChange}>
+                                                     </textarea>
                                                 </div>
                                             </div>
                                         </div>

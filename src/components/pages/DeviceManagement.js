@@ -7,7 +7,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     
     let data;
 
-    //Get the state
+    //Get the global state
     let customersState = customerState.customers;
     let isLoading = customerState.isLoading;
 
@@ -18,6 +18,10 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
 
     let deviceTypesState = deviceTypeState.deviceTypes;
     let isDeviceTypesLoading = deviceTypeState.isLoading;
+
+    //Local states
+    //const [asset_id, setAssetId] = useStat('');
+    //const [device_type_id, setDeviceTypeId] = useState('');
 
     //***********Functions************* */
 

@@ -1,13 +1,15 @@
-import React from 'react'
+import React, {useEffect,useState} from 'react'
+import {useDispatch} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
+import { addAsset } from '../slices/assetSlice';
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
     let data;
 
-    //Get the state
+    //Get the global state
     let customersState = customerState.customers;
     let isLoading = customerState.isLoading
 
@@ -18,6 +20,32 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
     let devicesState = deviceState.devices;
     let IsLoadingDevices = deviceState.isLoading;
+
+    //Make deep copies of the states
+    let dataRows = JSON.parse(JSON.stringify(assetsState));
+    let customerRows = JSON.parse(JSON.stringify(customersState));
+    let assetTypeRows = JSON.parse(JSON.stringify(assetTypesState));
+
+    //On page load and other
+    useEffect(()=>{
+
+    },[assetsState]);//only rerender if the admins change
+
+    //*****************Asset Registration*******************
+
+    const dispatch = useDispatch();
+
+    //Local states
+    const [asset_type_id, setAssetTypeId] = useState('');
+    const [asset_name, setAssetName] = useState('');
+    const [asset_description, setAssetDescription] = useState('');
+    const [customer_id, setCustomerId] = useState('');
+
+    //OnChange handlers
+    const onAssetTypeIdChange = e => setAssetTypeId(e.target.value);
+    const onAssetNameChange = e => setAssetName(e.target.value);
+    const onAssetDescriptionChange = e => setAssetDescription(e.target.value);
+    const onCustomerIdChange = e => setCustomerId(e.target.value);
 
     //***********Functions************ */
 
@@ -35,10 +63,53 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             confirmButtonText: `Register Asset`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
+              
+                //Send the api request
+                api.post('/assets', {
+                    asset_type_id,
+                    asset_name,
+                    asset_description,
+                    customer_id,
+                }).then( function(response){
 
-              Swal.fire('Asset Registered!', '', 'success');
+                    //Dispatch to update the state
+                    dispatch(
+                        addAsset({
+                            asset_id: response.data.data.asset_id,
+                            asset_type_id,
+                            asset_name,
+                            asset_description,
+                            deleted: response.data.data.deleted,
+                            customer_id
+                        })
+                    )
 
+                    //set the data table details correctly
+                    adjustId();
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Asset has been added with name: ${response.data.data.asset_name}`
+                    });
+
+                    //Clear all the inputs
+                    setAssetTypeId('');
+                    setAssetName('');
+                    setAssetDescription('');
+                    setCustomerId('');
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+              
             } else if (result.isDismissed) {
 
               Swal.fire('Asset was not registered.', '', 'info')
@@ -92,45 +163,43 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             } 
           });
     }
-
-    //Make deep copies of the states
-    let dataRows = JSON.parse(JSON.stringify(assetsState));
-    let customerRows = JSON.parse(JSON.stringify(customersState));
-    let assetTypeRows = JSON.parse(JSON.stringify(assetTypesState))
     
-    //For Every object in the JSON object
-    for(var i = 0; i<dataRows.length;i++){
+    const adjustId = () =>{
+        //For Every object in the JSON object
+        for(var i = 0; i<dataRows.length;i++){
 
-        //Replace the customer id with the customer name
+            //Replace the customer id with the customer name
 
-        //loop through all the customers
-        for(var k = 0; k <customerRows.length; k++ ){
+            //loop through all the customers
+            for(var k = 0; k <customerRows.length; k++ ){
 
-            if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
-                dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
-            
+                if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
+                    dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
+                
+            }
+
+            //loop through all the asset types
+            for(var j = 0; j <assetTypeRows.length; j++ ){
+
+                if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
+                    dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+                
+            }
+
+            //append the action key value pair to the end of each object
+            dataRows[i]['action'] = (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
+                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details 
+                    </button>
+                </div>
+            )
         }
-        
-        //Replace the asset type id with the asset type alias
-
-        //loop through all the asset types
-        for(var j = 0; j <assetTypeRows.length; j++ ){
-
-            if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
-                dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
-            
-        }
-
-        //append the action key value pair to the end of each object
-        dataRows[i]['action'] = (
-            <div>
-                <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
-                    <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                    View Details 
-                </button>
-            </div>
-        )
     }
+    
+    //Adjust the id's
+    adjustId();
 
     data = {
 
@@ -193,12 +262,18 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>Asset Name</label>
-                                                    <input required='required' type="text" class="form-control" id="assetName" name="assetName" placeholder="Asset Name *" />
+                                                    <input required='required' type="text" class="form-control" id="assetName" 
+                                                     name="assetName" placeholder="Asset Name *" 
+                                                     value={asset_name}
+                                                     onChange={onAssetNameChange}/>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Asset Type</label>
                                                     {!IsLoadingAssestTypes ? (
-                                                        <select required='required' class='form-control' id='assetTypeId' name='assetTypeId'>
+                                                        <select required='required' class='form-control' id='assetTypeId' 
+                                                         name='assetTypeId'
+                                                         value={asset_type_id}
+                                                         onChange={onAssetTypeIdChange}>
                                                             <option hidden selected disabled>Please choose a asset type.</option>
                                                             {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
                                                         </select>
@@ -216,7 +291,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                                 <div class="col-md-12">
                                                     <label class='label'>Customer Name</label>
                                                     {!isLoading ? (
-                                                        <select required='required' class='form-control' id='customerID' name='customerID'>
+                                                        <select required='required' class='form-control' id='customerID' 
+                                                         name='customerID'
+                                                         value={customer_id}
+                                                         onChange={onCustomerIdChange}>
                                                             <option hidden selected disabled>Please choose a customer.</option>
                                                             {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
                                                         </select>
@@ -233,7 +311,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Asset Description</label>
-                                                    <textarea required='required' rows='4' type="text" class="form-control" id="assetDescription" name="assetDescription" placeholder="Asset Description *" ></textarea>
+                                                    <textarea required='required' rows='4' type="text" class="form-control" 
+                                                     id="assetDescription" name="assetDescription" placeholder="Asset Description *" 
+                                                     value={asset_description}
+                                                     onChange={onAssetDescriptionChange}></textarea>
                                                 </div>
                                             </div>
                                         </div>

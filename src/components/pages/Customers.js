@@ -11,8 +11,24 @@ export default function Customers({customerState}) {
     //Get the global state
     let customersState = customerState.customers;
 
-     //Get your state
-     const [customerAdmins, setCustomerAdmins] = useState([]);//The initial state of admins is empty
+    //Get your state
+    const [customerAdmins, setCustomerAdmins] = useState([]);//The initial state of admins is empty
+
+    //*********Customer Admin ads****************/
+    const [username, setUsername] = useState('');
+    const [user_firstname, setFirstName] = useState('');
+    const [user_surname, setSurname] = useState('');
+    const [user_email, setEmail] = useState('');
+    const [user_cellphone, setCellphone] = useState('');
+    const [user_role, setUserRole] = useState('');
+
+    //on change handlers 
+    const onUsernameChange = e => setUsername(e.target.value);
+    const onFirstNameChange = e => setFirstName(e.target.value);
+    const onSurnameChange = e => setSurname(e.target.value);
+    const onEmailChange = e  => setEmail(e.target.value);
+    const onCellphoneChange = e => setCellphone(e.target.value);
+    const onUserRoleChange = e => setUserRole(e.target.value);
 
     
     //*************Functions**************** */
@@ -22,24 +38,76 @@ export default function Customers({customerState}) {
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
+        //Get the customer id
+        var customerId = document.getElementById('btnRegisterAdmin').getAttribute('data-id');
+
         //Trigger the SWAL
         Swal.fire({
             icon: 'question',
             title: 'Register Admin?',
             text: 'Are you sure you want to register the admin?',
-            showDenyButton: true,
             showCancelButton: true,
             confirmButtonText: `Register Admin`,
-            denyButtonText: `Don't register`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Saved!', '', 'success');
+             
+              //Send the api request to create the customer
+              api.post('/users', {
+                username,
+                user_password: user_email, //passwords
+                user_email,
+                user_firstname,
+                user_surname,
+                user_cellphone,
+                user_type_id: 3
+              }).then(response => {
 
-            } else if (result.isDenied) {
+                //Send another request to add the customer user
+                api.post('/customerusers',{
+                    user_id: response.data.data.user_id,
+                    customer_id: parseInt(customerId),
+                    user_role
+                }).then(userResponse =>{
 
-              Swal.fire('Admin not registered.', '', 'info')
-            }
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Customer admin has been added with username: ${response.data.data.username}`
+                    });
+
+                    //Set the states back to null
+                    setUsername('');
+                    setFirstName('');
+                    setSurname('');
+                    setEmail('');
+                    setCellphone('');
+                    setUserRole('')
+
+                    //close the modal
+                    document.getElementById('registerModal').click();
+
+                }).catch(userError =>{
+                    if(userError.response && userError.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: JSON.stringify(userError.response.data.userError)
+                        });
+                    }
+                });
+                
+            }).catch(function(error){
+                if(error.response && error.response.data){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${error.response.data.error[0].name} => ${error.response.data.error[0].errors[0].message}`
+                    });
+                }
+            });
+              
+            } 
           });
     }
 
@@ -87,30 +155,6 @@ export default function Customers({customerState}) {
           });
     }
 
-    //Enable API Access
-    let enableAPIAccess = (e) =>{
-        //Prevent form from submitting to the actual file
-        e.preventDefault();
-
-        //Trigger the SWAL
-        Swal.fire({
-            icon: 'question',
-            title: 'Enable Access?',
-            text: 'Are you sure you want to enable API access for this account?',
-            showCancelButton: true,
-            confirmButtonText: `Enable Access`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Saved!', '', 'success');
-
-            } else if (result.isDismissed) {
-
-              Swal.fire('Access not disabled.', '', 'info')
-            }
-          });
-    }
-
     //View company details Function
     let viewCompanyDetails = (e) =>{
         
@@ -127,6 +171,18 @@ export default function Customers({customerState}) {
             document.getElementById('customerNotes').value = response.data.data.customer_notes;
 
         });
+    }
+
+    let addAdmins = (e) =>{
+        
+        //Get the customer id
+        var customerId = e.target.getAttribute('data-id');
+        if(customerId!==null){
+            //set the register button to the value of the button
+            document.getElementById('btnRegisterAdmin').setAttribute('data-id', customerId);
+        }
+        
+        
     }
 
     //Function to view the company admins
@@ -160,7 +216,7 @@ export default function Customers({customerState}) {
                     <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
                     Admins
                 </button> {' '}
-                <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id} data-toggle="modal" data-target="#registerCustomerAdminModal">
+                <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id}  onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
                     <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
                     Add
                 </button>
@@ -214,10 +270,6 @@ export default function Customers({customerState}) {
                 <button type="button" data-id={userId} onClick={deleteAdmin} class="btn btn-danger btn-sm">
                         <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
                         Delete
-                </button>{' '}
-                <button type="button" data-id={userId} onClick={enableAPIAccess} class="btn btn-info btn-sm">
-                        <i class="fas fa-check fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Enable API Access
                 </button>
             </div>
         );
@@ -342,12 +394,12 @@ export default function Customers({customerState}) {
             {/* End Customer Details Modal */}
 
             {/* Customer Admin Modal */}
-            <div class="modal fade" id="registerCustomerAdminModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Add Customer Admin</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Customer Details</h5>
                             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
@@ -360,7 +412,10 @@ export default function Customers({customerState}) {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>Username</label>
-                                                    <input required='required' type="text" class="form-control" id="username" name="username" placeholder="Username *" />
+                                                    <input required='required' type="text" class="form-control" id="username" 
+                                                     name="username" placeholder="Username *" 
+                                                     value={username}
+                                                     onChange={onUsernameChange}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -371,11 +426,17 @@ export default function Customers({customerState}) {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>First Name</label>
-                                                    <input required='required' type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name *" />
+                                                    <input required='required' type="text" class="form-control" id="firstName" 
+                                                     name="firstName" placeholder="First Name *" 
+                                                     value={user_firstname}
+                                                     onChange={onFirstNameChange}/>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Surname</label>
-                                                    <input required='required' type="text" class="form-control" id="surname" name="surname" placeholder="Surname *"  />
+                                                    <input required='required' type="text" class="form-control" id="surname" 
+                                                     name="surname" placeholder="Surname *"  
+                                                     value={user_surname}
+                                                     onChange={onSurnameChange}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -386,11 +447,17 @@ export default function Customers({customerState}) {
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>Email</label>
-                                                    <input required='required' type="email" class="form-control" id="email" name="email" placeholder="Email *"  />
+                                                    <input required='required' type="email" class="form-control" id="email" 
+                                                     name="email" placeholder="Email *"  
+                                                     value={user_email}
+                                                     onChange={onEmailChange}/>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <label class='label'>Cellphone</label>
-                                                    <input required='required' type="text" maxlength="10" minlength="10" class="form-control" id="cellphone" name="cellphone" placeholder="Cellphone *" />
+                                                    <input required='required' type="text" maxlength="10" minlength="10" class="form-control" 
+                                                     id="cellphone" name="cellphone" placeholder="Cellphone *" 
+                                                     value={user_cellphone}
+                                                     onChange={onCellphoneChange}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -401,7 +468,10 @@ export default function Customers({customerState}) {
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <label class='label'>User Role</label>
-                                                    <textarea required='required' type='text' class='form-control' rows='3' id='customerUserRole' name='customerUserRole'  placeholder="User Role *">
+                                                    <textarea required='required' type='text' class='form-control' rows='3' id='customerUserRole' 
+                                                     name='customerUserRole'  placeholder="User Role *"
+                                                     value={user_role}
+                                                     onChange={onUserRoleChange}>
 
                                                     </textarea>
                                                 </div>
@@ -413,7 +483,7 @@ export default function Customers({customerState}) {
                                     <div class="col-md-3"></div>
                                     <div class="col-md-7"><br/>
                                         <div class='row'>
-                                            <button type='submit' class="btn btn-success btn-icon-split">
+                                            <button type='submit' data-id='0' id='btnRegisterAdmin' class="btn btn-success btn-icon-split">
                                                     <span class="icon text-white-50">
                                                         <i class="fas fa-check"></i>
                                                     </span>

@@ -32,14 +32,10 @@ export const deviceTypeSlice = createSlice({
             state.isLoading = false;
         },
         //Reducer to add a device type
-        addDeviceType:{
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated.');
-            },
-            prepare: (deviceTypeDetails) =>{
-                return {payload: deviceTypeDetails}
-            }
+        addDeviceType: (state,action) =>{
+            //update the state
+            state.deviceTypes.push(action.payload);
+            console.log('State updated.');
         },
         //Reducer to update a device type
         updateDeviceType:{

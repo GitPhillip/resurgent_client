@@ -27,14 +27,10 @@ export const assetSlice = createSlice({
             state.isLoading = false;
         },
         //Reducer to add an asset
-        addAsset: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (assetDetails) =>{
-                return {payload: assetDetails}
-            }
+        addAsset: (state,action) =>{
+            //update the state
+            state.assets.push(action.payload);
+            console.log('State updated');
         },
         //Reducer to add update a specific asset
         updateAsset: {
