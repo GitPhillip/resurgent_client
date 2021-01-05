@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addAssetType } from '../slices/typeSlice';
+import { addAssetType,updateAssetType } from '../slices/typeSlice';
 
 export default function AssetTypes({assetTypeState}) {
 
@@ -12,8 +12,9 @@ export default function AssetTypes({assetTypeState}) {
     //Get the global state
     let assetTypesState = assetTypeState.assetTypes;
 
-    //Handle the states
+
     //----------Asset types registration----------------
+    //Handle the states
     const [type_alias, setAssetTypeAlias] = useState('');
     const [type_description, setTypeDescription] = useState('');
 
@@ -21,8 +22,18 @@ export default function AssetTypes({assetTypeState}) {
     const onTypeAliasChange = e => setAssetTypeAlias(e.target.value);
     const onTypeDescriptionChange = e => setTypeDescription(e.target.value);
 
+
+    //--------------Asset Type Updates------------------
+
+    const [type_aliasModal, setAssetTypeAliasModal] = useState('');
+    const [type_descriptionModal, setTypeDescriptionModal] = useState('');
+    const onTypeAliasModalChange = e => setAssetTypeAliasModal(e.target.value);
+    const onTypeDescriptionModalChange = e => setTypeDescriptionModal(e.target.value);
+
     //Dispatch to update the global state
     const dispatch = useDispatch();
+
+    //use Effect to update changes here
 
     //***********Functions************ */
 
@@ -54,7 +65,6 @@ export default function AssetTypes({assetTypeState}) {
                             type_alias,
                             type_description,
                             deleted:response.data.data.deleted
-
                         })
                     )
 
@@ -68,6 +78,7 @@ export default function AssetTypes({assetTypeState}) {
                     //clear all the input fields
                     setAssetTypeAlias('');
                     setTypeDescription('');
+                    
 
                 }).catch(function(error){
                     if(error.response && error.response.data){
@@ -77,7 +88,6 @@ export default function AssetTypes({assetTypeState}) {
                             text: `${error.response.data.error}`
                         });
                     }
-                    
                 });
 
             } 
@@ -86,8 +96,15 @@ export default function AssetTypes({assetTypeState}) {
 
     let viewAssetTypeDetails = (e) =>{
         
-        //Get the customer id
+        //Get the asset Id id
         var assetTypeId = e.target.getAttribute('data-id');
+        if(assetTypeId !== null)
+        {
+            //Adjust the update button data-id of the button 
+            document.getElementById('btnUpdateAssetType').setAttribute('data-id', assetTypeId);
+        }
+
+        //const existingAssetType = assetTypesState.find(assetType => assetType.type_id ===assetTypeId)
 
         //Send the axios request
         api.get('/assettypes/'+assetTypeId)
@@ -96,13 +113,22 @@ export default function AssetTypes({assetTypeState}) {
             document.getElementById('assetTypeAliasModal').value = response.data.data.type_alias;
             document.getElementById('assetDescriptionModal').value = response.data.data.type_description;
 
+            //set the state of the inputs
+            setAssetTypeAliasModal(response.data.data.type_alias);
+            setTypeDescriptionModal(response.data.data.type_description)
+
+
         });
     }
 
     //Update Asset Function
-    let updateAssetType = (e) =>{
-        //Prevent form from submitting to the actual file
+    let updateAssetTypeChanges = (e) =>{
+        
+        //Prevent the form submitting
         e.preventDefault();
+        
+        //Get the asset type id
+        var assetTypeId = parseInt(document.getElementById('btnUpdateAssetType').getAttribute('data-id'));
 
         //Trigger the SWAL
         Swal.fire({
@@ -115,7 +141,44 @@ export default function AssetTypes({assetTypeState}) {
             if (result.isConfirmed) {
               //Handle axios request
 
-              Swal.fire('Asst updated!', '', 'success');
+                //Send the api request
+                api.put(`/assettypes/${assetTypeId}`,{
+                    type_alias: type_aliasModal,
+                    type_description: type_descriptionModal
+                }).then(function (response){
+
+                    //dispatch to update the state
+                    dispatch(
+                        updateAssetType({
+                            type_id: assetTypeId,
+                            type_alias: type_aliasModal,
+                            type_description: type_descriptionModal,
+                        })
+                    )
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Asset type details have been saved.`
+                    });
+
+                    //clear all the input fields
+                    setAssetTypeAliasModal('');
+                    setTypeDescriptionModal('');
+
+                    //Close the modal
+                    document.getElementById('assetTypeDetailsModal').click();
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
 
             } 
           });
@@ -269,7 +332,7 @@ export default function AssetTypes({assetTypeState}) {
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form method='post' onSubmit={updateAssetType}>
+                        <form method='post' onSubmit={updateAssetTypeChanges}>
                             <div class="row register-form">
                                 
                                 <div class="col-md-12">
@@ -277,7 +340,10 @@ export default function AssetTypes({assetTypeState}) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Asset Type Alias</label>
-                                                <input required='required' type="text" class="form-control" id="assetTypeAliasModal" name="assetTypeAliasModal" placeholder="Asset Type Alias *"  />
+                                                <input required='required' type="text" class="form-control" id="assetTypeAliasModal" 
+                                                 name="assetTypeAliasModal" placeholder="Asset Type Alias *" 
+                                                 value={type_aliasModal}
+                                                 onChange={onTypeAliasModalChange}/>
                                             </div>
                                         </div>
                                     </div>
@@ -288,7 +354,10 @@ export default function AssetTypes({assetTypeState}) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Asset Description</label>
-                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
+                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" 
+                                                 name="assetDescriptionModal" placeholder="Asset Description *" 
+                                                 value={type_descriptionModal}
+                                                 onChange={onTypeDescriptionModalChange}></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -299,7 +368,7 @@ export default function AssetTypes({assetTypeState}) {
                                 <div class="col-md-3"></div>
                                 <div class="col-md-7"><br/>
                                     <div className='row'>
-                                        <button type='submit' class="btn btn-success btn-icon-split">
+                                        <button type='submit' data-id='0' id='btnUpdateAssetType' data- class="btn btn-success btn-icon-split">
                                                 <span class="icon text-white-50">
                                                     <i class="fas fa-check"></i>
                                                 </span>

@@ -38,14 +38,18 @@ export const deviceTypeSlice = createSlice({
             console.log('State updated.');
         },
         //Reducer to update a device type
-        updateDeviceType:{
-            reducer: (state,action) =>{
-                //update the status
-                console.log('State updated')
-            },
-            prepare: (deviceDetails) =>{
-                return {payload:deviceDetails}
+        updateOneDeviceType: (state,action) =>{
+            //update the status
+            const {type_id, type_alias, type_description, type_conversion, packet_structure } = action.payload;
+            const existingDeviceType = state.deviceTypes.find(deviceType => deviceType.type_id === type_id);
+            if(existingDeviceType){
+                existingDeviceType.type_id = type_id;
+                existingDeviceType.type_alias = type_alias;
+                existingDeviceType.type_description = type_description;
+                existingDeviceType.type_conversion = type_conversion;
+                existingDeviceType.packet_structure = packet_structure;
             }
+            console.log('State updated');
         },
         //Reducer to delete a device type
         deleteDeviceType: {
@@ -72,7 +76,7 @@ export const deviceTypeSlice = createSlice({
 export default deviceTypeSlice.reducer;
 
 //Export the reducers
-export const {getAllDeviceTypes, addDeviceType, updateDeviceType, deleteDeviceType, startLoading, hasError} = deviceTypeSlice.actions;
+export const {getAllDeviceTypes, addDeviceType, updateOneDeviceType, deleteDeviceType, startLoading, hasError} = deviceTypeSlice.actions;
 
 //Export the Selectors
 export const selectDeviceTypes = state => state.deviceTypes;

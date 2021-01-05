@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addAsset } from '../slices/assetSlice';
+import { addAsset, updateOneAsset } from '../slices/assetSlice';
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
@@ -19,7 +19,6 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     let IsLoadingAssestTypes = assetTypeState.isLoading;
 
     let devicesState = deviceState.devices;
-    let IsLoadingDevices = deviceState.isLoading;
 
     //Make deep copies of the states
     let dataRows = JSON.parse(JSON.stringify(assetsState));
@@ -28,13 +27,14 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
     //On page load and other
     useEffect(()=>{
-
-    },[assetsState]);//only rerender if the admins change
+        
+    },[]);//only rerender if the admins change
 
     //*****************Asset Registration*******************
 
     const dispatch = useDispatch();
 
+    //-------------Asset Registrations---------------
     //Local states
     const [asset_type_id, setAssetTypeId] = useState('');
     const [asset_name, setAssetName] = useState('');
@@ -46,6 +46,18 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     const onAssetNameChange = e => setAssetName(e.target.value);
     const onAssetDescriptionChange = e => setAssetDescription(e.target.value);
     const onCustomerIdChange = e => setCustomerId(e.target.value);
+
+    //-------------Asset Update----------------
+    const [asset_type_idModal, setAssetTypeIdModal] = useState('');
+    const [asset_nameModal, setAssetNameModal] = useState('');
+    const [asset_descriptionModal, setAssetDescriptionModal] = useState('');
+    const [customer_idModal, setCustomerIdModal] = useState('');
+
+    //onChange handlers
+    const onAssetTypeIdChangeModal = e => setAssetTypeIdModal(e.target.value);
+    const onAssetNameChangeModal = e => setAssetNameModal(e.target.value);
+    const onAssetDescriptionChangeModal = e => setAssetDescriptionModal(e.target.value);
+    const onCustomerIdChangeModal = e => setCustomerIdModal(e.target.value);
 
     //***********Functions************ */
 
@@ -126,9 +138,24 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     //View Asset details
     let viewAssetDetails = (e) =>{
         
-        //Get the customer id
-        var assetId = e.target.getAttribute('data-id');
+        //Get the asset id
+        var assetId = parseInt(e.target.getAttribute('data-id'));
+        if(assetId !== null)
+        {
+            //Adjust the update button data-id of the button 
+            document.getElementById('btnUpdateAsset').setAttribute('data-id', assetId);
+        }
 
+        //find all the devices that contain this asset it and put them in an array
+        let dataRows = JSON.parse(JSON.stringify(devicesState));
+
+        let deviceHtml = ``;
+        for(var k =  0; k < dataRows.length;k++){
+            
+            if(dataRows[k]['asset_id'] === assetId)
+                deviceHtml += `<p><i class='fa fa-cog'></i> Packet Structure: ${dataRows[k]['device_pac']}.  Sigfox Id: ${dataRows[k]['sigfox_id']} </p>`;
+        }
+        
         //Send the axios request
         api.get('/assets/'+assetId)
         .then(response => {
@@ -136,16 +163,25 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             document.getElementById('assetNameModal').value = response.data.data.asset_name;
             document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
             document.getElementById('customerIDModal').value = response.data.data.customer_id;
-            document.getElementById('deviceIDModal').value = "Can't find the device";
+            document.getElementById('deviceIdModal').innerHTML = deviceHtml;
             document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
+
+            //update the state
+            setAssetNameModal(response.data.data.asset_name);
+            setAssetTypeIdModal(response.data.data.asset_type_id);
+            setCustomerIdModal(response.data.data.customer_id);
+            setAssetDescriptionModal(response.data.data.asset_description);
 
         });
     }
 
     //Update Asset Function
-    let updateAsset = (e) =>{
+    let updateAsset = (e) => {
         //Prevent form from submitting to the actual file
         e.preventDefault();
+
+        //Get the asset id
+        var assetId = parseInt(document.getElementById('btnUpdateAsset').getAttribute('data-id'));
 
         //Trigger the SWAL
         Swal.fire({
@@ -154,17 +190,78 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             text: 'Are you sure you want to update the asset?',
             showCancelButton: true,
             confirmButtonText: `Update Asset`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              //Handle axios request
+          }).then( (result) => {
 
-              Swal.fire('Asst updated!', '', 'success');
+                if (result.isConfirmed) {
+              
+                    //Send the api request
+                    api.put(`/assets/${assetId}`,{
+                        asset_type_id: asset_type_idModal,
+                        asset_name: asset_nameModal,
+                        asset_description: asset_descriptionModal,
+                        customer_id: customer_idModal
+                    }).then( function (response) {
 
-            } 
-          });
+                        //dispatch to update the state
+                        dispatch(
+                            updateOneAsset({
+                                asset_id: assetId,
+                                asset_type_id: asset_type_idModal,
+                                asset_name: asset_nameModal,
+                                asset_description: asset_descriptionModal ,
+                                customer_id: customer_idModal
+                            })
+                        )
+
+                        //Trigger the swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Saved!',
+                            text: `${response.data.message}`
+                        });
+
+                        //Just change the id to the alias
+                        //get the state again
+                        dataRows = JSON.parse(JSON.stringify(assetsState));
+
+                        const existingAsset = dataRows.find(asset => asset.asset_id ===assetId);
+
+                        //loop through all the customers
+                        for(var k = 0; k <customerRows.length; k++ ){
+
+                            if(existingAsset.customer_id===customerRows[k]['customer_id'] )
+                            {
+                                existingAsset.customer_id = customerRows[k]['customer_name'];
+                            }
+                                
+                        }
+
+                        //clear all the input fields
+                        setAssetTypeIdModal('');
+                        setAssetNameModal('');
+                        setAssetDescriptionModal('');
+                        setCustomerIdModal('');
+
+                        //Close the modal
+                        document.getElementById('assetDetailsModal').click();
+
+                        
+                    }).catch(function(error){
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+         
+                }
+            })
     }
     
     const adjustId = () =>{
+        
         //For Every object in the JSON object
         for(var i = 0; i<dataRows.length;i++){
 
@@ -198,7 +295,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
         }
     }
     
-    //Adjust the id's
+    //Adjust the id's to be strings
     adjustId();
 
     data = {
@@ -381,12 +478,18 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class='label'>Asset Name</label>
-                                                <input required='required' type="text" class="form-control" id="assetNameModal" name="assetNameModal" placeholder="Asset Name *"  />
+                                                <input required='required' type="text" class="form-control" id="assetNameModal" 
+                                                 name="assetNameModal" placeholder="Asset Name *" 
+                                                 value={asset_nameModal}
+                                                 onChange={onAssetNameChangeModal} />
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Asset Type</label>
                                                 {!IsLoadingAssestTypes ? (
-                                                        <select required='required' class='form-control' id='assetTypeIdModal' name='assetTypeIdModal'>
+                                                        <select required='required' class='form-control' id='assetTypeIdModal'
+                                                         name='assetTypeIdModal'
+                                                         value={asset_type_idModal}
+                                                         onChange={onAssetTypeIdChangeModal}>
                                                             <option hidden selected disabled>Please choose a asset type.</option>
                                                             {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
                                                         </select>
@@ -404,7 +507,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                             <div class="col-md-12">
                                                 <label class='label'>Customer Name</label>
                                                 {!isLoading ? (
-                                                        <select required='required' class='form-control' id='customerIDModal' name='customerIDModal'>
+                                                        <select required='required' class='form-control' id='customerIDModal' 
+                                                         name='customerIDModal'
+                                                         value={customer_idModal}
+                                                         onChange={onCustomerIdChangeModal}>
                                                             <option hidden selected disabled>Please choose a customer.</option>
                                                             {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
                                                         </select>
@@ -420,15 +526,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Device Attached</label>
-                                                {!IsLoadingDevices ? (
-                                                        <select required='required' class='form-control' id='deviceIDModal' name='deviceIDModal'>
-                                                            <option hidden selected disabled>Please choose a device.</option>
-                                                            {devicesState.map(device => <option value={device.device_id} >Device pac: {device.device_pac} ~  Sigfox Id: {device.sigfox_id}</option>)}
-                                                        </select>
-                                                        
-                                                        ) : (<option>Loading...</option> )
-                                                }
+                                                <label class='label'>Device(s) Attached</label>
+                                                <div id='deviceIdModal'>
+
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -439,7 +540,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Asset Description</label>
-                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
+                                                <textarea rows='4' type="text" class="form-control" id="assetDescriptionModal" 
+                                                 name="assetDescriptionModal" placeholder="Asset Description *"
+                                                 value={asset_descriptionModal} 
+                                                 onChange={onAssetDescriptionChangeModal} ></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -450,7 +554,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                 <div class="col-md-3"></div>
                                 <div class="col-md-7"><br/>
                                     <div className='row'>
-                                        <button type='submit' class="btn btn-success btn-icon-split">
+                                        <button type='submit' data-id='0' id='btnUpdateAsset' class="btn btn-success btn-icon-split">
                                                 <span class="icon text-white-50">
                                                     <i class="fas fa-check"></i>
                                                 </span>

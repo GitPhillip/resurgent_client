@@ -33,14 +33,22 @@ export const assetSlice = createSlice({
             console.log('State updated');
         },
         //Reducer to add update a specific asset
-        updateAsset: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (assetDetails) =>{
-                return {payload: assetDetails}
+        updateOneAsset: (state,action) =>{
+            //update the state
+            const {asset_id,asset_type_id,asset_name,asset_description,customer_id} = action.payload;
+            const exisitngAsset = state.assets.find(asset => asset.asset_id === asset_id );
+
+            if(exisitngAsset){
+                exisitngAsset.asset_id = asset_id;
+                exisitngAsset.asset_type_id = asset_type_id;
+                exisitngAsset.asset_name = asset_name;
+                exisitngAsset.asset_description = asset_description;
+                exisitngAsset.customer_id = customer_id;
+                exisitngAsset.deleted = false;
+
             }
+            console.log('State updated');
+            
         },
         //Reducer to delete a asset
         deleteAsset: {
@@ -70,7 +78,7 @@ export const assetSlice = createSlice({
 export default assetSlice.reducer;
 
 //Export the reducers
-export const {getAllAssets, addAsset, updateAsset,deleteAsset, startLoading, hasError} = assetSlice.actions;
+export const {getAllAssets, addAsset, updateOneAsset,deleteAsset, startLoading, hasError} = assetSlice.actions;
 
 //Selctors
 export const selectAssests = state => state.assets;

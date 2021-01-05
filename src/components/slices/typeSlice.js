@@ -30,14 +30,15 @@ export const typeSlice = createSlice({
             state.assetTypes.push(action.payload);
             console.log('State updated');
         },
-        updateAssetType: {
-            reducer: (state,action)=> {
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (assetTypeDetails) =>{
-                return {payload: assetTypeDetails}
+        updateAssetType: (state,action)=> {
+            //update the state
+            const {type_id, type_alias, type_description } = action.payload;
+            const existingAssetType = state.assetTypes.find(assetType => assetType.type_id ===type_id)
+            if(existingAssetType){
+                existingAssetType.type_alias = type_alias;
+                existingAssetType.type_description = type_description;
             }
+            console.log('State updated');
         },
         deleteAssestType: {
             reducer: (state,action) =>{

@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addDeviceType } from '../slices/deviceTypeSlice';
+import { addDeviceType,updateOneDeviceType } from '../slices/deviceTypeSlice';
 
 export default function DeviceTypes({deviceTypeState}) {
 
@@ -25,6 +25,16 @@ export default function DeviceTypes({deviceTypeState}) {
     const onTypeDescriptionChange = e => setDeviceTypeDescription(e.target.value);
     const onPacketStructureChange = e => setPacketStructure(e.target.value);
     const onTypeConversionChange = e => setTypeConversion(e.target.value);
+
+    //--------------Device Type Updates------------------
+    const [type_aliasModal, setDeviceTypeAliasModal] = useState('');
+    const [type_descriptionModal, setDeviceTypeDescriptionModal] = useState('');
+    const [type_conversionModal, setTypeConversionModal] = useState('');
+    const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
+    const onTypeAliasModalChange = e => setDeviceTypeAliasModal(e.target.value);
+    const onTypeDescriptionModalChange = e => setDeviceTypeDescriptionModal(e.target.value);
+    const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
+    const onTypeConversionModalChange = e => setTypeConversionModal(e.target.value);
 
     //***********Functions************* */
 
@@ -103,6 +113,12 @@ export default function DeviceTypes({deviceTypeState}) {
         //Get the id of the device type
         let deviceTypeId = e.target.getAttribute('data-id');
 
+        if(deviceTypeId !== null)
+        {
+            //Adjust the update button data-id of the button 
+            document.getElementById('btnUpdateDeviceType').setAttribute('data-id', deviceTypeId);
+        }
+
         //Send the axios request to the API
         //Send the axios request
         api.get('/devicetypes/'+deviceTypeId)
@@ -110,10 +126,16 @@ export default function DeviceTypes({deviceTypeState}) {
             
             //Populate the correct html
             document.getElementById('deviceTypeAliasModal').value =response.data.data.type_alias;
-            document.getElementById('deviceTypeConversionModal').value =response.data.data.type_conversion;
-            document.getElementById('packetStructureModal').value =response.data.data.packet_structure;
-            document.getElementById('sigfoxIDModal').value =response.data.data.sigfox_id;
-            document.getElementById('deviceTypeDescriptionModal').value =response.data.data.type_description;
+            document.getElementById('deviceTypeDescriptionModal').value = response.data.data.type_description;
+            document.getElementById('deviceTypeConversionModal').value = response.data.data.type_conversion;
+            document.getElementById('packetStructureModal').value = response.data.data.packet_structure;
+            document.getElementById('sigfoxIDModal').value = response.data.data.sigfox_id;
+
+            //Set the intial values to the ones of the requested device type
+            setDeviceTypeAliasModal(response.data.data.type_alias);
+            setDeviceTypeDescriptionModal(response.data.data.type_description);
+            setTypeConversionModal(response.data.data.type_conversion);
+            setTypePacketStructureModal(response.data.data.packet_structure);
 
         });
 
@@ -123,6 +145,10 @@ export default function DeviceTypes({deviceTypeState}) {
     let updateDeviceType = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
+
+        //Get the device type id
+        var deviceTypeId = parseInt(document.getElementById('btnUpdateDeviceType').getAttribute('data-id'));
+
 
         //Trigger the SWAL
         Swal.fire({
@@ -135,7 +161,51 @@ export default function DeviceTypes({deviceTypeState}) {
             if (result.isConfirmed) {
               //Handle axios request
 
-              Swal.fire('Device Type Updated!', '', 'success');
+              //Send the api request
+              api.put(`/devicetypes/${deviceTypeId}`,{
+                type_alias: type_aliasModal,
+                type_description: type_descriptionModal,
+                type_conversion: type_conversionModal,
+                packet_structure: type_packet_structureModal
+                }).then(function (response){
+
+                    //dispatch to update the state
+                    dispatch(
+                        updateOneDeviceType({
+                            type_id: deviceTypeId,
+                            type_alias: type_aliasModal,
+                            type_description: type_descriptionModal,
+                            type_conversion: type_conversionModal,
+                            packet_structure: type_packet_structureModal
+                        })
+                    )
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `${response.data.message}`
+                    });
+
+                    //clear all the input fields
+                    setDeviceTypeAliasModal('');
+                    setDeviceTypeDescription('');
+                    setTypePacketStructureModal('');
+                    setTypeConversionModal('');
+
+                    //Close the modal
+                    document.getElementById('assetDetailsModal').click();
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+              
 
             } 
           });
@@ -323,7 +393,10 @@ export default function DeviceTypes({deviceTypeState}) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Device Type Alias</label>
-                                                <input required='required' class='form-control' id='deviceTypeAliasModal' name='deviceTypeAliasModal' placeholder="Device Type Alias*" />
+                                                <input required='required' class='form-control' id='deviceTypeAliasModal' 
+                                                 name='deviceTypeAliasModal' placeholder="Device Type Alias*"
+                                                 value={type_aliasModal}
+                                                 onChange={onTypeAliasModalChange} />
                                             </div>
                                         </div>
                                     </div>
@@ -334,11 +407,17 @@ export default function DeviceTypes({deviceTypeState}) {
                                         <div class="row">
                                             <div class="col-md-6">
                                             <label class='label'>Device Type Conversion</label>
-                                                <input required='required' readonly='readonly' type='text' class='form-control' id='deviceTypeConversionModal' name='deviceTypeConversionModal' placeholder="Device Type Conversion *" />
+                                                <input required='required' type='text' class='form-control' id='deviceTypeConversionModal' 
+                                                 name='deviceTypeConversionModal' placeholder="Device Type Conversion *" 
+                                                 value={type_conversionModal}
+                                                 onChange={onTypeConversionModalChange}/>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Packet Structure</label>
-                                                <input required='required' readonly='readonly' type="text" class="form-control" id="packetStructureModal" name="packetStructureModal" placeholder="Packet Structure *"/>
+                                                <input required='required' type="text" class="form-control" id="packetStructureModal"
+                                                 name="packetStructureModal" placeholder="Packet Structure *"
+                                                 value={type_packet_structureModal}
+                                                 onChange={onPacketStructureModalChange}/>
                                             </div>
                                         </div>
                                     </div>
@@ -349,7 +428,9 @@ export default function DeviceTypes({deviceTypeState}) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Sigfox ID</label>
-                                                <input required='required' readonly='readonly' type='text' class='form-control' id='sigfoxIDModal' name='sigfoxIDModal' placeholder="Sigfox ID *" />
+                                                <input required='required' readonly='readonly' type='text' class='form-control' id='sigfoxIDModal'
+                                                 name='sigfoxIDModal' placeholder="Sigfox ID *"
+                                                  />
                                             </div>
                                         </div>
                                     </div>
@@ -360,7 +441,10 @@ export default function DeviceTypes({deviceTypeState}) {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Device Type Description</label>
-                                                <textarea rows='4' type="text" class="form-control" id="deviceTypeDescriptionModal" name="deviceTypeDescriptionModal" placeholder="Device Type Description *"  ></textarea>
+                                                <textarea rows='4' type="text" class="form-control" id="deviceTypeDescriptionModal"
+                                                 name="deviceTypeDescriptionModal" placeholder="Device Type Description *" 
+                                                 value={type_descriptionModal}
+                                                 onChange={onTypeDescriptionModalChange} ></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -371,7 +455,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                 <div class="col-md-3"></div>
                                 <div class="col-md-7"><br/>
                                     <div className='row'>
-                                        <button type='submit' class="btn btn-success btn-icon-split">
+                                        <button type='submit' data-id='0' id='btnUpdateDeviceType' class="btn btn-success btn-icon-split">
                                                 <span class="icon text-white-50">
                                                     <i class="fas fa-check"></i>
                                                 </span>

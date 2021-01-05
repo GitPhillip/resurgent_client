@@ -143,13 +143,14 @@ export default function Customers({customerState}) {
                    document.getElementById('customerAdminsModal').click();
 
                 }).catch(function(error){
-                     //display a msg
-                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: `${error}`,
-                    });
-                })
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
 
             } 
           });

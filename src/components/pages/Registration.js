@@ -157,7 +157,6 @@ export default function Registration() {
                             text: `${error.response.data.error[0]}`
                         });
                     }
-                    
                 });
             } 
           });

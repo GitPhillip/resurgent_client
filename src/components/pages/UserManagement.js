@@ -1,4 +1,4 @@
-import React, {useEffect,useState} from 'react'
+import React, {useEffect,useState, useRef} from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
@@ -8,9 +8,14 @@ export default function UserManagement() {
 
     //Get your state
     const [admins, setAdmins] = useState([]);//The initial state of admins is empty
+    const [technicians, setTechnicians] = useState([]);//The initial state of technicians is empty
+
+    const mountedRef = useRef();
 
     //On page load
     useEffect(()=>{
+
+        mountedRef.current = true;
 
         //Make the request to the API and update the state
         api.get('/users/usertype/1')
@@ -18,14 +23,35 @@ export default function UserManagement() {
             //update the state
             setAdmins(response.data.data);
         }).catch(function(error){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error',
-                text: `${error}`
-            });
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
         });
 
-    },[admins]);//only rerender if the admins change
+        //Make the request to the API and update the state
+        api.get('/users/usertype/2')
+        .then(response => {
+            //update the state
+            setTechnicians(response.data.data);
+        }).catch(function(error){
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+
+    },[]);//only rerender if the admins change
+
+    useEffect(()=>{
+
+    },[admins,technicians]);
     
     let data;  
 
@@ -58,28 +84,11 @@ export default function UserManagement() {
         });
     }
 
-    let dataRows = JSON.parse(JSON.stringify(admins));
-
-    for(var i = 0; i<dataRows.length;i++){
-
-        for(var j = 0; j < Object.keys(dataRows[i]).length;j++){
-            dataRows[i]['action'] = (
-                <div>
-                    <button  type="button" data-id={dataRows[i]['user_id']} class="btn btn-success btn-sm" onClick={viewEmployeeDetails} data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-        }
-    }
-    
-    
-    //**************Functions************ */
-    /*Delete Admin
+    //Delete Admin
     let deleteAdmin = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
+        var employeeId = parseInt(e.target.getAttribute('data-id'));
 
         //Trigger the SWAL
         Swal.fire({
@@ -90,13 +99,68 @@ export default function UserManagement() {
             confirmButtonText: `Delete Admin`,
           }).then((result) => {
             if (result.isConfirmed) {
-              //Handle axios request
-              Swal.fire('Saved!', '', 'success');
+             
+                //Send the request to the api
+                api.delete(`/users/${employeeId}`)
+                .then(function (response) {
+
+                    //update the state accordingly
+                    if(response.data.type===1){
+                        setAdmins(admins.filter(admin => admin.user_id !==employeeId));
+                    }else if(response.data.type===2)
+                    {
+                        setTechnicians(technicians.filter(technician => technician.user_id !==employeeId));
+                    }
+                    
+                    //display a msg
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted',
+                        text: `${response.data.message}`
+                    });
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
 
             }
           });
     }
-    */
+
+    let dataRows = JSON.parse(JSON.stringify(admins));
+    let technicianRows = JSON.parse(JSON.stringify(technicians));
+    
+    //Add the two objects together
+    dataRows = dataRows.concat(technicianRows);
+
+    for(var i = 0; i<dataRows.length;i++){
+
+        if(dataRows[i]['user_type_id']===1) dataRows[i]['user_type_id'] = 'Administrator';
+        else if(dataRows[i]['user_type_id']===2) dataRows[i]['user_type_id'] = 'Technician';
+
+        for(var j = 0; j < Object.keys(dataRows[i]).length;j++){
+            dataRows[i]['action'] = (
+                <div>
+                    <button  type="button" data-id={dataRows[i]['user_id']} class="btn btn-success btn-sm" onClick={viewEmployeeDetails} data-toggle="modal" data-target="#detailsModal">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        View Details
+                    </button> {' '}
+                    <button  type="button" data-id={dataRows[i]['user_id']} class="btn btn-danger btn-sm" onClick={deleteAdmin}>
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Delete user
+                    </button>
+                </div>
+            )
+        }
+    }
+    
+
     data = {
 
         columns: [
@@ -123,6 +187,11 @@ export default function UserManagement() {
           {
             label: 'Cellphone',
             field: 'user_cellphone',
+            sort: 'asc',
+          },
+          {
+            label: 'Employee Type',
+            field: 'user_type_id',
             sort: 'asc',
           },
           {
