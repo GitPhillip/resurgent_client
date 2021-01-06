@@ -52,13 +52,13 @@ export const deviceTypeSlice = createSlice({
             console.log('State updated');
         },
         //Reducer to delete a device type
-        deleteDeviceType: {
-            reduer: (status,action) =>{
-                //update the status
-                console.log('Status updated')
-            },
-            prepare: (deleteTypeID) =>{
-                return {payload:deleteTypeID}
+        deleteDeviceType: (state,action) =>{
+            //get the payload
+            const {type_id} = action.payload;
+            //Find the device type that must be deleted
+            const existingDeviceType = state.deviceTypes.find(deviceType => deviceType.type_id === type_id);
+            if(existingDeviceType){
+                state.deviceTypes = state.deviceTypes.filter(deviceType => deviceType.type_id !== existingDeviceType.type_id);
             }
         },
         //these are for when waiting for api request to finish

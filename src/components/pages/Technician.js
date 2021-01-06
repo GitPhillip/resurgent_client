@@ -58,6 +58,7 @@ export default function Technician({customerState, assetState, assetTypeState, d
                                 <Route exact path='/technician/asset_management' render = {props => (
                                                                         <AssetManagement {...props} customerState={customersState} 
                                                                                                     assetState={assetsState} 
+                                                                                                    deviceState={devicesState} 
                                                                                                     assetTypeState={assetTypesState}/> 
                                                                         )} 
                                 />

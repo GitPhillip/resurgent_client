@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addDeviceType,updateOneDeviceType } from '../slices/deviceTypeSlice';
+import { addDeviceType,deleteDeviceType,updateOneDeviceType } from '../slices/deviceTypeSlice';
 
 export default function DeviceTypes({deviceTypeState}) {
 
@@ -194,7 +194,57 @@ export default function DeviceTypes({deviceTypeState}) {
                     setTypeConversionModal('');
 
                     //Close the modal
-                    document.getElementById('assetDetailsModal').click();
+                    document.getElementById('deviceTypeModal').click();
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+              
+
+            } 
+          });
+    }
+
+      //Delete Device Type Function
+      let deleteOneDeviceType = (e) =>{
+
+        //Get the device type id
+         let deviceTypeId = parseInt(e.target.getAttribute('data-id'));
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Device Type?',
+            text: 'Are you sure you want to delete the device type?',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              //Send the api request
+              api.delete(`/devicetypes/${deviceTypeId}`)
+              .then(function (response){
+
+                    //dispatch to update the state
+                    dispatch(
+                        deleteDeviceType({
+                            type_id: deviceTypeId,
+                        })
+                    )
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: `${response.data.message}`
+                    });
 
                 }).catch(function(error){
                     if(error.response && error.response.data){
@@ -220,8 +270,12 @@ export default function DeviceTypes({deviceTypeState}) {
         dataRows[i]['action'] = (
             <div>
                 <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].type_id} onClick={viewDeviceType} data-toggle="modal" data-target="#deviceTypeModal">
-                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details
+                </button> {' '}
+                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].type_id} onClick={deleteOneDeviceType}>
+                    <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
+                   Delete
                 </button>
             </div>
         )

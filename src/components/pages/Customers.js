@@ -1,12 +1,18 @@
 import React, { useState} from 'react';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
+import {useDispatch} from 'react-redux'
+
 import api from '../../api/api';
+import { deleteCustomer } from '../slices/customerSlice';
 
 export default function Customers({customerState}) {
 
     let data;
     let adminData;
+
+    //Dispatch
+    const dispatch = useDispatch();
 
     //Get the global state
     let customersState = customerState.customers;
@@ -115,7 +121,7 @@ export default function Customers({customerState}) {
     let deleteAdmin = (e) =>{
         //Prevent form from submitting to the actual file
         //Get the customer user id
-        var customerUserId = e.target.getAttribute('data-id');
+        var customerUserId = parseInt(e.target.getAttribute('data-id'));
 
         //Trigger the SWAL
         Swal.fire({
@@ -141,6 +147,53 @@ export default function Customers({customerState}) {
 
                     //close the modal
                    document.getElementById('customerAdminsModal').click();
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+
+            } 
+          });
+    }
+
+    //Delete customer
+    let deleteOneCustomer = (e) =>{
+        //Get the customer user id
+        var customerId = parseInt(e.target.getAttribute('data-id'));
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Customer?',
+            text: 'Are you sure you want to delete the customer account?',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              
+                //Send the axios request
+                api.delete(`/customer/${customerId}`)
+                .then(function (response) {
+                    //update the state
+
+                    dispatch(
+                        deleteCustomer({
+                            customer_id: customerId
+                        })
+                    )
+
+                    //display a msg
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted',
+                        text: `${response.data.message}`,
+                    });
 
                 }).catch(function(error){
                     if(error.response && error.response.data){
@@ -206,6 +259,10 @@ export default function Customers({customerState}) {
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
 
+        //Replace the api key field with 'None' for this version
+
+        if(dataRows[i]['api_key']===null) dataRows[i]['api_key'] = 'None';
+
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
@@ -214,12 +271,14 @@ export default function Customers({customerState}) {
                     Details 
                 </button> {' '}
                 <button  type="button" class="btn btn-info btn-sm" data-id={dataRows[i].customer_id}  onClick={viewCompanyAdmins} data-toggle="modal" data-target="#customerAdminsModal">
-                    <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i>
                     Admins
                 </button> {' '}
                 <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id}  onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
                     <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Add
+                </button>{' '}
+                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].customer_id}  onClick={deleteOneCustomer} >
+                    <i class="fas fa-trash fa-sm fa-fw mr-2"></i>Delete
                 </button>
             </div>
         )

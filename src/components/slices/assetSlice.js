@@ -45,19 +45,16 @@ export const assetSlice = createSlice({
                 exisitngAsset.asset_description = asset_description;
                 exisitngAsset.customer_id = customer_id;
                 exisitngAsset.deleted = false;
-
             }
             console.log('State updated');
             
         },
         //Reducer to delete a asset
-        deleteAsset: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (assetID) =>{
-                return {payload: assetID}
+        deleteAsset: (state,action) =>{
+            const {asset_id} = action.payload;
+            const exisitngAsset = state.assets.find(asset => asset.asset_id === asset_id);
+            if(exisitngAsset){
+                state.assets = state.assets.filter(asset => asset.asset_id !== exisitngAsset.asset_id);
             }
         },
         //these are for when waiting for api request to finish

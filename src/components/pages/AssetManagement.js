@@ -3,7 +3,7 @@ import {useDispatch} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addAsset, updateOneAsset } from '../slices/assetSlice';
+import { addAsset, deleteAsset, updateOneAsset } from '../slices/assetSlice';
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
@@ -259,6 +259,56 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 }
             })
     }
+
+    //Update Asset Function
+    let deleteOneAsset = (e) => {
+        //Prevent form from submitting to the actual file
+        //e.preventDefault();
+
+         //Get the asset id
+         var assetId = parseInt(e.target.getAttribute('data-id'));
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Asset?',
+            text: 'Are you sure you want to delete the asset?',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+          }).then( (result) => {
+
+                if (result.isConfirmed) {
+              
+                    //Send the api request
+                    api.delete(`/assets/${assetId}`)
+                    .then( function (response) {
+                        //dispatch to update the state
+                        dispatch(
+                            deleteAsset({
+                                asset_id: assetId
+                            })
+                        )
+
+                        //Trigger the swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: `${response.data.message}`
+                        });
+
+                    }).catch(function(error){
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+         
+                }
+            })
+    }
     
     const adjustId = () =>{
         
@@ -289,6 +339,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                     <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
                         <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details 
+                    </button>{' '}
+                    <button  type="button" class="btn btn-danger btn-sm" onClick={deleteOneAsset} data-id={dataRows[i]['asset_id']} >
+                        <i class="fas fa-trash fa-sm fa-fw mr-2 "></i>
+                        Delete
                     </button>
                 </div>
             )

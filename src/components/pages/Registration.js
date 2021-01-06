@@ -126,7 +126,7 @@ export default function Registration() {
               //Send the api request to create the customer
               api.post('/users', {
                 username,
-                user_password: user_email, //passwords
+                user_password: user_email, //password is defaulted to email
                 user_email,
                 user_firstname,
                 user_surname,
@@ -321,7 +321,7 @@ export default function Registration() {
                                                 <select required='required' class="form-control" id='userType' name='userType'
                                                  value={user_type_id}
                                                  onChange={onEmployeeTypeChange}>
-                                                    <option hidden selected disabled>Please select the employee type.</option>
+                                                    <option hidden selected >Please select the employee type.</option>
                                                     <option value="1" >Administrator</option>
                                                     <option value="2" >Technician</option>
                                                 </select>

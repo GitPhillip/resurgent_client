@@ -46,13 +46,16 @@ export const customerSlice = createSlice({
             }
         },
         //Reducer to delete a customer
-        deleteCustomer: {
-            reducer: (state,action) =>{
+        deleteCustomer: (state,action) =>{
+            //get the payload
+            const {customer_id} = action.payload;
+            //get the customer to be deleted
+            const existingCustomer = state.customers.find(customer => customer.customer_id === customer_id);
+            //if the customer exists
+            if(existingCustomer){
                 //update the state
-                console.log('State updated');
-            },
-            prepare: (customerID) =>{
-                return {payload: customerID}
+                state.customers = state.customers.filter(customer => customer.customer_id !== existingCustomer.customer_id);
+                console.log('State updated')
             }
         },
         //these are for when waiting for api request to finish

@@ -115,7 +115,29 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             if (result.isConfirmed) {
               //Handle axios request
 
-              Swal.fire('Device Updated!', '', 'success');
+              Swal.fire('Device Updated!', 'Functionality missing', 'error');
+
+            } 
+          });
+    }
+
+    //Delete Device Function
+    let deleteOneDevice = (e) =>{
+        //Prevent form from submitting to the actual file
+        e.preventDefault();
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Device?',
+            text: 'Are you sure you want to delete the device?',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+              Swal.fire('Device Updated!', 'Functionality missing', 'error');
 
             } 
           });
@@ -128,7 +150,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
 
-        
         //loop through all the device types
         for(var k = 0; k <deviceTypeRows.length; k++ ){
 
@@ -143,6 +164,10 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
                         <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
                         View Details
+                </button>{' '}
+                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].device_id} onClick={deleteOneDevice}>
+                        <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
+                        Delete
                 </button>
             </div>
         )

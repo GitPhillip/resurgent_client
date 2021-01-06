@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
-import { addAssetType,updateAssetType } from '../slices/typeSlice';
+import { addAssetType,updateAssetType, deleteAssestType } from '../slices/typeSlice';
 
 export default function AssetTypes({assetTypeState}) {
 
@@ -96,7 +96,7 @@ export default function AssetTypes({assetTypeState}) {
 
     let viewAssetTypeDetails = (e) =>{
         
-        //Get the asset Id id
+        //Get the asset type Id id
         var assetTypeId = e.target.getAttribute('data-id');
         if(assetTypeId !== null)
         {
@@ -133,10 +133,10 @@ export default function AssetTypes({assetTypeState}) {
         //Trigger the SWAL
         Swal.fire({
             icon: 'question',
-            title: 'Update Asset?',
-            text: 'Are you sure you want to update the asset?',
+            title: 'Update Asset Type?',
+            text: 'Are you sure you want to update the asset type?',
             showCancelButton: true,
-            confirmButtonText: `Update Asset`,
+            confirmButtonText: `Update`,
           }).then((result) => {
             if (result.isConfirmed) {
               //Handle axios request
@@ -184,6 +184,57 @@ export default function AssetTypes({assetTypeState}) {
           });
     }
 
+    //Delete Asset Type Function
+    let deleteOneAssetType = (e) =>{
+        
+        //Prevent the form submitting
+        //e.preventDefault();
+        
+        //Get the asset type id
+        var assetTypeId = parseInt(e.target.getAttribute('data-id'));
+
+        //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Asset Type?',
+            text: 'Are you sure you want to delete the asset type?',
+            showCancelButton: true,
+            confirmButtonText: `Delete`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //Handle axios request
+
+                //Send the api request
+                api.delete(`/assettypes/${assetTypeId}`)
+                .then(function (response){
+                    //dispatch to update the state
+                    dispatch(
+                        deleteAssestType({
+                            type_id: assetTypeId
+                        })
+                    )
+
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: `${response.data.message}`
+                    });
+
+                }).catch(function(error){
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+
+            } 
+          });
+    }
+
     //Make deep copies of the states
     let dataRows = JSON.parse(JSON.stringify(assetTypesState));
 
@@ -198,6 +249,10 @@ export default function AssetTypes({assetTypeState}) {
                 <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetTypeDetails} data-id={dataRows[i]['type_id']} data-toggle="modal" data-target="#assetTypeDetailsModal">
                     <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details 
+                </button> {' '}
+                <button  type="button" class="btn btn-danger btn-sm" onClick={deleteOneAssetType} data-id={dataRows[i]['type_id']} >
+                    <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Delete
                 </button>
             </div>
         )

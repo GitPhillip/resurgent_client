@@ -1,4 +1,4 @@
-import React, {useEffect,useState, useRef} from 'react'
+import React, {useEffect,useState} from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
@@ -10,12 +10,14 @@ export default function UserManagement() {
     const [admins, setAdmins] = useState([]);//The initial state of admins is empty
     const [technicians, setTechnicians] = useState([]);//The initial state of technicians is empty
 
-    const mountedRef = useRef();
-
     //On page load
     useEffect(()=>{
 
-        mountedRef.current = true;
+        fetchData();
+
+    },[]);//only rerender if the admins change
+
+    const fetchData = () =>{
 
         //Make the request to the API and update the state
         api.get('/users/usertype/1')
@@ -46,12 +48,7 @@ export default function UserManagement() {
                 });
             }
         });
-
-    },[]);//only rerender if the admins change
-
-    useEffect(()=>{
-
-    },[admins,technicians]);
+    }
     
     let data;  
 

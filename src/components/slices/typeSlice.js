@@ -40,13 +40,15 @@ export const typeSlice = createSlice({
             }
             console.log('State updated');
         },
-        deleteAssestType: {
-            reducer: (state,action) =>{
-
-            },
-            prepare: (assetTypeID) =>{
-                return {payload: assetTypeID}
+        deleteAssestType: (state,action) =>{
+            //get the payload
+            const{type_id} = action.payload;
+            //update the state
+            const existingAssetType = state.assetTypes.find(assetType => assetType.type_id ===type_id)
+            if(existingAssetType){
+                state.assetTypes = state.assetTypes.filter(assetType => assetType.type_id !== existingAssetType.type_id);
             }
+            console.log('State updated');
         },
         //these are for when waiting for api request to finish
         startLoading: state =>{
