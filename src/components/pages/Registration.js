@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
 
@@ -8,6 +8,8 @@ import { addCustomer } from '../slices/customerSlice';
 export default function Registration() {
 
     //Handle the states
+    let user = useSelector(state => state.user.user);
+
     //----------Customer registration----------------
     const [customer_name, setCustomerName] = useState('');
     const [customer_email, setCustomerEmail] = useState('');
@@ -80,6 +82,26 @@ export default function Registration() {
                     })
                 );
 
+                //***************SYSTEM LOG********************* */
+                //********************************************** */
+                let entry_content = `Employee Reg: User registered a customer with ${customer_name}.`;
+                
+                api.post('/systemlog',{
+                    user_id: user.user_id,
+                    entry_content})
+                .then()
+                .catch(error =>{
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+                //***************SYSTEM LOG********************* */
+                //********************************************** */
+
                 //Trigger the swal
                 Swal.fire({
                     icon: 'success',
@@ -133,6 +155,28 @@ export default function Registration() {
                 user_cellphone,
                 user_type_id: parseInt(user_type_id)
               }).then(response => {
+
+                //***************SYSTEM LOG********************* */
+                //********************************************** */
+                let entry_content = ``;
+                if(user_type_id===1) entry_content = `Employee Reg: User registered an admin with name(s) ${user_firstname} ${user_surname}.`;
+                else entry_content = `Employee Reg: User registered a technician with name(s) ${user_firstname} ${user_surname}.`;
+                
+                api.post('/systemlog',{
+                    user_id: user.user_id,
+                    entry_content})
+                .then()
+                .catch(error =>{
+                    if(error.response && error.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: `${error.response.data.error}`
+                        });
+                    }
+                });
+                //***************SYSTEM LOG********************* */
+                //********************************************** */
 
                 //Trigger the swal
                 Swal.fire({

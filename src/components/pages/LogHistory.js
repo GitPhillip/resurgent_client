@@ -69,7 +69,7 @@ export default function LogHistory() {
             sort: 'asc',
           },
           {
-            label: 'User Name',
+            label: 'Name & Surname',
             field: 'names',
             sort: 'asc',
           },

@@ -1,37 +1,123 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import { Redirect} from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 
-export default function CustomerAssets() {
+//global fetches
+import {useSelector} from 'react-redux';
+
+//api import
+import api from '../../api/api';
+
+export default function CustomerAssets({customerState,assetState,deviceState, assetTypeState}) {
 
     let data;
     //***********Functions************ */
+
+    let IsLoadingAssestTypes = assetTypeState.isLoading;
+
+    //On page load
+    useEffect(() => {
+       
+        
+    }, [])
+
+    //Function to view customer assets
+    let viewAssetDetails = (e) =>{
+        
+        //Get the asset id
+        var assetId = parseInt(e.target.getAttribute('data-id'));
+
+        //find all the devices that contain this asset it and put them in an array
+        let dataRows = JSON.parse(JSON.stringify(deviceState.devices));
+
+        let deviceHtml = ``;
+        for(var k =  0; k < dataRows.length;k++){
+            
+            if(dataRows[k]['asset_id'] === assetId)
+                deviceHtml += `<p><i class='fa fa-cog'></i> Packet Structure: ${dataRows[k]['device_pac']}.  Sigfox Id: ${dataRows[k]['sigfox_id']} </p>`;
+        }
+        
+        //Send the axios request
+        api.get('/assets/'+assetId)
+        .then(response => {
+            //populate the html elements accordingly
+            document.getElementById('assetNameModal').value = response.data.data.asset_name;
+            document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
+            document.getElementById('deviceIdModal').innerHTML = deviceHtml;
+            document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
+
+        });
+    }
+
+    const user = useSelector(state => state.user.user);
+    //if the company id is not there
+    if(user.user_company_id ===undefined){
+        return <Redirect to='/' />
+    }
+
+    //loop through the assets and return those thaat belong to the session company
+    const customerAssets = assetState.assets.filter(asset => asset.customer_id === user.user_company_id);
+
+    //Make deep copies of the states
+    let dataRows = JSON.parse(JSON.stringify(customerAssets));
+    let customerRows = JSON.parse(JSON.stringify(customerState.customers));
+    let assetTypeRows = JSON.parse(JSON.stringify(assetTypeState.assetTypes));
+
+    //Add the action column
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
+
+        //Replace the customer id with the customer name
+
+        //loop through all the customers
+        for(var k = 0; k <customerRows.length; k++ ){
+
+            if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
+                dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
+            
+        }
+
+        //loop through all the asset types
+        for(var j = 0; j <assetTypeRows.length; j++ ){
+
+            if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
+                dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+            
+        }
+
+        //append the action key value pair to the end of each object
+        dataRows[i]['action'] = (
+            <div>
+                <button type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
+                    <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
+                    View Details
+                </button>
+            </div>
+        )
+    }
+
 
     data = {
 
         columns: [
           {
             label: 'Asset ID',
-            field: 'assetID',
+            field: 'asset_id',
             sort: 'asc',
           },
           {
             label: 'Asset Name',
-            field: 'assetName',
+            field: 'asset_name',
             sort: 'asc',
           },
           {
             label: 'Customer Name',
-            field: 'customerName',
+            field: 'customer_id',
             sort: 'asc',
           },
           {
             label: 'Asset Type',
-            field: 'assetTypeID',
-            sort: 'asc',
-          },
-          {
-            label: 'Asset Device',
-            field: 'assetDeviceID',
+            field: 'asset_type_id',
             sort: 'asc',
           },
           {
@@ -40,99 +126,7 @@ export default function CustomerAssets() {
           },
           
         ],
-        rows: [
-          {
-            assetID: 'Tiger Nixon',
-            assetName: 'System Architect',
-            customerName: 'Edinburgh',
-            assetTypeID: '61',
-            assetDeviceID: '61',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Cedric Kelly',
-            assetName: 'Senior Javascript Developer',
-            customerName: 'Edinburgh',
-            assetTypeID: '22',
-            assetDeviceID: '22',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Airi Satou',
-            assetName: 'Accountant',
-            customerName: 'Tokyo',
-            assetTypeID: '33',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#detailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-
-          {
-            assetID: 'Charde Marshall',
-            assetName: 'Regional Director',
-            customerName: 'San Francisco',
-            assetTypeID: '36',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Haley Kennedy',
-            assetName: 'Senior Marketing Designer',
-            customerName: 'London',
-            assetTypeID: '43',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-          {
-            assetID: 'Tatyana Fitzpatrick',
-            assetName: 'Regional Director',
-            customerName: 'London',
-            assetTypeID: '19',
-            assetDeviceID: '33',
-            action: (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details
-                    </button>
-                </div>
-            )
-          },
-        ]
+        rows: dataRows
       };
     
     return (
@@ -175,23 +169,28 @@ export default function CustomerAssets() {
                         </button>
                     </div>
                     <div class="modal-body">
-                            <div class="row register-form">
+                    <div class="row register-form">
                                 
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class='label'>Asset Name</label>
-                                                <input readonly='readonly' type="text" class="form-control" id="assetNameModal" name="assetNameModal" placeholder="Asset Name *"  />
+                                                <input readOnly='readonly' type="text" class="form-control" id="assetNameModal" 
+                                                 name="assetNameModal" placeholder="Asset Name *"  />
                                             </div>
                                             <div class="col-md-6">
                                                 <label class='label'>Asset Type</label>
-                                                <select readonly='readonly' class='form-control' id='assetTypeModal' name='assetTypeModal'>
-                                                    <option hidden selected disabled>Please select a asset type.</option>
-                                                    <option value='1'>Truck</option>
-                                                    <option value='2'>Trailer</option>
-                                                    <option value='3'>Car</option>
-                                                </select>
+                                                {!IsLoadingAssestTypes ? (
+                                                        
+                                                        <select readOnly='readonly' class='form-control' id='assetTypeIdModal'
+                                                         name='assetTypeIdModal'>
+                                                            <option hidden selected disabled>Please choose a asset type.</option>
+                                                            {assetTypeState.assetTypes.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
+                                                        </select>
+                                                        
+                                                        ) : (<option>Loading...</option> )
+                                                    }
                                             </div>
                                         </div>
                                     </div>
@@ -201,29 +200,10 @@ export default function CustomerAssets() {
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Company Name</label>
-                                                <select readonly='readonly' class='form-control' id='customerNameModal' name='customerNameModal'>
-                                                    <option hidden selected disabled>Please choose a customer.</option>
-                                                    <option value='1'>Shoprite</option>
-                                                    <option value='2'>Coca Cola</option>
-                                                    <option value='3'>Checkers</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <label class='label'>Device(s) Attached</label>
+                                                <div readOnly='readonly' id='deviceIdModal'>
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <label class='label'>Devices Attached</label>
-                                                <select readonly='readonly' class='form-control' id='deviceAttachedModal' name='deviceAttachedModal'>
-                                                    <option hidden selected disabled>Please choose a device.</option>
-                                                    <option value='1'>Device 1</option>
-                                                    <option value='2'>Device 2</option>
-                                                    <option value='3'>Device 3</option>
-                                                </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -234,12 +214,17 @@ export default function CustomerAssets() {
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <label class='label'>Asset Description</label>
-                                                <textarea  readonly='readonly' rows='4' type="text" class="form-control" id="assetDescriptionModal" name="assetDescriptionModal" placeholder="Asset Description *"  ></textarea>
+                                                <textarea readOnly='readonly' rows='4' type="text" class="form-control" id="assetDescriptionModal" 
+                                                 name="assetDescriptionModal" placeholder="Asset Description *"
+                                                 ></textarea>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <br/><br/>
+                                
+                                
                             </div>
                     </div>
                     <div class="modal-footer">

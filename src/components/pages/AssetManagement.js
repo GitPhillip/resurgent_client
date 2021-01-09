@@ -1,11 +1,15 @@
 import React, {useEffect,useState} from 'react'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
 import { addAsset, deleteAsset, updateOneAsset } from '../slices/assetSlice';
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
+
+
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.user.user);
 
     let data;
 
@@ -28,11 +32,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     //On page load and other
     useEffect(()=>{
         
-    },[]);//only rerender if the admins change
+    },[customersState, assetsState, assetTypesState, devicesState]);//only rerender if the admins change
 
     //*****************Asset Registration*******************
 
-    const dispatch = useDispatch();
 
     //-------------Asset Registrations---------------
     //Local states
@@ -96,8 +99,24 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                         })
                     )
 
-                    //set the data table details correctly
-                    adjustId();
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Asset Reg: User registered an asset with name ${asset_name}`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Trigger the swal
                     Swal.fire({
@@ -213,6 +232,25 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                             })
                         )
 
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Asset Update: User updated an asset with name ${asset_nameModal}`;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+
                         //Trigger the swal
                         Swal.fire({
                             icon: 'success',
@@ -289,6 +327,25 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                             })
                         )
 
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Asset Delete: User deleted an asset with name ${response.data.asset_name}`;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+
                         //Trigger the swal
                         Swal.fire({
                             icon: 'success',
@@ -310,47 +367,45 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             })
     }
     
-    const adjustId = () =>{
+
         
-        //For Every object in the JSON object
-        for(var i = 0; i<dataRows.length;i++){
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
 
-            //Replace the customer id with the customer name
+        //Replace the customer id with the customer name
 
-            //loop through all the customers
-            for(var k = 0; k <customerRows.length; k++ ){
+        //loop through all the customers
+        for(var k = 0; k <customerRows.length; k++ ){
 
-                if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
-                    dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
-                
-            }
-
-            //loop through all the asset types
-            for(var j = 0; j <assetTypeRows.length; j++ ){
-
-                if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
-                    dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
-                
-            }
-
-            //append the action key value pair to the end of each object
-            dataRows[i]['action'] = (
-                <div>
-                    <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
-                        <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
-                        View Details 
-                    </button>{' '}
-                    <button  type="button" class="btn btn-danger btn-sm" onClick={deleteOneAsset} data-id={dataRows[i]['asset_id']} >
-                        <i class="fas fa-trash fa-sm fa-fw mr-2 "></i>
-                        Delete
-                    </button>
-                </div>
-            )
+            if(customerRows[k]['customer_id']===dataRows[i]['customer_id'] )
+                dataRows[i]['customer_id'] = customerRows[k]['customer_name'];
+            
         }
+
+        //loop through all the asset types
+        for(var j = 0; j <assetTypeRows.length; j++ ){
+
+            if(assetTypeRows[j]['type_id']===dataRows[i]['asset_type_id'] )
+                dataRows[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+            
+        }
+
+        //append the action key value pair to the end of each object
+        dataRows[i]['action'] = (
+            <div>
+                <button  type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
+                    <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
+                    View Details 
+                </button>{' '}
+                <button  type="button" class="btn btn-danger btn-sm" onClick={deleteOneAsset} data-id={dataRows[i]['asset_id']} >
+                    <i class="fas fa-trash fa-sm fa-fw mr-2 "></i>
+                    Delete
+                </button>
+            </div>
+        )
     }
     
-    //Adjust the id's to be strings
-    adjustId();
+    
 
     data = {
 
@@ -425,7 +480,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                                          name='assetTypeId'
                                                          value={asset_type_id}
                                                          onChange={onAssetTypeIdChange}>
-                                                            <option hidden selected disabled>Please choose a asset type.</option>
+                                                            <option hidden selected >Please choose an asset type.</option>
                                                             {assetTypesState.map(assetType => <option value={assetType.type_id} >{assetType.type_alias}</option>)}
                                                         </select>
                                                         
@@ -446,7 +501,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                                          name='customerID'
                                                          value={customer_id}
                                                          onChange={onCustomerIdChange}>
-                                                            <option hidden selected disabled>Please choose a customer.</option>
+                                                            <option hidden selected>Please choose a customer.</option>
                                                             {customersState.map(customer => <option value={customer.customer_id} >{customer.customer_name}</option>)}
                                                         </select>
                                                         

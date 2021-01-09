@@ -1,6 +1,6 @@
 //Imports
-import React from 'react';
-import {Route, Switch} from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {Route, Switch, Redirect} from 'react-router-dom';
 
 //components
 import Header from '../layout/Header';
@@ -18,23 +18,36 @@ import AssetTypes from './AssetTypes';
 import DeviceTypes from './DeviceTypes';
 import DeviceManagement from './DeviceManagement';
 import LogHistory from './LogHistory';
+import Login from './Login';
 
 //Error UI
 import Page404 from './Page404';
 
-export default function Admin({customerState, assetState, assetTypeState, deviceState,deviceTypeState}) {
+export default function Admin({customerState, assetState, assetTypeState, deviceState,deviceTypeState, userState}) {
 
     let customersState = customerState;
     let assetTypesState = assetTypeState;
     let assetsState = assetState;
     let deviceTypesState = deviceTypeState;
     let devicesState = deviceState;
+    let usersState = userState;
+
+    useEffect(()=>{
+
+    },[customersState,assetState,assetTypeState,deviceState,deviceTypeState]);
+
+    //Check if there is an active user
+    const loggedIn = usersState.loggedIn;
+
+    if(!loggedIn){
+        return <Redirect to='/' />
+    }
 
     return (
         
         <div id="wrapper">
                 
-            <SideBar/>
+            <SideBar />
 
             {/*<!-- Content Wrapper -->*/}
             <div id="content-wrapper" class="d-flex flex-column">
@@ -42,13 +55,18 @@ export default function Admin({customerState, assetState, assetTypeState, device
                     {/*<!-- Main Content -->*/}
                     <div id="content">
 
-                        <Header/>
+                        <Header userState={usersState}/>
 
                         {/*<!-- Begin Page Content-->*/}
                         <div className="container-fluid">
 
                             {/*<!-- Switch will render the first route that matches -->*/}
                             <Switch>
+
+                                {/* Login */}
+                <Route exact path='/' render = {props => (
+                                                <Login {...props} />
+                                                  )} />
 
                                 {/* Dashboard */}
                                 <Route exact path='/admin/dashboard' component = {Dashboard} />

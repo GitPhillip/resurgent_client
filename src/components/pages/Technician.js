@@ -1,6 +1,6 @@
 //Imports
-import React from 'react';
-import {Route, Switch} from 'react-router-dom';
+import React,{useEffect} from 'react';
+import {Route, Switch, Redirect} from 'react-router-dom';
 
 //components
 import Header from '../layout/Header';
@@ -18,13 +18,25 @@ import AssetTypes from './AssetTypes';
 //Error UI
 import Page404 from './Page404';
 
-export default function Technician({customerState, assetState, assetTypeState, deviceState,deviceTypeState}) {
+export default function Technician({customerState, assetState, assetTypeState, deviceState,deviceTypeState, userState}) {
 
     let customersState = customerState;
     let assetTypesState = assetTypeState;
     let assetsState = assetState;
     let deviceTypesState = deviceTypeState;
     let devicesState = deviceState;
+    let usersState = userState;
+
+    useEffect(()=>{
+
+    },[customersState,assetState,assetTypeState,deviceState,deviceTypeState]);
+
+    //Check if there is an active user session
+    const loggedIn = usersState.loggedIn;
+
+    if(!loggedIn){
+        return <Redirect to='/' />
+    }
 
     return (
         
@@ -38,7 +50,7 @@ export default function Technician({customerState, assetState, assetTypeState, d
                     {/*<!-- Main Content -->*/}
                     <div id="content">
 
-                        <Header/>
+                        <Header userState={usersState}/>
 
                         {/*<!-- Begin Page Content-->*/}
                         <div className="container-fluid">

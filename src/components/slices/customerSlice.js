@@ -36,13 +36,16 @@ export const customerSlice = createSlice({
             console.log('State updated');
         },
         //Reducer to add update a specific customer
-        updateCustomer: {
-            reducer: (state,action) =>{
-                //update the state
-                console.log('State updated');
-            },
-            prepare: (customerDetails) =>{
-                return {payload: customerDetails}
+        updateCustomer:  (state,action) => {
+            //update the state
+            const {customer_id, customer_name, customer_email, customer_telephone, customer_notes } = action.payload;
+            //find the user
+            const existingCustomer = state.customers.find(customer => customer.customer_id === customer_id);
+            if(existingCustomer){
+                existingCustomer.customer_name = customer_name;
+                existingCustomer.customer_email = customer_email;
+                existingCustomer.customer_telephone = customer_telephone;
+                existingCustomer.customer_notes = customer_notes;
             }
         },
         //Reducer to delete a customer

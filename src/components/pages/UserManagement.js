@@ -2,22 +2,21 @@ import React, {useEffect,useState} from 'react'
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2'
 
+import {useSelector} from 'react-redux';
+
 import api from '../../api/api';
 
 export default function UserManagement() {
 
-    //Get your state
+    //Get your global state
+    const user = useSelector(state => state.user.user);
+
+    //Get your local state
     const [admins, setAdmins] = useState([]);//The initial state of admins is empty
     const [technicians, setTechnicians] = useState([]);//The initial state of technicians is empty
 
     //On page load
     useEffect(()=>{
-
-        fetchData();
-
-    },[]);//only rerender if the admins change
-
-    const fetchData = () =>{
 
         //Make the request to the API and update the state
         api.get('/users/usertype/1')
@@ -48,8 +47,9 @@ export default function UserManagement() {
                 });
             }
         });
-    }
-    
+
+    },[admins, technicians]);//only rerender if the admins change
+
     let data;  
 
     //*************Functions ********************/
@@ -102,13 +102,34 @@ export default function UserManagement() {
                 .then(function (response) {
 
                     //update the state accordingly
+                    let entry_content = ``;
                     if(response.data.type===1){
                         setAdmins(admins.filter(admin => admin.user_id !==employeeId));
+                        entry_content = `Employee Delete: User deleted an admin with name(s) ${response.data.names}.`;
                     }else if(response.data.type===2)
                     {
                         setTechnicians(technicians.filter(technician => technician.user_id !==employeeId));
+                        entry_content = `Employee Delete: User deleted a technician with name(s) ${response.data.names}.`;
                     }
                     
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
                     //display a msg
                     Swal.fire({
                         icon: 'success',

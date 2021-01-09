@@ -146,7 +146,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     let dataRows = JSON.parse(JSON.stringify(devicesState));
     let deviceTypeRows = JSON.parse(JSON.stringify(deviceTypesState));
 
-
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
 

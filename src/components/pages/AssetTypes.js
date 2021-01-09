@@ -1,5 +1,5 @@
-import React,{useState} from 'react'
-import { useDispatch } from 'react-redux';
+import React,{useState, useEffect} from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
@@ -11,6 +11,7 @@ export default function AssetTypes({assetTypeState}) {
 
     //Get the global state
     let assetTypesState = assetTypeState.assetTypes;
+    let user = useSelector(state => state.user.user);
 
 
     //----------Asset types registration----------------
@@ -34,6 +35,9 @@ export default function AssetTypes({assetTypeState}) {
     const dispatch = useDispatch();
 
     //use Effect to update changes here
+    useEffect(() => {
+        
+    }, [assetTypesState])
 
     //***********Functions************ */
 
@@ -67,6 +71,25 @@ export default function AssetTypes({assetTypeState}) {
                             deleted:response.data.data.deleted
                         })
                     )
+
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Asset Type Reg: User registered an asset type with alias ${type_alias}`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Trigger the swal
                     Swal.fire({
@@ -156,11 +179,30 @@ export default function AssetTypes({assetTypeState}) {
                         })
                     )
 
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Asset Type Update: User updated an asset type with alias ${type_aliasModal}`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
                     //Trigger the swal
                     Swal.fire({
                         icon: 'success',
                         title: 'Saved!',
-                        text: `Asset type details have been saved.`
+                        text: `${response.data.message}.`
                     });
 
                     //clear all the input fields
@@ -213,6 +255,25 @@ export default function AssetTypes({assetTypeState}) {
                             type_id: assetTypeId
                         })
                     )
+
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Asset Type Delete: User deleted an asset type with alias ${response.data.type_alias}`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Trigger the swal
                     Swal.fire({

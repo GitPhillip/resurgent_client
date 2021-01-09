@@ -2,8 +2,10 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
-//components
+//Persisting sessions
 
+
+//components
 import Login from './components/pages/Login';
 import ForgotPassword from './components/pages/ForgotPassword';
 import Admin from './components/pages/Admin';
@@ -32,9 +34,6 @@ import { fetchDevices } from './components/slices/deviceSlice';
 //Device Types
 import { fetchDeviceTypes } from './components/slices/deviceTypeSlice';
 
-
-//import { fetchAdmins } from './components/slices/adminSlice';
-
 export default function App() {
 
     //Get the different parts of the state
@@ -43,6 +42,7 @@ export default function App() {
     const assets = useSelector(state => state.assets);
     const deviceTypes = useSelector(state => state.deviceTypes);
     const devices = useSelector(state => state.devices);
+    const user = useSelector(state => state.user);
 
     const dispatch = useDispatch();
 
@@ -73,43 +73,58 @@ export default function App() {
           {/* Can only put Routes in switch component */}
           <Switch> 
 
-              {/* Login */}
-                  <Route exact path='/' component = {Login} />
-              {/* End Login */}
+                {/* Login */}
+                <Route exact path='/' render = {props => (
+                                                <Login {...props} userState={user} />
+                                                  )} />
+                {/* End Login */}
 
-              {/* ForgotPassword */}
-              <Route path='/forgot_password' component = {ForgotPassword} />
-              {/* End ForgotPassword */}
+                {/* ForgotPassword */}
+                <Route path='/forgot_password' component = {ForgotPassword} />
+                {/* End ForgotPassword */}
               
-              {/* Admin screens */}
-              <Route path='/admin' render = {props => (
-                                            <Admin {...props} customerState={customers} 
-                                                              assetState={assets} 
-                                                              assetTypeState={assetTypes}
-                                                              deviceState={devices} 
-                                                              deviceTypeState={deviceTypes}/> 
-                                            )} 
-              />
-              {/* End Admin screens */}
+               
+                    
+                    {/* Admin screens */}
+                    <Route path='/admin' render = {props => (
+                                                    <Admin {...props} customerState={customers} 
+                                                                    assetState={assets} 
+                                                                    assetTypeState={assetTypes}
+                                                                    deviceState={devices} 
+                                                                    deviceTypeState={deviceTypes}
+                                                                    userState={user}/> 
+                                                    )} 
+                    />
+                    {/* End Admin screens */}
 
-              {/* Technician screens */}
-              <Route path='/technician'  render = {props => (
-                                            <Technician {...props} customerState={customers} 
-                                                                   assetState={assets} 
-                                                                   assetTypeState={assetTypes}
-                                                                   deviceState={devices}
-                                                                   deviceTypeState={deviceTypes} /> 
-                                            )} 
-              />
-              {/* End Admin screens */}
+                    {/* Technician screens */}
+                    <Route path='/technician'  render = {props => (
+                                                    <Technician {...props} customerState={customers} 
+                                                                        assetState={assets} 
+                                                                        assetTypeState={assetTypes}
+                                                                        deviceState={devices}
+                                                                        deviceTypeState={deviceTypes}
+                                                                        userState={user} /> 
+                                                    )} 
+                    />
+                    {/* End Admin screens */}
 
-              {/* Customer screens */}
-              <Route path='/customer' component = {Customer} state={customers}/>
-              {/* End Customer screens */}
+                    {/* Customer screens */}
+                    <Route path='/customer' render = {props => (
+                                                    <Customer {...props} customerState={customers} 
+                                                                        assetState={assets} 
+                                                                        assetTypeState={assetTypes}
+                                                                        deviceState={devices}
+                                                                        deviceTypeState={deviceTypes}
+                                                                        userState={user} /> 
+                                                    )} 
+                    />
+                    {/* End Customer screens */}
 
-              {/* Catch Wrong Route */}
-              <Route component = {Page404} />
-              {/* End Catch Wrong Route */}
+
+                {/* Catch Wrong Route */}
+                <Route component = {Page404} />
+                {/* End Catch Wrong Route */}
               
           </Switch>
           

@@ -1,11 +1,28 @@
 import {configureStore } from '@reduxjs/toolkit';
+
+//Sessions 
+import {persistReducer, persistStore} from 'redux-persist';
+import sessionStorage from 'redux-persist/lib/storage/session';
+//import storage from 'redux-persist/lib/storage/';
+import userReducer from '../components/slices/userSlice';
+
 import adminReducer from '../components/slices/adminSlice';
 import customerReducer from '../components/slices/customerSlice';
 import assetReducer from '../components/slices/assetSlice';
 import typeReducer from '../components/slices/typeSlice';
 import deviceReducer from '../components/slices/deviceSlice';
-import deviceTypesReducer from '../components/slices/deviceTypeSlice'
+import deviceTypesReducer from '../components/slices/deviceTypeSlice';
 
+
+  
+//Persisting state
+const authPersistConfig = {
+   key: 'root', //The key for the persist
+   storage: sessionStorage, // The storage adapter - sessionStorage | localStorage | cookies | memory
+   
+}
+
+const persistedReducer = persistReducer(authPersistConfig, userReducer)
 
 const store = configureStore({
 
@@ -16,8 +33,16 @@ const store = configureStore({
         assets: assetReducer,
         assetTypes: typeReducer,
         devices: deviceReducer,
-        deviceTypes: deviceTypesReducer
+        deviceTypes: deviceTypesReducer,
+        //for the user session to remain persistent
+        user: persistedReducer
    }
 });
 
 export default store;
+
+//persist the store
+const persistor = persistStore(store);
+
+//export the persistor
+export {persistor};

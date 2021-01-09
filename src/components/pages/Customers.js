@@ -1,7 +1,7 @@
 import React, { useState} from 'react';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
 import api from '../../api/api';
 import { deleteCustomer } from '../slices/customerSlice';
@@ -13,6 +13,9 @@ export default function Customers({customerState}) {
 
     //Dispatch
     const dispatch = useDispatch();
+
+    //Gbloc states
+    const user = useSelector(state=> state.user.usser);
 
     //Get the global state
     let customersState = customerState.customers;
@@ -74,6 +77,25 @@ export default function Customers({customerState}) {
                     customer_id: parseInt(customerId),
                     user_role
                 }).then(userResponse =>{
+
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Customer User Reg: User registered a customer user type with name(s) ${user.user_firstname} ${user.usersurname}`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Trigger the swal
                     Swal.fire({

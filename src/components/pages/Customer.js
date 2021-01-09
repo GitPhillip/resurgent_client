@@ -1,6 +1,6 @@
 //Imports
-import React from 'react';
-import {Route, Switch} from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {Route, Switch, Redirect} from 'react-router-dom';
 
 //components
 import Header from '../layout/Header';
@@ -16,8 +16,29 @@ import CustomerDevices from './CustomerDevices';
 //Error UI
 import Page404 from './Page404';
 
-export default function Customer() {
+export default function Customer({customerState, assetState, assetTypeState, deviceState,deviceTypeState, userState}) {
 
+    //Get the global state
+    let customersState = customerState;
+    let assetTypesState = assetTypeState;
+    let assetsState = assetState;
+    let deviceTypesState = deviceTypeState;
+    let devicesState = deviceState;
+    let usersState = userState;
+
+    //Check if there is an active user session
+    const loggedIn = usersState.loggedIn;
+
+    useEffect(()=>{
+
+    },[customersState,assetState,assetTypeState,deviceState,deviceTypeState]);
+
+    if(!loggedIn){
+        return <Redirect to='/' />
+    }
+
+    
+    
     return (
         
         <div id="wrapper">
@@ -25,12 +46,12 @@ export default function Customer() {
             <CustomerSideBar/>
 
             {/*<!-- Content Wrapper -->*/}
-            <div id="content-wrapper" className="d-flex flex-column">
+            <div id="content-wrapper" class="d-flex flex-column">
 
                     {/*<!-- Main Content -->*/}
                     <div id="content">
 
-                        <Header/>
+                        <Header userState={usersState}/>
 
                         {/*<!-- Begin Page Content-->*/}
                         <div className="container-fluid">
@@ -47,12 +68,25 @@ export default function Customer() {
                                 {/* End Profile */}
 
                                 {/* Asset Management */}
-                                <Route exact path='/customer/assets' component = {CustomerAssets} />
+                                <Route exact path='/customer/assets' render = {props => (
+                                                                        <CustomerAssets {...props} customerState={customersState} 
+                                                                                              assetState={assetsState}
+                                                                                              assetTypeState={assetTypesState}
+                                                                                              deviceState={devicesState} /> 
+                                                                        )} 
+                                />
                                 {/* End Asset Management */}
 
 
                                 {/* Device Management */}
-                                 <Route exact path='/customer/devices' component = {CustomerDevices} />
+                                 <Route exact path='/customer/devices' render = {props => (
+                                                                        <CustomerDevices {...props} customerState={customersState} 
+                                                                                              assetState={assetsState}
+                                                                                              assetTypeState={assetTypesState}
+                                                                                              deviceState={devicesState}
+                                                                                              deviceTypeState={deviceTypesState} /> 
+                                                                        )} 
+                                />
                                 {/* End Device Management */}
 
                                 {/* Catch Wrong Route */}

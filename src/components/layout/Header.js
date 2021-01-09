@@ -1,7 +1,48 @@
 import React from 'react';
+import {useDispatch} from 'react-redux';
 import { Link } from 'react-router-dom';
 
-export default function Header() {
+import Swal from 'sweetalert2';
+import api from '../../api/api';
+
+import { deleteUserSession } from '../slices/userSlice'
+
+export default function Header({userState}) {
+
+    //Get the global state
+    let usersState = userState.user;
+
+    const dispatch = useDispatch();
+
+    //Logout function
+    const logout = () =>{
+        //End the session/Clear the state
+        dispatch(
+            deleteUserSession({
+            user_id: usersState.user_id
+            })
+        )
+        //***************SYSTEM LOG********************* */
+        //********************************************** */
+        let entry_content = `Logout Activity: User logged out.`
+        api.post('/systemlog',{
+            user_id:usersState.user_id,
+            entry_content})
+        .then()
+        .catch(error =>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+        //***************SYSTEM LOG********************* */
+        //********************************************** */
+        //Reroute to login
+        window.location='/';
+    }
     return (
 
         <React.Fragment>
@@ -58,7 +99,7 @@ export default function Header() {
                         <li class="nav-item dropdown no-arrow">
                             <Link class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{usersState.user_firstname+ " "+ usersState.user_surname}</span>
                             </Link>
                             {/*<!-- Dropdown - User notification-->*/}
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -92,7 +133,7 @@ export default function Header() {
                         <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            <a class="btn btn-primary" href="login.html">Logout</a>
+                            <button class="btn btn-primary" type='button' onClick={logout}>Logout</button>
                         </div>
                     </div>
                 </div>

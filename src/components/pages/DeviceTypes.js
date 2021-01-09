@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
@@ -10,6 +10,7 @@ export default function DeviceTypes({deviceTypeState}) {
     let data;
 
     const dispatch = useDispatch();
+    const user = useSelector(state => state.user.user);
 
     //Get the global state
     let deviceTypesState = deviceTypeState.deviceTypes;
@@ -75,6 +76,25 @@ export default function DeviceTypes({deviceTypeState}) {
                             data_types: response.data.data.data_types
                         })
                     )
+
+                    //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Device Type Reg: User registered a device type with alias ${type_alias}`;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
 
                      //Trigger the swal
                     Swal.fire({
