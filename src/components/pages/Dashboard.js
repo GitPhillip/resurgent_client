@@ -1,11 +1,234 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import { MDBDataTable } from 'mdbreact';
 
+//Maps
+import GoogleMapReact from 'google-map-react';
 
+//api
+import api from '../../api/api';
+
+//Swal
+import Swal from 'sweetalert2';
 
 export default function Dashboard() {
 
+    //Get the global states
+    const customers = useSelector(state => state.customers.customers); 
+    const assets = useSelector(state => state.assets.assets);
+    const devices = useSelector(state => state.devices.devices);
+    //const user = useSelector(state => state.user);
+
+    //get the global state count
+    const customerCount = customers.length;
+    const assetCount = assets.length;
+    const deviceCount = devices.length;
+
+    //Local state for all the active users
+    const [activeUsersCount, setActiveUsersCount] = useState([]);
+
+    useEffect(() => {
+       
+        //Send the api request to get all users
+        api.get(`/users`)
+        .then(response =>{
+
+            //Temp array
+            let tempArray = [];
+            //push all active users into the array
+            for(var i =0; i< response.data.data.length;i++){
+                if(response.data.data[i].isActive===true)
+                    tempArray.push(response.data.data[i]);
+            }
+            //set the active users count
+            setActiveUsersCount(tempArray.length);
+
+        })
+        .catch(error =>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+
+    }, [])
+
+    //*******************Local states***********************
+
+    //set the center of the map - Centre is set to the center of South Africa
+    const [center, setCenter] = useState({
+        lat: -28.4792625,
+        lng: 24.6727135
+    });
+    //How far in to zoom
+    const [zoom, setZoom] = useState(6);
+    //data packat payload
+    const [payload, setPayload] = useState([]);
+
+    //^^^^^^^^^^GPS Coordinates^^^^^^^^^^^^^^^^
+    const [gpsCoordinates, setGPSCoordinates] = useState({
+        lat: -28.4792625, //Default
+        lng: 24.6727135 //Default
+    })
+
+    //Populate the datatable with all the device data packets
+    let devicePacketData = {
+
+        columns: [
+          {
+            label: 'MPPT Load (I)',
+            field: 'MPPT_Load_Current',
+            sort: 'asc',
+          },
+          {
+            label: 'Battery (V) LS',
+            field: 'Battery_Voltage_LS',
+            sort: 'asc',
+          },
+          {
+            label: 'Battery (V) MS',
+            field: 'Battery_Voltage_MS',
+            sort: 'asc',
+          },
+          {
+            label: 'Load (I) Max LS',
+            field: 'Load_Current_Max_LS',
+            sort: 'asc',
+          },
+          {
+            label: 'Load (I) Max MS',
+            field: 'Load_Current_Max_MS',
+            sort: 'asc',
+          },
+          {
+            label: 'Avg Load (I) LS',
+            field: 'Avg_Load_Current_LS',
+            sort: 'asc',
+          },
+          {
+            label: 'Avg Load (I) MS',
+            field: 'Avg_Load_Current_MS',
+            sort: 'asc',
+          },
+          {
+            label: 'Packet Date',
+            field: 'packet_date',
+            sort: 'asc',
+          }
+
+        ],
+        rows: payload
+      };
+
+    //***********Function to view device details**************
+    let viewDeviceDetails = (e) => {
+
+        //Get the device ID
+        let deviceId = e.target.getAttribute('data-id');
+        let tempData = [];
+        let latestRecordIndex;
+
+        //Send the API request to get the device packet data
+        api.get(`/datapackets/device/${deviceId}`)
+        .then(response =>{
+
+            //Populate the device packet data rows
+            for(var i = 0; i< response.data.data.length; i++){
+                //Parse each object as a JSON object
+                tempData.push(JSON.parse(response.data.data[i].payload));
+
+                //replace the true/false with a string
+                if(tempData[i]['MPPT_Load_Current']===false) tempData[i]['MPPT_Load_Current'] = 'No';
+                else tempData[i]['MPPT_Load_Current'] = 'True';
+
+                //Add the date of each payload to the actual payload for the device
+                tempData[i]['packet_date'] = response.data.data[i].packet_date.substring(0,16);
+
+            }
+            //Set the data to the local state payload
+            setPayload(tempData); 
+
+            latestRecordIndex = 0;
+
+            Object.keys(tempData[latestRecordIndex]).forEach(key =>{
+                //Check if the GPS Coordinate key is there
+                
+                if(key==='GPS'){
+                    let array = tempData[latestRecordIndex][key].toString().split(',');
+                    setGPSCoordinates({
+                        lat: array[0],
+                        lng: array[1]
+                    })
+                }
+            });
+            
+        })
+        .catch(error =>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        })
+
+    }
+    //***********Function to view device details**************
+
+    //**************Handle devices data table*****************
+    let dataRows = JSON.parse(JSON.stringify(devices));
+    let assetsData = JSON.parse(JSON.stringify(assets));
+
+    let circleColour;
+    //For Every object in the JSON object
+    for(var i = 0; i<dataRows.length;i++){
+
+        //loop through all the device types
+        for(var k = 0; k <assetsData.length; k++ ){
+
+            //Change the colour of the circles
+            if(dataRows[i]['device_status'].includes("IN USE")) circleColour = <i class="fas fa-circle text-success"></i>
+            else if(dataRows[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
+            else if(dataRows[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
+
+            if(assetsData[k]['asset_id']===dataRows[i]['asset_id'] ){
+                dataRows[i]['asset_id'] = (
+                    <div>
+                        <a type='button' data-id={dataRows[i]['device_id']} onClick={viewDeviceDetails} href>
+                            {circleColour}{assetsData[k]['asset_name']}
+                        </a>
+                    </div>
+                );
+            }
+        }
+        
+    }
+
+    let dataDevice = {
+
+        columns: [
+          {
+            label: 'Asset Name',
+            field: 'asset_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Device',
+            field: 'sigfox_id',
+            sort: 'asc',
+          },
+          
+        ],
+        rows: dataRows
+      };
+
     
+    //***********Function to Render**************
     return (
 
             //<!-- Begin Page Content -->
@@ -14,8 +237,6 @@ export default function Dashboard() {
                 {/*<!-- Page Heading -->*/}
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                    <Link to='#'  class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                            class="fas fa-download fa-sm text-white-50"></i> Generate Report</Link>
                 </div>
 
                 {/*<!-- Content Row -->*/}
@@ -28,29 +249,11 @@ export default function Dashboard() {
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Earnings (Monthly)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                                            Assets</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{assetCount}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/*<!-- Earnings (Monthly) Card Example -->*/}
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Earnings (Annual)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        <i class="fas fa-truck fa-2x "></i>
                                     </div>
                                 </div>
                             </div>
@@ -63,22 +266,30 @@ export default function Dashboard() {
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
-                                        </div>
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="progress progress-sm mr-2">
-                                                    <div class="progress-bar bg-info" role="progressbar"
-                                                        style={volume} ></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Devices </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{deviceCount}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        <i class="fas fa-tablet-alt fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/*<!-- Earnings (Monthly) Card Example -->*/}
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Customers
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold ">{customerCount}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-handshake fa-2x "></i>
                                     </div>
                                 </div>
                             </div>
@@ -87,16 +298,16 @@ export default function Dashboard() {
 
                     {/*<!-- Pending Requests Card Example -->*/}
                     <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Pending Requests</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                         Users Online</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{activeUsersCount}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        <i class="fas fa-users fa-2x "></i>
                                     </div>
                                 </div>
                             </div>
@@ -114,7 +325,7 @@ export default function Dashboard() {
                             {/*<!-- Card Header - Dropdown -->*/}
                             <div
                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Map</h6>
                                 <div class="dropdown no-arrow">
                                     <Link to='#' class="dropdown-toggle"   role="button" id="dropdownMenuLink"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -133,7 +344,16 @@ export default function Dashboard() {
                             {/*<!--Card Body -->*/}
                             <div class="card-body">
                                 <div class="chart-area">
-                                    <canvas id="myAreaChart"></canvas>
+                                    <GoogleMapReact
+                                        bootstrapURLKeys={{ key: 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas' }}
+                                        defaultCenter={center}
+                                        defaultZoom={zoom}>
+
+                                        <i class='fa fa-truck fa-2x text-danger' 
+                                            lat={gpsCoordinates.lat}
+                                            lng={gpsCoordinates.lng}
+                                        />
+                                    </GoogleMapReact>
                                 </div>
                             </div>
                         </div>
@@ -145,7 +365,7 @@ export default function Dashboard() {
                             {/*<!--  Card Header - Dropdown -->*/}
                             <div
                                 class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Devices</h6>
                                 <div class="dropdown no-arrow">
                                     <Link  to='#' class="dropdown-toggle"  role="button" id="dropdownMenuLink"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -163,18 +383,19 @@ export default function Dashboard() {
                             </div>
                             {/*<!-- Card Body -->*/}
                             <div class="card-body">
-                                <div class="chart-pie pt-4 pb-2">
-                                    <canvas id="myPieChart"></canvas>
+                                <div class="chart-pie bg-light " style={scrollCSS}>
+                                    <MDBDataTable hover striped bordered  data={dataDevice}/>
+                                    
                                 </div>
                                 <div class="mt-4 text-center small">
                                     <span class="mr-2">
-                                        <i class="fas fa-circle text-primary"></i> Direct
+                                        <i class="fas fa-circle text-success"></i> In Use
                                     </span>
                                     <span class="mr-2">
-                                        <i class="fas fa-circle text-success"></i> Social
+                                        <i class="fas fa-circle text-warning"></i> Being Repaired
                                     </span>
                                     <span class="mr-2">
-                                        <i class="fas fa-circle text-info"></i> Referral
+                                        <i class="fas fa-circle text-danger"></i> Decommissioned
                                     </span>
                                 </div>
                             </div>
@@ -182,151 +403,22 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/*<!--Content Row  -->*/}
-                <div class="row">
-
-                    {/*<!-- Content Column -->*/}
-                    <div class="col-lg-6 mb-4">
-
-                        {/*<!-- Project Card Example -->*/}
+                <div class='row'>
+                    
+                    <div class="col-xl-12 col-lg-12">
+                        {/*<!-- DataTales Example -->*/}
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Device Packet Data</h6>
                             </div>
                             <div class="card-body">
-                                <h4 class="small font-weight-bold">Server Migration <span
-                                        class="float-right">20%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-danger" role="progressbar" style={volume}></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Sales Tracking <span
-                                        class="float-right">40%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-warning" role="progressbar" style={volume}></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Customer Database <span
-                                        class="float-right">60%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar" role="progressbar" style={volume}></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Payout Details <span
-                                        class="float-right">80%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-info" role="progressbar" style={volume}></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Account Setup <span
-                                        class="float-right">Complete!</span></h4>
-                                <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style={volume}></div>
+                                <div class="table-responsive">
+                                    <MDBDataTable striped bordered data={devicePacketData}/>
                                 </div>
                             </div>
                         </div>
-
-                        {/*<!-- Color System -->*/}
-                        <div class="row">
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-primary text-white shadow">
-                                    <div class="card-body">
-                                        Primary
-                                        <div class="text-white-50 small">#4e73df</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-success text-white shadow">
-                                    <div class="card-body">
-                                        Success
-                                        <div class="text-white-50 small">#1cc88a</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-info text-white shadow">
-                                    <div class="card-body">
-                                        Info
-                                        <div class="text-white-50 small">#36b9cc</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-warning text-white shadow">
-                                    <div class="card-body">
-                                        Warning
-                                        <div class="text-white-50 small">#f6c23e</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-danger text-white shadow">
-                                    <div class="card-body">
-                                        Danger
-                                        <div class="text-white-50 small">#e74a3b</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-secondary text-white shadow">
-                                    <div class="card-body">
-                                        Secondary
-                                        <div class="text-white-50 small">#858796</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-light text-black shadow">
-                                    <div class="card-body">
-                                        Light
-                                        <div class="text-black-50 small">#f8f9fc</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-dark text-white shadow">
-                                    <div class="card-body">
-                                        Dark
-                                        <div class="text-white-50 small">#5a5c69</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <div class="col-lg-6 mb-4">
-
-                            {/*<!-- Illustrationss -->*/}
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center">
-                                    
-                                </div>
-                                <p>Add some quality, svg illustrations to your project courtesy of <Link
-                                        target="_blank" rel="nofollow" to="https://undraw.co/">unDraw</Link>, a
-                                    constantly updated collection of beautiful svg images that you can use
-                                    completely free and without attribution!</p>
-                                <Link target="_blank" rel="nofollow" to="https://undraw.co/">Browse Illustrations on
-                                    unDraw &rarr;</Link>
-                            </div>
-                        </div>
-
-                        {/*<!-- Approach -->*/}
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                            </div>
-                            <div class="card-body">
-                                <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                    CSS bloat and poor page performance. Custom CSS classes are used to create
-                                    custom components and custom utility classes.</p>
-                                <p class="mb-0">Before working with this theme, you should become familiar with the
-                                    Bootstrap framework, especially the utility classes.</p>
-                            </div>
-                        </div>
-
-                    </div>
                 </div>
 
             </React.Fragment>
@@ -334,12 +426,10 @@ export default function Dashboard() {
     
 }
 
-const volume ={
-    width: '50%',
-    ariaValuenow: "50",
-    ariaValuemin:"0",
-     ariaValuemax:"100"
+
+const scrollCSS = {
+    WebkitOverflowScrolling:"touch",
+    overflowY:"scroll",
+    align: 'auto',
+    textAlign: 'left'
 }
-
-
-

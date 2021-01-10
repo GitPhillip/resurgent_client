@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -13,9 +13,57 @@ export default function Header({userState}) {
     let usersState = userState.user;
 
     const dispatch = useDispatch();
+    const [notifications, setNotifications] = useState([]);
+    const [notificationsCount, setNotificationsCount] = useState(0);
+    const [blnNotificationsExist, setBlnNotificationsExist] = useState(false);
+
+    //On page load
+    useEffect(() => {
+        
+        //Api request to get notifications
+        api.get(`/notifications/user/${usersState.user_id}`)
+        .then(response =>{
+            
+            //set the state - notifications count
+            setNotificationsCount(response.data.data.length);
+
+            //if there are no notifications
+            if(response.data.data.length === 0){
+
+            }else{
+                //set the state - notifications
+                setNotifications(response.data.data);
+                setBlnNotificationsExist(true);
+            }
+
+        })
+        .catch(error =>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+    }, [usersState.user_id])
 
     //Logout function
     const logout = () =>{
+
+        //Send a request to the database to update the active status
+        api.put(`/users/${usersState.user_id}`, {isActive: false} )
+        .then()
+        .catch(error=>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+
         //End the session/Clear the state
         dispatch(
             deleteUserSession({
@@ -24,7 +72,7 @@ export default function Header({userState}) {
         )
         //***************SYSTEM LOG********************* */
         //********************************************** */
-        let entry_content = `Logout Activity: User logged out.`
+        let entry_content = `Logout Activity: User (ID: ${usersState.user_id}) logged out.`
         api.post('/systemlog',{
             user_id:usersState.user_id,
             entry_content})
@@ -61,7 +109,7 @@ export default function Header({userState}) {
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
                                 {/*<!-- Counter - Alerts -->*/}
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span class="badge badge-danger badge-counter">{notificationsCount}</span>
                             </Link>
                             {/*<!-- Dropdown - Alerts -->*/}
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -69,27 +117,28 @@ export default function Header({userState}) {
                                 <h6 class="dropdown-header">
                                     Notification Center
                                 </h6>
-                                <Link class="dropdown-item d-flex align-items-center" to="#">
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                        <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
-                                    </div>
-                                </Link>
-                                <Link class="dropdown-item d-flex align-items-center" to="#">
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                            A new monthly report is ready to download!
-                                            <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
-                                    </div>
-                                </Link>
-                                <Link class="dropdown-item d-flex align-items-center" to="#">
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                            A new monthly report is ready to download!
-                                            <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
-                                    </div>
-                                </Link>
+
+                                {blnNotificationsExist ? 
+
+                                (   
+                                    notifications.map(notification => 
+                                        
+                                        <Link class="dropdown-item d-flex align-items-center" to="#">
+                                            <div class='col-md-12'>
+                                                <div class="small text-gray-500">{notification.notification_date.substring(0,16)}</div>
+                                                <span class="font-weight-bold">{notification.notification_content}</span>
+                                                <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
+                                            </div>
+                                        </Link>
+                                    )
+                                ) 
+                                :
+                                (   
+                                    <div> No notifications to show </div>
+                                )
+
+                                }
+                                
                             </div>
                         </li>
 
@@ -148,6 +197,8 @@ const scrollCSS = {
 
     WebkitOverflowScrolling:"touch",
     overflowY:"scroll",
+    overflowX:"scroll",
     height:"400%",
-    marginLeft: '-100px'
+    marginLeft: '-100px',
+    align: 'auto'
 }

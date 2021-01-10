@@ -19,6 +19,7 @@ import deviceTypesReducer from '../components/slices/deviceTypeSlice';
 const authPersistConfig = {
    key: 'root', //The key for the persist
    storage: sessionStorage, // The storage adapter - sessionStorage | localStorage | cookies | memory
+   timeout: 2000,
    
 }
 

@@ -110,7 +110,7 @@ export default function SideBar() {
                 {/*<!-- Nav Item - Charts -->*/}
                 <li class="nav-item">
                     <Link class="nav-link" to="/admin/customers">
-                    <i class="fas fa-user-plus"></i>
+                    <i class="fas fa-handshake"></i>
                         <span>Customers</span></Link>
                 </li>
 

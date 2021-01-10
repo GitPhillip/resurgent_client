@@ -168,6 +168,25 @@ export default function CustomerProfile() {
                         })
                     )
 
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Customer Edit: User (ID '${user.user_id}) edited their company's profile (ID: ${customer_name}). `;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
                     //Success msg
                     Swal.fire({
                         icon: 'success',
@@ -223,7 +242,7 @@ export default function CustomerProfile() {
                             api.put(`/customerusers/${user.user_id}`, customerUserParams)
                             .then( customerUserResponse =>{
 
-                                //Dispatch to update the state user_id, user_firstname, user_surname, user_email, user_type, user_role
+                                //Dispatch to update the state 
                                 dispatch(
                                     updateUserSession({
                                         user_id: user.user_id,
@@ -233,6 +252,27 @@ export default function CustomerProfile() {
                                         user_role
                                     })
                                 )
+
+                                //***************SYSTEM LOG********************* */
+                                //********************************************** */
+                                let entry_content = `Customer User Edit: User (ID '${user.user_id}) edited their profile.`;
+                                api.post('/systemlog',{
+                                    user_id: user.user_id,
+                                    entry_content})
+                                .then()
+                                .catch(error =>{
+                                    if(error.response && error.response.data){
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: `${error.response.data.error}`
+                                        });
+                                    }
+                                });
+                                //***************SYSTEM LOG********************* */
+                                //********************************************** */
+
+
                                 //Success msg
                                 Swal.fire({
                                     icon: 'success',
@@ -291,6 +331,26 @@ export default function CustomerProfile() {
                                     user_role
                                 })
                             )
+
+                            //***************SYSTEM LOG********************* */
+                            //********************************************** */
+                            let entry_content = `Customer User Edit: User (ID '${user.user_id}) edited their profile.`;
+                            api.post('/systemlog',{
+                                user_id: user.user_id,
+                                entry_content})
+                            .then()
+                            .catch(error =>{
+                                if(error.response && error.response.data){
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `${error.response.data.error}`
+                                    });
+                                }
+                            });
+                            //***************SYSTEM LOG********************* */
+                            //********************************************** */
+
                             //Success message
                             Swal.fire({
                                 icon: 'success',

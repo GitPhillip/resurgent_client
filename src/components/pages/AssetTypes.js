@@ -74,7 +74,7 @@ export default function AssetTypes({assetTypeState}) {
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Asset Type Reg: User registered an asset type with alias ${type_alias}`;
+                    let entry_content = `Asset Type Reg: User (ID: ${user.user_id}) registered an asset type with name ${type_alias} (ID: ${response.data.data.type_id}).`;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})
@@ -181,7 +181,7 @@ export default function AssetTypes({assetTypeState}) {
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Asset Type Update: User updated an asset type with alias ${type_aliasModal}`;
+                    let entry_content = `Asset Type Update: User (ID: ${user.user_id}) edited an asset type with name ${type_aliasModal} (ID: ${assetTypeId}). `;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})
@@ -258,7 +258,7 @@ export default function AssetTypes({assetTypeState}) {
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Asset Type Delete: User deleted an asset type with alias ${response.data.type_alias}`;
+                    let entry_content = `Asset Type Delete: User (ID: ${user.user_id}) deleted an asset type with name ${response.data.type_alias} (ID: ${assetTypeId}). `;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})

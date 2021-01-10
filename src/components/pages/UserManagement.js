@@ -105,11 +105,11 @@ export default function UserManagement() {
                     let entry_content = ``;
                     if(response.data.type===1){
                         setAdmins(admins.filter(admin => admin.user_id !==employeeId));
-                        entry_content = `Employee Delete: User deleted an admin with name(s) ${response.data.names}.`;
+                        entry_content = `Employee Delete: User (ID: ${user.user_id}) deleted an admin with name(s) ${response.data.names} (ID: ${employeeId}).`;
                     }else if(response.data.type===2)
                     {
                         setTechnicians(technicians.filter(technician => technician.user_id !==employeeId));
-                        entry_content = `Employee Delete: User deleted a technician with name(s) ${response.data.names}.`;
+                        entry_content = `Employee Delete: User (ID: ${user.user_id}) deleted a technician with name(s) ${response.data.names} (ID: ${employeeId}).`;
                     }
                     
                     //***************SYSTEM LOG********************* */

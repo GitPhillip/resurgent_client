@@ -78,23 +78,23 @@ export default function DeviceTypes({deviceTypeState}) {
                     )
 
                     //***************SYSTEM LOG********************* */
-                        //********************************************** */
-                        let entry_content = `Device Type Reg: User registered a device type with alias ${type_alias}`;
-                        api.post('/systemlog',{
-                            user_id: user.user_id,
-                            entry_content})
-                        .then()
-                        .catch(error =>{
-                            if(error.response && error.response.data){
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: `${error.response.data.error}`
-                                });
-                            }
-                        });
-                        //***************SYSTEM LOG********************* */
-                        //********************************************** */
+                    //********************************************** */
+                    let entry_content = `Device Type Reg: User (ID: ${user.user_id}) registered a device type with name ${type_alias} (ID: ${response.data.data.type_id}). `;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                      //Trigger the swal
                     Swal.fire({
@@ -118,11 +118,6 @@ export default function DeviceTypes({deviceTypeState}) {
                         });
                     }
                 });
-
-                
-
-                
-
             } 
           });
     }
@@ -200,6 +195,25 @@ export default function DeviceTypes({deviceTypeState}) {
                         })
                     )
 
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Device Type Reg: User (ID: ${user.user_id}) edited a device type with name ${type_aliasModal} (ID: ${deviceTypeId})`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
                     //Trigger the swal
                     Swal.fire({
                         icon: 'success',
@@ -225,8 +239,6 @@ export default function DeviceTypes({deviceTypeState}) {
                         });
                     }
                 });
-              
-
             } 
           });
     }
@@ -258,6 +270,25 @@ export default function DeviceTypes({deviceTypeState}) {
                             type_id: deviceTypeId,
                         })
                     )
+
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Device Type Reg: User (ID: ${user.user_id}) registered a device type with name ${response.data.type_alias} (ID: ${deviceTypeId})`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Trigger the swal
                     Swal.fire({
@@ -415,7 +446,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                                     <span class="icon text-white-50">
                                                         <i class="fas fa-check"></i>
                                                     </span>
-                                                    <span class="text">Register Asset</span>
+                                                    <span class="text">Register Device Type</span>
                                             </button>
                                         </div>
                                     </div>

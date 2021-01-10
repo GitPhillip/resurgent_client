@@ -7,7 +7,6 @@ import { addAsset, deleteAsset, updateOneAsset } from '../slices/assetSlice';
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
-
     const dispatch = useDispatch();
     const user = useSelector(state => state.user.user);
 
@@ -101,7 +100,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Asset Reg: User registered an asset with name ${asset_name}`;
+                    let entry_content = `Asset Reg: User (ID: ${user.user_id}) registered an asset with name ${asset_name} (ID: ${response.data.data.asset_id}).`;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})
@@ -234,7 +233,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
-                        let entry_content = `Asset Update: User updated an asset with name ${asset_nameModal}`;
+                        let entry_content = `Asset Update: User (ID: ${user.user_id}) edited an asset with name ${asset_nameModal} (ID '${assetId}).`;
                         api.post('/systemlog',{
                             user_id: user.user_id,
                             entry_content})
@@ -329,7 +328,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
-                        let entry_content = `Asset Delete: User deleted an asset with name ${response.data.asset_name}`;
+                        let entry_content = `Asset Delete: User (ID: ${user.user_id}) deleted an asset with name ${response.data.asset_name} (ID: ${assetId}).`;
                         api.post('/systemlog',{
                             user_id: user.user_id,
                             entry_content})

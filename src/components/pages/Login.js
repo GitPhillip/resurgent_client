@@ -43,6 +43,11 @@ export default function Login({userState}) {
                     text: `Your accont has been deleted. Please contact the administrators if this is a problem.`
                 });
             }else{
+
+                let user_id = response.data.data.user_id;
+                let user_firstname = response.data.data.user_firstname; 
+                let user_surname = response.data.data.user_surname; 
+
                 //--------Create the session--------
                 //If it's an admin
                 if(response.data.data.user_type_id === 1){
@@ -51,13 +56,23 @@ export default function Login({userState}) {
                         return <Redirect to="/admin/dashboard" />;
                     }
 
-                    let user_id = response.data.data.user_id;
-                    let user_firstname = response.data.data.user_firstname; 
-                    let user_surname = response.data.data.user_surname; 
+                    //Send a request to the database to update the active status
+                    api.put(`/users/${user_id}`, {isActive: true} )
+                    .then()
+                    .catch(error=>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+
                     //dispatch to create an admin
                     dispatch(
                         setUserSession({
-                        user_id: response.data.data.user_id,
+                        user_id,
                         user_email: response.data.data.user_email,
                         user_type: 'ADMIN',
                         user_firstname,
@@ -68,7 +83,7 @@ export default function Login({userState}) {
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Login Activity: User logged in.`
+                    let entry_content = `Login Activity: User (ID: ${user_id}) logged in.`
                     api.post('/systemlog',{
                         user_id,
                         entry_content})
@@ -90,6 +105,7 @@ export default function Login({userState}) {
 
                 }//If it's a technician
                 else if(response.data.data.user_type_id === 2){
+
                     //dispatch to create a technician
                     dispatch(setUserSession({
                         user_id: response.data.data.user_id,
@@ -100,6 +116,25 @@ export default function Login({userState}) {
                         isActive: true
                         })
                     )
+
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Login Activity: User (ID: ${user_id}) logged in.`
+                    api.post('/systemlog',{
+                        user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
 
                     //Redirect to the relevant pages
                     history.push('/technician/dashboard');
@@ -124,6 +159,25 @@ export default function Login({userState}) {
                                 isActive: true
                             })
                         )
+
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Login Activity: User (ID: ${user_id}) logged in.`
+                        api.post('/systemlog',{
+                            user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
 
                     }).catch(userTypeError =>{
                         if(userTypeError.response && userTypeError.response.data){

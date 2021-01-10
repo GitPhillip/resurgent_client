@@ -127,7 +127,7 @@ export default function AdminProfile() {
 
                             //***************SYSTEM LOG********************* */
                             //********************************************** */
-                            let entry_content = `Profile Edit: User edited their profile.`;
+                            let entry_content = `Profile Edit: User (ID: ${user.user_id}) edited their profile.`;
                             api.post('/systemlog',{
                                 user_id: user.user_id,
                                 entry_content})
@@ -191,7 +191,7 @@ export default function AdminProfile() {
 
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
-                        let entry_content = `Profile Edit: User edited their profile.`;
+                        let entry_content = `Profile Edit: User (ID: ${user.user_id}) edited their profile.`;
                         api.post('/systemlog',{
                             user_id: user.user_id,
                             entry_content})

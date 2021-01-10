@@ -84,7 +84,7 @@ export default function Registration() {
 
                 //***************SYSTEM LOG********************* */
                 //********************************************** */
-                let entry_content = `Employee Reg: User registered a customer with ${customer_name}.`;
+                let entry_content = `Customer Reg: User (ID: ${user.user_id}) registered a customer with ${customer_name} (ID: ${response.data.data.customer_id}).`;
                 
                 api.post('/systemlog',{
                     user_id: user.user_id,
@@ -159,8 +159,8 @@ export default function Registration() {
                 //***************SYSTEM LOG********************* */
                 //********************************************** */
                 let entry_content = ``;
-                if(user_type_id===1) entry_content = `Employee Reg: User registered an admin with name(s) ${user_firstname} ${user_surname}.`;
-                else entry_content = `Employee Reg: User registered a technician with name(s) ${user_firstname} ${user_surname}.`;
+                if(user_type_id===1) entry_content = `Employee Reg: User (ID: ${user.user_id}) registered an admin with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
+                else entry_content = `Employee Reg: User (ID: ${user.user_id}) registered a technician with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
                 
                 api.post('/systemlog',{
                     user_id: user.user_id,

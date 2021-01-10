@@ -15,7 +15,7 @@ export default function Customers({customerState}) {
     const dispatch = useDispatch();
 
     //Gbloc states
-    const user = useSelector(state=> state.user.usser);
+    const user = useSelector(state=> state.user.user);
 
     //Get the global state
     let customersState = customerState.customers;
@@ -41,14 +41,17 @@ export default function Customers({customerState}) {
 
     
     //*************Functions**************** */
-
+   
     //Register Admin Function
     let registerAdmin = (e) =>{
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
-        //Get the customer id
-        var customerId = document.getElementById('btnRegisterAdmin').getAttribute('data-id');
+        var customerId =  parseInt(document.getElementById('companyId').value);
+        //get the customer
+        const customer = customersState.find(customer => customer.customer_id === parseInt(customerId));
+
+        const user_type_id = 3;
 
         //Trigger the SWAL
         Swal.fire({
@@ -63,12 +66,12 @@ export default function Customers({customerState}) {
               //Send the api request to create the customer
               api.post('/users', {
                 username,
-                user_password: user_email, //passwords
+                user_password: user_email, //password is the email by default
                 user_email,
                 user_firstname,
                 user_surname,
                 user_cellphone,
-                user_type_id: 3
+                user_type_id,
               }).then(response => {
 
                 //Send another request to add the customer user
@@ -78,9 +81,121 @@ export default function Customers({customerState}) {
                     user_role
                 }).then(userResponse =>{
 
+                    //Trigger the swal
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: `Customer admin has been added with username: ${response.data.data.username}`
+                    }).then( swalSuccess =>{
+
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Customer User Reg: User (ID: ${user.user_id}) registered a customer user for the customer ${customer.customer_name} (ID: ${customer.customer_id}). `;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                    });
+
+                    //close the modal
+                    document.getElementById('registerModal').click();
+
+                    //Set the states back to empty
+                    setUsername('');
+                    setFirstName('');
+                    setSurname('');
+                    setEmail('');
+                    setCellphone('');
+                    setUserRole('')
+
+                }).catch(userError =>{
+                    if(userError.response && userError.response.data){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: JSON.stringify(userError.response.data.userError)
+                        });
+                    }
+                });
+                
+            }).catch(error =>{
+                if(error.response && error.response.data){
+
+                    let errorMessage = '';
+                    if(error.response.data.error.errors===undefined){
+                        if(typeof error.response.data.error === 'object' ) {
+
+                            if(error.response.data.error[0].errors){
+                                errorMessage = JSON.stringify(error.response.data.error[0].errors[0].message);
+                            }else{
+                                errorMessage = JSON.stringify(error.response.data.error[0]);
+                            }
+                        }
+                        else errorMessage = error.response.data.error;
+                    }else{
+                        errorMessage = error.response.data.error;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${errorMessage}`
+                    });
+                }
+            });
+              
+            } 
+          });
+    }
+
+    //Delete Admin
+    let deleteAdmin = (e) =>{
+        //Get the customer user id
+        var customerUserId = parseInt(e.target.getAttribute('data-id'));
+
+        //Check if the ID is a valid number
+        if(isNaN(customerUserId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try delete the user again.`
+            });
+        }
+        //else it is a number
+        else{
+
+            //Trigger the SWAL
+        Swal.fire({
+            icon: 'question',
+            title: 'Delete Admin?',
+            text: 'Are you sure you want to delete the admin account?',
+            showCancelButton: true,
+            confirmButtonText: `Delete Admin`,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              
+                //Send the axios request
+                api.delete(`/customerusers/${customerUserId}`)
+                .then(function (response) {
+
+                    //update the state
+                    setCustomerAdmins(customerAdmins.filter(customerAdmin => customerAdmin.user.user_id !==customerUserId));
+
+                    const customer = customersState.find(customer => customer.customer_id === response.data.customer_id);
+
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Customer User Reg: User registered a customer user type with name(s) ${user.user_firstname} ${user.usersurname}`;
+                    let entry_content = `Customer User Delete: User (ID: ${user.user_id}) deleted a customer user from company (${customer.customer_name}). `;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})
@@ -96,70 +211,7 @@ export default function Customers({customerState}) {
                     });
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-
-                    //Trigger the swal
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Saved!',
-                        text: `Customer admin has been added with username: ${response.data.data.username}`
-                    });
-
-                    //Set the states back to null
-                    setUsername('');
-                    setFirstName('');
-                    setSurname('');
-                    setEmail('');
-                    setCellphone('');
-                    setUserRole('')
-
-                    //close the modal
-                    document.getElementById('registerModal').click();
-
-                }).catch(userError =>{
-                    if(userError.response && userError.response.data){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: JSON.stringify(userError.response.data.userError)
-                        });
-                    }
-                });
-                
-            }).catch(function(error){
-                if(error.response && error.response.data){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: `${error.response.data.error[0].name} => ${error.response.data.error[0].errors[0].message}`
-                    });
-                }
-            });
-              
-            } 
-          });
-    }
-
-    //Delete Admin
-    let deleteAdmin = (e) =>{
-        //Prevent form from submitting to the actual file
-        //Get the customer user id
-        var customerUserId = parseInt(e.target.getAttribute('data-id'));
-
-        //Trigger the SWAL
-        Swal.fire({
-            icon: 'question',
-            title: 'Delete Admin?',
-            text: 'Are you sure you want to delete the admin account?',
-            showCancelButton: true,
-            confirmButtonText: `Delete Admin`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              
-                //Send the axios request
-                api.delete(`/customerusers/${customerUserId}`)
-                .then(function (response) {
-                    //update the state
-                    setCustomerAdmins(customerAdmins.filter(customerAdmin => customerAdmin.user.user_id !==customerUserId));
+                    
                     //display a msg
                     Swal.fire({
                         icon: 'success',
@@ -168,7 +220,7 @@ export default function Customers({customerState}) {
                     });
 
                     //close the modal
-                   document.getElementById('customerAdminsModal').click();
+                    document.getElementById('customerAdminsModal').click();
 
                 }).catch(function(error){
                     if(error.response && error.response.data){
@@ -182,6 +234,8 @@ export default function Customers({customerState}) {
 
             } 
           });
+        }
+
     }
 
     //Delete customer
@@ -210,6 +264,26 @@ export default function Customers({customerState}) {
                         })
                     )
 
+                    const customer = customersState.find(customer => customer.customer_id === customerId);
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Customer Delete: User (ID: ${user.user_id}) deleted a customer with name ${customer.customer_name} (ID: ${customer.customer_id}). `;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
                     //display a msg
                     Swal.fire({
                         icon: 'success',
@@ -237,25 +311,55 @@ export default function Customers({customerState}) {
         //Get the customer id
         var customerId = e.target.getAttribute('data-id');
 
-        //Send the axios request
-        api.get('/customers/'+customerId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('customerName').value = response.data.data.customer_name;
-            document.getElementById('customerEmail').value = response.data.data.customer_email;
-            document.getElementById('customerTelephone').value = response.data.data.customer_telephone;
-            document.getElementById('customerNotes').value = response.data.data.customer_notes;
+        //Check if the id is valid
+        if(customerId === null){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Something went wrong. Please try again.`
+            });
+            //close the modal
+            document.getElementById('customerDetailsModal').click();
+        }
+        //Else ID is valid so send the request
+        else{
+            //Send the axios request
+            api.get('/customers/'+customerId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('customerName').value = response.data.data.customer_name;
+                document.getElementById('customerEmail').value = response.data.data.customer_email;
+                document.getElementById('customerTelephone').value = response.data.data.customer_telephone;
+                document.getElementById('customerNotes').value = response.data.data.customer_notes;
 
-        });
+            });
+        }
+
     }
 
     let addAdmins = (e) =>{
         
+        e.preventDefault();
+        //Open the modal
+        //close the modal
+        document.getElementById('registerModal').click();
         //Get the customer id
-        var customerId = e.target.getAttribute('data-id');
+        var target = e.target || e.srcElement; // Where e.target fails it falls back on e.srcElement for IE
+        var customerId = target.getAttribute('data-id');
         if(customerId!==null){
             //set the register button to the value of the button
             document.getElementById('btnRegisterAdmin').setAttribute('data-id', customerId);
+            document.getElementById('companyId').value = customerId;
+
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oopss...',
+                text: `Something went wrong. Please try again.`
+            }).then( result =>{
+                //close the modal
+                document.getElementById('registerModal').click();
+            });
         }
         
         
@@ -297,7 +401,7 @@ export default function Customers({customerState}) {
                     Admins
                 </button> {' '}
                 <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id}  onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
-                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>
+                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i> Add
                 </button>{' '}
                 <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].customer_id}  onClick={deleteOneCustomer} >
                     <i class="fas fa-trash fa-sm fa-fw mr-2"></i>Delete
@@ -433,7 +537,7 @@ export default function Customers({customerState}) {
                                     <div class="row">
                                         <div class="col-md-12">
                                             <label class='label'>Customer Name</label>
-                                            <input type="text" readonly='readonly' class="form-control" required='true' id="customerName" name="customerName" placeholder="Customer Name *" value="" />
+                                            <input type="text" readonly='readonly' class="form-control" required='true' id="customerName" name="customerName" placeholder="Customer Name *" />
                                         </div>
                                     </div>
                                 </div>
@@ -444,11 +548,11 @@ export default function Customers({customerState}) {
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label class='label'>Customer Email</label>
-                                            <input type="email" readonly='readonly' class="form-control" required='true' id="customerEmail" name="customerEmail" placeholder="Customer Email *" value="" />
+                                            <input type="email" readonly='readonly' class="form-control" required='true' id="customerEmail" name="customerEmail" placeholder="Customer Email *" />
                                         </div>
                                         <div class="col-md-6">
                                             <label class='label'>Customer Telephone</label>
-                                            <input type="text" readonly='readonly' maxlength="10" minlength="10" class="form-control" required='true' id="customerTelephone" name="customerTelephone" placeholder="Customer Telephone *" value="" />
+                                            <input type="text" readonly='readonly' maxlength="10" minlength="10" class="form-control" required='true' id="customerTelephone" name="customerTelephone" placeholder="Customer Telephone *" />
                                         </div>
                                     </div>
                                 </div>
@@ -480,8 +584,8 @@ export default function Customers({customerState}) {
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Customer Details</h5>
+                        <div class="modal-header"><input hidden id='companyId'/>
+                            <h5 class="modal-title" id="exampleModalLabel">Add Customer Admin</h5>
                             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>

@@ -35,7 +35,7 @@ let persistor = persistStore(store);
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-        <PersistGate timeout={1000} loading={ <StyledLoader
+        <PersistGate loading={ <StyledLoader
                                   active={true}
                                   spinner
                                   classNamePrefix='MyLoader_'

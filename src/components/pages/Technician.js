@@ -9,11 +9,11 @@ import TechnicianSideBar from '../layout/TechnicianSideBar';
 
 //Admin UI
 import Dashboard from './Dashboard';
-import TechnicianProfile from './TechnicianProfile';
 import AssetManagement from './AssetManagement';
 import DeviceTypes from './DeviceTypes';
 import DeviceManagement from './DeviceManagement';
 import AssetTypes from './AssetTypes';
+import AdminProfile from './AdminProfile';
 
 //Error UI
 import Page404 from './Page404';
@@ -63,7 +63,7 @@ export default function Technician({customerState, assetState, assetTypeState, d
                                 {/* End Dashboard */}
 
                                 {/* Profile */}
-                                <Route exact path='/technician/profile' component = {TechnicianProfile} />
+                                <Route exact path='/technician/profile' component = {AdminProfile} />
                                 {/* End Profile */}
 
                                 {/* Asset Management */}
