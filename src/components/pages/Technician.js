@@ -14,6 +14,7 @@ import DeviceTypes from './DeviceTypes';
 import DeviceManagement from './DeviceManagement';
 import AssetTypes from './AssetTypes';
 import AdminProfile from './AdminProfile';
+import LogHistory from './LogHistory';
 
 //Error UI
 import Page404 from './Page404';
@@ -99,6 +100,10 @@ export default function Technician({customerState, assetState, assetTypeState, d
                                                                         )} 
                                 />
                                 {/* End Device Management */}
+
+                                {/* Log History */}
+                                <Route exact path='/technician/log_history' component = {LogHistory} />
+                                {/* End Log History */}
 
                                 {/* Catch Wrong Route */}
                                 <Route component = {Page404} />

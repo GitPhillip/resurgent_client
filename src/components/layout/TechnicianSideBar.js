@@ -82,6 +82,21 @@ export default function TechnicianSideBar() {
                     </div>
                 </li>
 
+                {/*<!-- Divider -->*/}
+                <hr class="sidebar-divider d-none d-md-block" />
+
+                {/*<!-- Admin -->*/}
+                <div class="sidebar-heading">
+                    Admin
+                </div>
+
+                {/*<!-- Nav Item - Charts -->*/}
+                <li class="nav-item">
+                    <Link class="nav-link" to="/technician/log_history">
+                        <i class="fas fa-fw fa-clock"></i>
+                        <span>Log History</span></Link>
+                </li>
+
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />

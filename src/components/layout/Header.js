@@ -103,42 +103,57 @@ export default function Header({userState}) {
                     {/*<!-- Topbar Navbar  -->*/}
                     <ul class="navbar-nav ml-auto ">
 
-                        {/*<!-- Nav Item - Alerts -->*/}
-                        <li class="nav-item dropdown no-arrow mx-4">
-                            <Link class="nav-link dropdown-toggle" to="#" id="alertsDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                {/*<!-- Counter - Alerts -->*/}
-                                <span class="badge badge-danger badge-counter">{notificationsCount}</span>
-                            </Link>
-                            {/*<!-- Dropdown - Alerts -->*/}
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown" style={scrollCSS} >
-                                <h6 class="dropdown-header">
-                                    Notification Center
-                                </h6>
-
-                                {blnNotificationsExist ? 
-
-                                (   
-                                    notifications.map(notification => 
-                                        
-                                        <Link class="dropdown-item d-flex align-items-center" to="#">
-                                            <div class='col-md-12'>
-                                                <div class="small text-gray-500">{notification.notification_date.substring(0,16)}</div>
-                                                <span class="font-weight-bold">{notification.notification_content}</span>
-                                                <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
-                                            </div>
-                                        </Link>
-                                    )
-                                ) 
-                                :
-                                (   
-                                    <div> No notifications to show </div>
-                                )
-
-                                }
+                        {/*<!-- Nav Item - Messages -->*/}
+                        <li class=" container nav-item dropdown no-arrow mx-1" > 
+                            <div class="container" >
+                                <a class="nav-link dropdown-toggle" href id="messagesDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-envelope fa-fw"></i>
+                                    {/*<!-- Counter - Messages -->*/}
+                                    <span class="badge badge-danger badge-counter">{notificationsCount}</span>
+                                </a>
+                                {/*<!-- Dropdown - Messages -->*/}
                                 
+                                <div class="dropdown-list dropdown-menu dropdown-menu-left shadow animated--grow-in"
+                                    aria-labelledby="messagesDropdown" >
+                                    <h6 class="dropdown-header" >
+                                        Notifications Center
+                                    </h6>
+                                    
+                                    <div style={scrollCSS}>
+                                    {blnNotificationsExist ? 
+
+                                    (   
+                                        notifications.map(notification => 
+                                            <React.Fragment>
+
+                                            <a class="dropdown-item d-flex align-items-center" href>
+                                                <div class='col-md-12'>
+                                                    <div class="font-weight-bold">
+                                                        <div class="small text-gray-500">{notification.notification_date.substring(0,16)}</div>
+                                                        <div class="row">
+                                                            <span class=" text-truncate">
+                                                                {notification.notification_content}                                                        </span>
+                                                            <div class="dropdown-list-image mr-2">
+                                                                <div class="status-indicator bg-success"></div>{' '} <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            </React.Fragment>
+                                        )
+                                    ) 
+                                    :
+                                    (   
+                                        <div> No notifications to show </div>
+                                    )
+
+                                    }
+                                    </div>
+                                    
+                                    
+                                </div>
                             </div>
                         </li>
 
@@ -198,7 +213,5 @@ const scrollCSS = {
     WebkitOverflowScrolling:"touch",
     overflowY:"scroll",
     overflowX:"scroll",
-    height:"400%",
-    marginLeft: '-100px',
-    align: 'auto'
+    height: '300px'
 }

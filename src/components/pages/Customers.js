@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { MDBDataTable } from 'mdbreact';
+import { MDBDataTable, MDBBtn } from 'mdbreact';
 import Swal from 'sweetalert2';
 import {useDispatch, useSelector} from 'react-redux'
 
@@ -392,20 +392,18 @@ export default function Customers({customerState}) {
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button type="button" class="btn btn-success btn-sm"  data-id={dataRows[i].customer_id}  onClick={viewCompanyDetails} data-toggle="modal" data-target="#customerDetailsModal">
-                    <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Details 
-                </button> {' '}
-                <button  type="button" class="btn btn-info btn-sm" data-id={dataRows[i].customer_id}  onClick={viewCompanyAdmins} data-toggle="modal" data-target="#customerAdminsModal">
-                    <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Admins
-                </button> {' '}
-                <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].customer_id}  onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
-                    <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i> Add
-                </button>{' '}
-                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].customer_id}  onClick={deleteOneCustomer} >
-                    <i class="fas fa-trash fa-sm fa-fw mr-2"></i>Delete
-                </button>
+                <MDBBtn size="sm" color='success' data-id={dataRows[i].customer_id} onClick={viewCompanyDetails} data-toggle="modal" data-target="#customerDetailsModal">
+                <i class="fas fa-briefcase fa-sm fa-fw mr-2 text-gray-400"></i> Details 
+                </MDBBtn> {' '}
+                <MDBBtn size="sm" color='info' data-id={dataRows[i].customer_id} onClick={viewCompanyAdmins} data-toggle="modal" data-target="#customerAdminsModal">
+                <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i> Admins 
+                </MDBBtn> {' '}
+                <MDBBtn size="sm" color='primary' data-id={dataRows[i].customer_id} onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
+                <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i> Add 
+                </MDBBtn>{' '}
+                <MDBBtn size="sm" color='danger' data-id={dataRows[i].customer_id} onClick={deleteOneCustomer}>
+                <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i> Delete 
+                </MDBBtn>
             </div>
         )
     }

@@ -8,10 +8,11 @@ import Footer from '../layout/Footer';
 import CustomerSideBar from '../layout/CustomerSideBar';
 
 //Admin UI
-import Dashboard from './Dashboard';
+import Dashboard from './CustomerDashboard';
 import CustomerProfile from './CustomerProfile';
 import CustomerAssets from './CustomerAssets';
 import CustomerDevices from './CustomerDevices';
+import CustomerLogHistory from './CustomerLogHistory';
 
 //Error UI
 import Page404 from './Page404';
@@ -88,6 +89,10 @@ export default function Customer({customerState, assetState, assetTypeState, dev
                                                                         )} 
                                 />
                                 {/* End Device Management */}
+
+                                {/* Log History */}
+                                <Route exact path='/customer/log_history' component = {CustomerLogHistory} />
+                                {/* End Log History */}
 
                                 {/* Catch Wrong Route */}
                                 <Route component = {Page404} />

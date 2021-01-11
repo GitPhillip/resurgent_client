@@ -18,7 +18,6 @@ import AssetTypes from './AssetTypes';
 import DeviceTypes from './DeviceTypes';
 import DeviceManagement from './DeviceManagement';
 import LogHistory from './LogHistory';
-import Login from './Login';
 
 //Error UI
 import Page404 from './Page404';
@@ -62,11 +61,6 @@ export default function Admin({customerState, assetState, assetTypeState, device
 
                             {/*<!-- Switch will render the first route that matches -->*/}
                             <Switch>
-
-                                {/* Login */}
-                <Route exact path='/' render = {props => (
-                                                <Login {...props} />
-                                                  )} />
 
                                 {/* Dashboard */}
                                 <Route exact path='/admin/dashboard' component = {Dashboard} />

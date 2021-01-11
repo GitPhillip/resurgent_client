@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import { MDBDataTable } from 'mdbreact';
+import { MDBDataTable, MDBBtn } from 'mdbreact';
 import Swal from 'sweetalert2';
 import api from '../../api/api';
 import { addDeviceType,deleteDeviceType,updateOneDeviceType } from '../slices/deviceTypeSlice';
@@ -59,7 +59,9 @@ export default function DeviceTypes({deviceTypeState}) {
                     type_alias,
                     type_description,
                     type_conversion,
-                    packet_structure
+                    packet_structure,
+                    data_types: packet_structure,
+                    type_variables: packet_structure
                 }).then( response => {
 
                     //Dispatch to update the state
@@ -181,7 +183,8 @@ export default function DeviceTypes({deviceTypeState}) {
                 type_alias: type_aliasModal,
                 type_description: type_descriptionModal,
                 type_conversion: type_conversionModal,
-                packet_structure: type_packet_structureModal
+                packet_structure: type_packet_structureModal,
+                data_types: type_packet_structureModal
                 }).then(function (response){
 
                     //dispatch to update the state
@@ -320,14 +323,13 @@ export default function DeviceTypes({deviceTypeState}) {
         //append the action key value pair to the end of each object
         dataRows[i]['action'] = (
             <div>
-                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].type_id} onClick={viewDeviceType} data-toggle="modal" data-target="#deviceTypeModal">
-                    <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                    View Details
-                </button> {' '}
-                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].type_id} onClick={deleteOneDeviceType}>
-                    <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
-                   Delete
-                </button>
+                <MDBBtn size="sm" color='success' data-id={dataRows[i].type_id} onClick={viewDeviceType} data-toggle="modal" data-target="#deviceTypeModal">
+                <i class="fas fa-cog fa-sm fa-fw mr-2 "></i>Details 
+                </MDBBtn>
+                 {' '}
+                <MDBBtn size="sm" color='danger' data-id={dataRows[i].type_id} onClick={deleteOneDeviceType}>
+                <i class="fa fa-trash fa-sm fa-fw mr-2 "></i>
+                </MDBBtn>
             </div>
         )
        

@@ -1,9 +1,13 @@
-import React,{useState, useEffect} from 'react'
+import React,{useState, useEffect} from 'react';
+import { useSelector } from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
 import api from '../../api/api';
 import Swal from 'sweetalert2';
 
 export default function LogHistory() {
+
+    //get the global user state
+    const user = useSelector(state => state.user.user);
 
     //Create a local state here
     const [systemLogs, setSystemLog] = useState([]);//The initial state of systemLog is empty
@@ -12,29 +16,50 @@ export default function LogHistory() {
     //On page load
     useEffect(()=>{
 
-        //Make the request to the API and update the state
-        //Get the system logs
-        api.get('/systemlog')
-        .then(response => {
-            //update the state
-            setSystemLog(response.data.data);
-        }).catch(function(error){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error',
-                text: `${error}`
+        //If the user logged in is an  admin, fetch all the users and all the logs
+        if(user.user_type === 'ADMIN'){
+            //Make the request to the API and update the state
+            //Get the system logs
+            api.get('/systemlog')
+            .then(response => {
+                //update the state
+                setSystemLog(response.data.data);
+            }).catch(function(error){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error',
+                    text: `${error}`
+                });
             });
-        });
 
-        //Get all the users
-        api.get('/users')
-        .then(response => {
-            //update the state
-            setAllUsers(response.data.data);
-        });
+            //Get all the users
+            api.get('/users')
+            .then(response => {
+                //update the state
+                setAllUsers(response.data.data);
+            });
+        }
+        //else if it is a technician
+        else if(user.user_type === 'TECHNICIAN'){
+            //Make the request to the API and update the state
+            //Get the system logs
+            api.get(`/systemlog/user/${user.user_id}`)
+            .then(response => {
+                //update the state
+                setSystemLog(response.data.data);
+            }); //We don't catch coz we are just fetching data
+
+            //Get all the users
+            api.get(`/users/${user.user_id}`)
+            .then(response => {
+                //update the state
+                setAllUsers(response.data.data);
+            });
+        }
+        
 
 
-    },[]);//only rerender if the systemLog change
+    },[user.user_id, user.user_type]);//only rerender if the systemLog change
 
     let dataRows = JSON.parse(JSON.stringify(systemLogs));
     let userRows = JSON.parse(JSON.stringify(allUsers));

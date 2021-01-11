@@ -15,21 +15,21 @@ import Swal from 'sweetalert2';
 export default function Dashboard() {
 
     //Get the global states
-    const customers = useSelector(state => state.customers.customers); 
     const assets = useSelector(state => state.assets.assets);
     const devices = useSelector(state => state.devices.devices);
     const user = useSelector(state => state.user.user);
 
+    //Get the assets belonging to this customer
+    const customerAssets = assets.filter(asset => asset.customer_id === user.user_company_id);
+    //Get the devices belonging to this customer
+    const customerDevices = devices.filter(device => 
+        customerAssets.find(asset => asset.asset_id === device.asset_id));
+
     //get the global state count
-    const customerCount = customers.length;
-    const assetCount = assets.length;
-    const deviceCount = devices.length;
+    const assetCount = customerAssets.length;
+    const deviceCount = customerDevices.length;
 
-    
     //*******************Local states***********************
-
-    //Local state for all the active users
-    const [activeUsersCount, setActiveUsersCount] = useState([]);
 
     //set the center of the map - Centre is set to the center of South Africa
     const center = {
@@ -42,8 +42,8 @@ export default function Dashboard() {
     const [payload, setPayload] = useState([]);
 
     //Make deep copies of the states
-    let dataRows = JSON.parse(JSON.stringify(devices));
-    let assetsData = JSON.parse(JSON.stringify(assets));
+    let dataRows = JSON.parse(JSON.stringify(customerDevices));
+    let assetsData = JSON.parse(JSON.stringify(customerAssets));
 
     //Truck icon to be displayed
     const [truckIcon, setTruckIcon] = useState();
@@ -51,33 +51,6 @@ export default function Dashboard() {
     
     useEffect(() => {
        
-        //Send the api request to get all users
-        api.get(`/users`)
-        .then(response =>{
-
-            //Temp array
-            let tempArray = [];
-
-            //push all active users into the array
-            for(var i =0; i< response.data.data.length;i++){
-                if(response.data.data[i].isActive===true)
-                    tempArray.push(response.data.data[i]);
-            }
-            //set the active users count
-            setActiveUsersCount(tempArray.length);
-            //set the center and the 
-
-        })
-        .catch(error =>{
-            if(error.response && error.response.data){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: `${error.response.data.error}`
-                });
-            }
-        });
-
     }, [])
 
     //Populate the datatable with all the device data packets
@@ -129,7 +102,6 @@ export default function Dashboard() {
         rows: payload
       };
 
-      
     //***********Function to view device details**************
     let viewDeviceDetails = (e) => {
 
@@ -138,7 +110,7 @@ export default function Dashboard() {
         let tempData = [];
         let latestRecordIndex;
 
-        //get the device that has just been clicked on
+        //Get the device that has just been clicked on
         const deviceClicked = devices.find(device => device.device_id === parseInt(deviceId));
 
         //Send the API request to get the device packet data
@@ -162,7 +134,7 @@ export default function Dashboard() {
             setPayload(tempData); 
 
             latestRecordIndex = 0;
-            let array;
+            let array
             Object.keys(tempData[latestRecordIndex]).forEach(key =>{
                 //Check if the GPS Coordinate key is there
                 if(key==='GPS'){
@@ -188,18 +160,20 @@ export default function Dashboard() {
 
     }
     //***********Function to view device details**************
+
+    //**************Handle devices data table*****************
     
-    //**************Handle devices data table****************
     let circleColour;
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
 
-        //Change the colour of the circles
-        if(dataRows[i]['device_status'].includes("IN USE")) circleColour = <i class="fas fa-circle text-success"></i>
-        else if(dataRows[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
-        else if(dataRows[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
-        //loop through all the device types
+        //loop through all the assets types
         for(var k = 0; k <assetsData.length; k++ ){
+
+            //Change the colour of the circles
+            if(dataRows[i]['device_status'].includes("IN USE")) circleColour = <i class="fas fa-circle text-success"></i>
+            else if(dataRows[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
+            else if(dataRows[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
 
             if(assetsData[k]['asset_id']===dataRows[i]['asset_id'] ){
                 dataRows[i]['asset_id'] = (
@@ -233,10 +207,8 @@ export default function Dashboard() {
       };
 
       //Prepare the relevent links
-      let assetManagementRoute = `/${user.user_type.toLowerCase()}/asset_management`;
-      let deviceManagementRoute = `/${user.user_type.toLowerCase()}/device_management`;
-      let customerManagementRoute = `/${user.user_type.toLowerCase()}/customers`;
-      let userManagementRoute = `/${user.user_type.toLowerCase()}/user_management`;
+      let assetManagementRoute = `/${user.user_type.toLowerCase().substring(0,8)}/assets`;
+      let deviceManagementRoute = `/${user.user_type.toLowerCase().substring(0,8)}/devices`;
 
     
     //***********Function to Render**************
@@ -250,162 +222,50 @@ export default function Dashboard() {
                     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
                 </div>
 
-                    {user.user_type === 'ADMIN' ?
-
-                        (
-                            /*<!-- Content Row -->*/
-                            <div class="row">
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <Link to={assetManagementRoute}>
-                                        <div class="card border-left-primary shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                            Assets</div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{assetCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-truck fa-2x  text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
+                {/*<!-- Content Row -->*/}
+                <div class="row">
+                    {/*<!-- Earnings (Monthly) Card Example -->*/}
+                    <div class="col-xl-5 col-md-5 mb-5">
+                        <Link to={assetManagementRoute}>
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Assets</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{assetCount}</div>
                                         </div>
-                                    </Link>
-                                </div>
-
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <Link to={deviceManagementRoute}>
-                                        <div class="card border-left-info shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                            Devices </div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{deviceCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-tablet-alt fa-2x  text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-truck fa-2x  text-gray-800"></i>
                                         </div>
-                                    </Link>
-                                </div>
-
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <Link to={customerManagementRoute}>
-                                        <div class="card border-left-warning shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Customers
-                                                        </div>
-                                                        <div class="h5 mb-0 font-weight-bold  text-gray-800">{customerCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-handshake fa-2x text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-
-                                {/*<!-- Pending Requests Card Example -->*/}
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <Link to={userManagementRoute}>
-                                        <div class="card border-left-success shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                        Online Users</div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{activeUsersCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-users fa-2x  text-gray-800 "></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
-                        )
+                        </Link>
+                    </div>
 
-                        :
-
-                        (
-                            /*<!-- Content Row -->*/
-                            <div class="row">
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-4 col-md-4 mb-4">
-                                    <Link to={assetManagementRoute}>
-                                        <div class="card border-left-primary shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                            Assets</div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{assetCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-truck fa-2x  text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    {/*<!-- Earnings (Monthly) Card Example -->*/}
+                    <div class="col-xl-5 col-md-5 mb-5">
+                        <Link to={deviceManagementRoute}>
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Devices </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{deviceCount}</div>
                                         </div>
-                                    </Link>
-                                </div>
-
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-4 col-md-4 mb-4">
-                                    <Link to={deviceManagementRoute}>
-                                        <div class="card border-left-info shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                            Devices </div>
-                                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{deviceCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-tablet-alt fa-2x  text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-tablet-alt fa-2x  text-gray-800"></i>
                                         </div>
-                                    </Link>
+                                    </div>
                                 </div>
-
-                                {/*<!-- Earnings (Monthly) Card Example -->*/}
-                                <div class="col-xl-4 col-md-4 mb-4">
-                                    <Link to='#'>
-                                        <div class="card border-left-warning shadow h-100 py-2">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Customers
-                                                        </div>
-                                                        <div class="h5 mb-0 font-weight-bold  text-gray-800">{customerCount}</div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <i class="fas fa-handshake fa-2x text-gray-800"></i>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-
                             </div>
-                        )
-                    }
+                        </Link>
+                    </div>
 
+                </div>
+                     
 
                 {/*<!--  <!-- Content Row --> -->*/}
 
@@ -440,9 +300,8 @@ export default function Dashboard() {
                                         bootstrapURLKeys={{ key: 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas' }}
                                         defaultCenter={center}
                                         defaultZoom={zoom}>
-
+                                        
                                         {truckIcon}
-
 
                                     </GoogleMapReact>
                                 </div>

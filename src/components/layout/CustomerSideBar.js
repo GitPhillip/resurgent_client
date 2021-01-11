@@ -64,9 +64,22 @@ export default function CustomerSideBar() {
                         <span>Devices</span></Link>
                 </li>
 
-                
+                {/*<!-- Divider -->*
+                <hr class="sidebar-divider d-none d-md-block" />
 
-                {/*<!-- Divider -->*/}
+                {/*<!-- Admin -->*
+                <div class="sidebar-heading">
+                    Admin
+                </div>
+
+                {/*<!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <Link class="nav-link" to="/customer/log_history">
+                        <i class="fas fa-fw fa-clock"></i>
+                        <span>Log History</span></Link>
+                </li>
+
+                <!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />
 
             </ul>
