@@ -948,10 +948,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                         Delete
                 </button>
                 {attachDeviceHtml}
-                <button  type="button" class="btn btn-dark btn-sm" data-id={dataRows[i].device_id} onClick={viewAssetsToAttach} data-toggle="modal" data-target="#attachAssetModal" title='Attach the device to an asset'>
-                                    <i class="fas fa-plus fa-sm fa-fw mr-2"></i>
-                                    Attach
-                                </button>
             </div>
         )
     }
