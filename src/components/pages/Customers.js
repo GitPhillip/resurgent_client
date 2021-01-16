@@ -175,32 +175,54 @@ export default function Customers({customerState}) {
         else{
 
             //Trigger the SWAL
-        Swal.fire({
-            icon: 'question',
-            title: 'Delete Admin?',
-            text: 'Are you sure you want to delete the admin account?',
-            showCancelButton: true,
-            confirmButtonText: `Delete Admin`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              
-                //Send the axios request
-                api.delete(`/customerusers/${customerUserId}`)
-                .then(function (response) {
+            Swal.fire({
+                icon: 'question',
+                title: 'Delete Admin?',
+                text: 'Are you sure you want to delete the admin account?',
+                showCancelButton: true,
+                confirmButtonText: `Delete Admin`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                
+                    //Send the axios request
+                    api.delete(`/customerusers/${customerUserId}`)
+                    .then(function (response) {
 
-                    //update the state
-                    setCustomerAdmins(customerAdmins.filter(customerAdmin => customerAdmin.user.user_id !==customerUserId));
+                        //update the state
+                        setCustomerAdmins(customerAdmins.filter(customerAdmin => customerAdmin.user.user_id !==customerUserId));
 
-                    const customer = customersState.find(customer => customer.customer_id === response.data.customer_id);
+                        const customer = customersState.find(customer => customer.customer_id === response.data.customer_id);
 
-                    //***************SYSTEM LOG********************* */
-                    //********************************************** */
-                    let entry_content = `Customer User Delete: User (ID: ${user.user_id}) deleted a customer user from company (${customer.customer_name}). `;
-                    api.post('/systemlog',{
-                        user_id: user.user_id,
-                        entry_content})
-                    .then()
-                    .catch(error =>{
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Customer User Delete: User (ID: ${user.user_id}) deleted a customer user from company (${customer.customer_name}). `;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        
+                        //display a msg
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted',
+                            text: `${response.data.message}`,
+                        });
+
+                        //close the modal
+                        document.getElementById('customerAdminsModal').click();
+
+                    }).catch(function(error){
                         if(error.response && error.response.data){
                             Swal.fire({
                                 icon: 'error',
@@ -209,31 +231,9 @@ export default function Customers({customerState}) {
                             });
                         }
                     });
-                    //***************SYSTEM LOG********************* */
-                    //********************************************** */
-                    
-                    //display a msg
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted',
-                        text: `${response.data.message}`,
-                    });
 
-                    //close the modal
-                    document.getElementById('customerAdminsModal').click();
-
-                }).catch(function(error){
-                    if(error.response && error.response.data){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `${error.response.data.error}`
-                        });
-                    }
-                });
-
-            } 
-          });
+                } 
+            });
         }
 
     }
@@ -399,7 +399,7 @@ export default function Customers({customerState}) {
                 <i class="fas fa-users fa-sm fa-fw mr-2 text-gray-400"></i> Admins 
                 </MDBBtn> {' '}
                 <MDBBtn size="sm" color='primary' data-id={dataRows[i].customer_id} onClick={addAdmins} data-toggle="modal" data-target="#registerModal">
-                <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i> Add 
+                <i class="fas fa-user-plus fa-sm fa-fw mr-2 text-gray-400"></i>Add 
                 </MDBBtn>{' '}
                 <MDBBtn size="sm" color='danger' data-id={dataRows[i].customer_id} onClick={deleteOneCustomer}>
                 <i class="fas fa-trash fa-sm fa-fw mr-2 text-gray-400"></i> Delete 

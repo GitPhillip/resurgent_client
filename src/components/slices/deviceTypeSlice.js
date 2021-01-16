@@ -11,12 +11,12 @@ export const deviceTypeSlice = createSlice({
             type_id: 0,
             type_alias: 'placeholder',
             type_description: 'placeholder',
-            type_conversion: 'placeholder',
             packet_structure: 'placeholder',
             sigfox_id: 'placeholder',
             deleted: 0,
-            type_variables: 'placeholder',
-            data_types: 'placeholder'
+            //type_variables: 'placeholder',
+            //data_types: 'placeholder'
+            //type_conversion: 'placeholder',
 
             }
         ],
@@ -40,14 +40,15 @@ export const deviceTypeSlice = createSlice({
         //Reducer to update a device type
         updateOneDeviceType: (state,action) =>{
             //update the status
-            const {type_id, type_alias, type_description, type_conversion, packet_structure } = action.payload;
+            const {type_id, type_alias, type_description, packet_structure } = action.payload;
             const existingDeviceType = state.deviceTypes.find(deviceType => deviceType.type_id === type_id);
             if(existingDeviceType){
                 existingDeviceType.type_id = type_id;
                 existingDeviceType.type_alias = type_alias;
                 existingDeviceType.type_description = type_description;
-                existingDeviceType.type_conversion = type_conversion;
                 existingDeviceType.packet_structure = packet_structure;
+                //existingDeviceType.type_conversion = type_conversion;
+                
             }
             console.log('State updated');
         },

@@ -19,23 +19,27 @@ export default function DeviceTypes({deviceTypeState}) {
     const [type_alias, setDeviceTypeAlias] = useState('');
     const [type_description, setDeviceTypeDescription] = useState('');
     const [packet_structure,setPacketStructure] = useState('');
-    const [type_conversion, setTypeConversion] = useState('');
+    
 
     //Onchange handlers
     const onTypeAliasChange = e => setDeviceTypeAlias(e.target.value);
     const onTypeDescriptionChange = e => setDeviceTypeDescription(e.target.value);
     const onPacketStructureChange = e => setPacketStructure(e.target.value);
-    const onTypeConversionChange = e => setTypeConversion(e.target.value);
 
     //--------------Device Type Updates------------------
     const [type_aliasModal, setDeviceTypeAliasModal] = useState('');
     const [type_descriptionModal, setDeviceTypeDescriptionModal] = useState('');
-    const [type_conversionModal, setTypeConversionModal] = useState('');
+    
     const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
     const onTypeAliasModalChange = e => setDeviceTypeAliasModal(e.target.value);
     const onTypeDescriptionModalChange = e => setDeviceTypeDescriptionModal(e.target.value);
     const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
-    const onTypeConversionModalChange = e => setTypeConversionModal(e.target.value);
+
+    //******Device Type Conversion Removed for this version */
+    //const [type_conversion, setTypeConversion] = useState('');
+    //const onTypeConversionChange = e => setTypeConversion(e.target.value);
+    //const [type_conversionModal, setTypeConversionModal] = useState('');
+    //const onTypeConversionModalChange = e => setTypeConversionModal(e.target.value);
 
     //***********Functions************* */
 
@@ -50,7 +54,7 @@ export default function DeviceTypes({deviceTypeState}) {
             title: 'Register Device Type?',
             text: 'Are you sure you want to register the device type?',
             showCancelButton: true,
-            confirmButtonText: `Register`,
+            confirmButtonText: `Register`
           }).then((result) => {
             if (result.isConfirmed) {
               
@@ -58,10 +62,10 @@ export default function DeviceTypes({deviceTypeState}) {
                 api.post('/devicetypes',{
                     type_alias,
                     type_description,
-                    type_conversion,
                     packet_structure,
-                    data_types: packet_structure,
-                    type_variables: packet_structure
+                    //data_types: packet_structure,
+                    //type_variables: packet_structure
+                    //type_conversion,
                 }).then( response => {
 
                     //Dispatch to update the state
@@ -70,12 +74,12 @@ export default function DeviceTypes({deviceTypeState}) {
                             type_id: response.data.data.type_id,
                             type_alias,
                             type_description,
-                            type_conversion,
                             packet_structure,
                             sigfox_id: response.data.data.sigfox_id,
                             deleted: response.data.data.deleted,
-                            type_variables: response.data.data.type_variables,
-                            data_types: response.data.data.data_types
+                            //type_conversion,
+                            //type_variables: response.data.data.type_variables,
+                            //data_types: response.data.data.data_types
                         })
                     )
 
@@ -109,7 +113,7 @@ export default function DeviceTypes({deviceTypeState}) {
                     setDeviceTypeAlias('');
                     setPacketStructure('');
                     setDeviceTypeDescription('');
-                    setTypeConversion('');
+                    //setTypeConversion('');
 
                 }).catch(error =>{
                     if(error.response && error.response.data){
@@ -130,32 +134,39 @@ export default function DeviceTypes({deviceTypeState}) {
         //Get the id of the device type
         let deviceTypeId = e.target.getAttribute('data-id');
 
-        if(deviceTypeId !== null)
+        //if it is null fire an error msg
+        if(deviceTypeId === null)
         {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Something went wrong. Please try again'
+            });
+        }else{
+
             //Adjust the update button data-id of the button 
             document.getElementById('btnUpdateDeviceType').setAttribute('data-id', deviceTypeId);
+
+            //Send the axios request to the API
+            api.get('/devicetypes/'+deviceTypeId)
+            .then(response =>{
+                
+                //Populate the correct html
+                document.getElementById('deviceTypeAliasModal').value =response.data.data.type_alias;
+                document.getElementById('deviceTypeDescriptionModal').value = response.data.data.type_description;
+                document.getElementById('packetStructureModal').value = response.data.data.packet_structure;
+                document.getElementById('sigfoxIDModal').value = response.data.data.sigfox_id;
+                //document.getElementById('deviceTypeConversionModal').value = response.data.data.type_conversion;
+
+                //Set the intial values to the ones of the requested device type
+                setDeviceTypeAliasModal(response.data.data.type_alias);
+                setDeviceTypeDescriptionModal(response.data.data.type_description);
+                setTypePacketStructureModal(response.data.data.packet_structure);
+                //setTypeConversionModal(response.data.data.type_conversion);
+
+            });
+
         }
-
-        //Send the axios request to the API
-        //Send the axios request
-        api.get('/devicetypes/'+deviceTypeId)
-        .then(response =>{
-            
-            //Populate the correct html
-            document.getElementById('deviceTypeAliasModal').value =response.data.data.type_alias;
-            document.getElementById('deviceTypeDescriptionModal').value = response.data.data.type_description;
-            document.getElementById('deviceTypeConversionModal').value = response.data.data.type_conversion;
-            document.getElementById('packetStructureModal').value = response.data.data.packet_structure;
-            document.getElementById('sigfoxIDModal').value = response.data.data.sigfox_id;
-
-            //Set the intial values to the ones of the requested device type
-            setDeviceTypeAliasModal(response.data.data.type_alias);
-            setDeviceTypeDescriptionModal(response.data.data.type_description);
-            setTypeConversionModal(response.data.data.type_conversion);
-            setTypePacketStructureModal(response.data.data.packet_structure);
-
-        });
-
     }
 
     //Update Device Type Function
@@ -165,7 +176,6 @@ export default function DeviceTypes({deviceTypeState}) {
 
         //Get the device type id
         var deviceTypeId = parseInt(document.getElementById('btnUpdateDeviceType').getAttribute('data-id'));
-
 
         //Trigger the SWAL
         Swal.fire({
@@ -182,9 +192,9 @@ export default function DeviceTypes({deviceTypeState}) {
               api.put(`/devicetypes/${deviceTypeId}`,{
                 type_alias: type_aliasModal,
                 type_description: type_descriptionModal,
-                type_conversion: type_conversionModal,
                 packet_structure: type_packet_structureModal,
-                data_types: type_packet_structureModal
+                //data_types: type_packet_structureModal
+                //type_conversion: type_conversionModal,
                 }).then(function (response){
 
                     //dispatch to update the state
@@ -193,8 +203,9 @@ export default function DeviceTypes({deviceTypeState}) {
                             type_id: deviceTypeId,
                             type_alias: type_aliasModal,
                             type_description: type_descriptionModal,
-                            type_conversion: type_conversionModal,
                             packet_structure: type_packet_structureModal
+                            //type_conversion: type_conversionModal,
+                            
                         })
                     )
 
@@ -228,7 +239,7 @@ export default function DeviceTypes({deviceTypeState}) {
                     setDeviceTypeAliasModal('');
                     setDeviceTypeDescription('');
                     setTypePacketStructureModal('');
-                    setTypeConversionModal('');
+                    //setTypeConversionModal('');
 
                     //Close the modal
                     document.getElementById('deviceTypeModal').click();
@@ -252,36 +263,64 @@ export default function DeviceTypes({deviceTypeState}) {
         //Get the device type id
          let deviceTypeId = parseInt(e.target.getAttribute('data-id'));
 
-        //Trigger the SWAL
-        Swal.fire({
-            icon: 'question',
-            title: 'Delete Device Type?',
-            text: 'Are you sure you want to delete the device type?',
-            showCancelButton: true,
-            confirmButtonText: `Delete`,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              //Handle axios request
+         //Check if the ID is a valid number
+        if(isNaN(deviceTypeId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try delete again.`
+            });
+        }else{
 
-              //Send the api request
-              api.delete(`/devicetypes/${deviceTypeId}`)
-              .then(function (response){
+            //Trigger the SWAL
+            Swal.fire({
+                icon: 'question',
+                title: 'Delete Device Type?',
+                text: 'Are you sure you want to delete the device type?',
+                showCancelButton: true,
+                confirmButtonText: `Delete`,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                //Handle axios request
 
-                    //dispatch to update the state
-                    dispatch(
-                        deleteDeviceType({
-                            type_id: deviceTypeId,
-                        })
-                    )
+                //Send the api request
+                api.delete(`/devicetypes/${deviceTypeId}`)
+                .then(function (response){
 
-                    //***************SYSTEM LOG********************* */
-                    //********************************************** */
-                    let entry_content = `Device Type Reg: User (ID: ${user.user_id}) registered a device type with name ${response.data.type_alias} (ID: ${deviceTypeId})`;
-                    api.post('/systemlog',{
-                        user_id: user.user_id,
-                        entry_content})
-                    .then()
-                    .catch(error =>{
+                        //dispatch to update the state
+                        dispatch(
+                            deleteDeviceType({
+                                type_id: deviceTypeId,
+                            })
+                        )
+
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+                        let entry_content = `Device Type Delete: User (ID: ${user.user_id}) deleted a device type with name ${response.data.type_alias} (ID: ${deviceTypeId})`;
+                        api.post('/systemlog',{
+                            user_id: user.user_id,
+                            entry_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************SYSTEM LOG********************* */
+                        //********************************************** */
+
+                        //Trigger the swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: `${response.data.message}`
+                        });
+
+                    }).catch(function(error){
                         if(error.response && error.response.data){
                             Swal.fire({
                                 icon: 'error',
@@ -290,29 +329,12 @@ export default function DeviceTypes({deviceTypeState}) {
                             });
                         }
                     });
-                    //***************SYSTEM LOG********************* */
-                    //********************************************** */
+                
 
-                    //Trigger the swal
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: `${response.data.message}`
-                    });
+                } 
+            });
+        }
 
-                }).catch(function(error){
-                    if(error.response && error.response.data){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `${error.response.data.error}`
-                        });
-                    }
-                });
-              
-
-            } 
-          });
     }
 
     let dataRows = JSON.parse(JSON.stringify(deviceTypesState));
@@ -328,7 +350,7 @@ export default function DeviceTypes({deviceTypeState}) {
                 </MDBBtn>
                  {' '}
                 <MDBBtn size="sm" color='danger' data-id={dataRows[i].type_id} onClick={deleteOneDeviceType}>
-                <i class="fa fa-trash fa-sm fa-fw mr-2 "></i>
+                <i class="fa fa-trash fa-sm fa-fw mr-2 "></i>Delete
                 </MDBBtn>
             </div>
         )
@@ -341,11 +363,6 @@ export default function DeviceTypes({deviceTypeState}) {
           {
             label: 'Device Type Alias',
             field: 'type_alias',
-            sort: 'asc',
-          },
-          {
-            label: 'Conversion',
-            field: 'type_conversion',
             sort: 'asc',
           },
           {
@@ -406,14 +423,14 @@ export default function DeviceTypes({deviceTypeState}) {
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                {/*<div class="col-md-6">
                                                     <label class='label'>Device Type Converstion</label>
                                                     <input required='required' class='form-control' id='deviceTypeConversion' 
                                                      name='deviceTypeConversion' placeholder="Device Type Conversion*"
                                                      value={type_conversion}
                                                      onChange={onTypeConversionChange}/>
-                                                </div>
-                                                <div class="col-md-6">
+                                                </div>*/}
+                                                <div class="col-md-12">
                                                     <label class='label'>Packet Structure</label>
                                                     <input required='required' class='form-control' id='deviceTypePacketStructure' 
                                                      name='deviceTypePacketStructure' placeholder="Device Type Packet Structure*"
@@ -512,14 +529,14 @@ export default function DeviceTypes({deviceTypeState}) {
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            {/*<div class="col-md-6">
                                             <label class='label'>Device Type Conversion</label>
                                                 <input required='required' type='text' class='form-control' id='deviceTypeConversionModal' 
                                                  name='deviceTypeConversionModal' placeholder="Device Type Conversion *" 
                                                  value={type_conversionModal}
                                                  onChange={onTypeConversionModalChange}/>
-                                            </div>
-                                            <div class="col-md-6">
+                                            </div>*/}
+                                            <div class="col-md-12">
                                                 <label class='label'>Packet Structure</label>
                                                 <input required='required' type="text" class="form-control" id="packetStructureModal"
                                                  name="packetStructureModal" placeholder="Packet Structure *"

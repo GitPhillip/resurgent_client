@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import { Link, useHistory, Redirect } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { MDBBtn } from 'mdbreact';
 
 import api from '../../api/api';
 import { setUserSession } from '../slices/userSlice';
@@ -25,7 +26,7 @@ export default function Login({userState}) {
      const history = useHistory();
 
     //*************Functions**************
-    let login = (e) => {
+    let userLogin = (e) => {
         //Prevent form from submitting to the actual file
         e.preventDefault();
 
@@ -228,7 +229,7 @@ export default function Login({userState}) {
                                                     <div class="text-center">
                                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                                     </div>
-                                                    <form class="user" method='post' onSubmit={login}>
+                                                    <form class="user" method='post' onSubmit={userLogin}>
                                                         <div class="form-group">
                                                             <input type="email" class="form-control form-control-user"
                                                                 id="exampleInputEmail" aria-describedby="emailHelp"
@@ -242,9 +243,9 @@ export default function Login({userState}) {
                                                                 value={password}
                                                                 onChange={onPasswordChange} />
                                                         </div>
-                                                        <button type='submit' class="btn btn-primary btn-user btn-block">
+                                                        <MDBBtn type='submit' class="btn btn-primary btn-user btn-block" >
                                                             Login 
-                                                        </button>
+                                                        </MDBBtn>
                                                     </form>
                                                     <hr/>
                                                     <div class="text-center">

@@ -38,7 +38,11 @@ export default function Dashboard() {
     };
     //How far in to zoom
     const zoom = 6;
-    //data packat payload
+
+    //google api key
+    const GoogleMapAPIKey= 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas';//'AIzaSyA5N9f2NrFQbQwtXVVBmmWldkhJ40U03Vg';
+
+    //data packet payload
     const [payload, setPayload] = useState([]);
 
     //Make deep copies of the states
@@ -48,7 +52,12 @@ export default function Dashboard() {
     //Truck icon to be displayed
     const [truckIcon, setTruckIcon] = useState();
 
-    
+    //for all the columns in the payload
+    const [columns, setColumns] = useState([]);
+
+    //Array to put the device packet data columns
+    var columnsArray = [];
+
     useEffect(() => {
        
         //Send the api request to get all users
@@ -78,57 +87,7 @@ export default function Dashboard() {
             }
         });
 
-    }, [])
-
-    //Populate the datatable with all the device data packets
-    let devicePacketData = {
-
-        columns: [
-          {
-            label: 'MPPT Load (I)',
-            field: 'MPPT_Load_Current',
-            sort: 'asc',
-          },
-          {
-            label: 'Battery (V) LS',
-            field: 'Battery_Voltage_LS',
-            sort: 'asc',
-          },
-          {
-            label: 'Battery (V) MS',
-            field: 'Battery_Voltage_MS',
-            sort: 'asc',
-          },
-          {
-            label: 'Load (I) Max LS',
-            field: 'Load_Current_Max_LS',
-            sort: 'asc',
-          },
-          {
-            label: 'Load (I) Max MS',
-            field: 'Load_Current_Max_MS',
-            sort: 'asc',
-          },
-          {
-            label: 'Avg Load (I) LS',
-            field: 'Avg_Load_Current_LS',
-            sort: 'asc',
-          },
-          {
-            label: 'Avg Load (I) MS',
-            field: 'Avg_Load_Current_MS',
-            sort: 'asc',
-          },
-          {
-            label: 'Packet Date',
-            field: 'packet_date',
-            sort: 'asc',
-          }
-
-        ],
-        rows: payload
-      };
-
+    }, []);
       
     //***********Function to view device details**************
     let viewDeviceDetails = (e) => {
@@ -164,16 +123,27 @@ export default function Dashboard() {
             latestRecordIndex = 0;
             let array;
             Object.keys(tempData[latestRecordIndex]).forEach(key =>{
+                //put the keys in an array
+                columnsArray.push({
+                    label: key,
+                    field: key,
+                    sort: 'asc'
+                });
+
                 //Check if the GPS Coordinate key is there
                 if(key==='GPS'){
                     array = tempData[latestRecordIndex][key].toString().split(',');
                 }
             });
 
+            //set the columns
+            setColumns(columnsArray);
+
             //Change the colour of the trucks for the map
-            if(deviceClicked.device_status.includes("IN USE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
-            if(deviceClicked.device_status.includes("BEING REPAIRED")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
+            if(deviceClicked.device_status.includes("ACTIVE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
+            if(deviceClicked.device_status.includes("REPAIRING")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
             if(deviceClicked.device_status.includes("DECOMMISSIONED")) setTruckIcon(<i class='fa fa-truck fa-2x text-danger' lat={array[0]} lng={array[1]} />)
+            if(deviceClicked.device_status.includes("IDLE")) setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={array[0]} lng={array[1]} />)
             
         })
         .catch(error =>{
@@ -188,6 +158,13 @@ export default function Dashboard() {
 
     }
     //***********Function to view device details**************
+
+    //Populate the datatable with all the device data packets
+    let devicePacketData = {
+
+        columns,
+        rows: payload
+    };
     
     //**************Handle devices data table****************
     let circleColour;
@@ -195,9 +172,10 @@ export default function Dashboard() {
     for(var i = 0; i<dataRows.length;i++){
 
         //Change the colour of the circles
-        if(dataRows[i]['device_status'].includes("IN USE")) circleColour = <i class="fas fa-circle text-success"></i>
-        else if(dataRows[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
+        if(dataRows[i]['device_status'].includes("ACTIVE")) circleColour = <i class="fas fa-circle text-success"></i>
+        else if(dataRows[i]['device_status'].includes("REPAIRING")) circleColour = <i class="fas fa-circle text-warning"></i>
         else if(dataRows[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
+        else if(dataRows[i]['device_status'].includes("IDLE")) circleColour = <i class="fas fa-circle text-default"></i>
         //loop through all the device types
         for(var k = 0; k <assetsData.length; k++ ){
 
@@ -437,7 +415,7 @@ export default function Dashboard() {
                             <div class="card-body">
                                 <div class="chart-area">
                                     <GoogleMapReact
-                                        bootstrapURLKeys={{ key: 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas' }}
+                                        bootstrapURLKeys={{ key: GoogleMapAPIKey }}
                                         defaultCenter={center}
                                         defaultZoom={zoom}>
 
@@ -480,13 +458,16 @@ export default function Dashboard() {
                                 </div>
                                 <div class="mt-4 text-center small">
                                     <span class="mr-2">
-                                        <i class="fas fa-circle text-success"></i> In Use
+                                        <i class="fas fa-circle text-success"></i> Active
                                     </span>
                                     <span class="mr-2">
-                                        <i class="fas fa-circle text-warning"></i> Being Repaired
+                                        <i class="fas fa-circle text-warning"></i> Repairing
                                     </span>
                                     <span class="mr-2">
                                         <i class="fas fa-circle text-danger"></i> Decommissioned
+                                    </span>
+                                    <span class="mr-2">
+                                        <i class="fas fa-circle text-default"></i> Idle
                                     </span>
                                 </div>
                             </div>
