@@ -5,15 +5,15 @@ export const assetSlice = createSlice({
     name: 'assets',//This will also be the name of our r
     initialState:{
         assets: [
-            {
-                //This is just a placeholder to ensure code doesn't break before we update the state.
+            /*{
+                /*This is just a placeholder to ensure code doesn't break before we update the state.
                 asset_id:'placeholder',
                 asset_type_id: 0,
                 asset_name:"phill@placeholder.com",
                 asset_description:"placeholder",
                 deleted:false,
                 customer_id:0
-            }
+            }*/
         ],
         isLoading: false,
         error: false

@@ -348,18 +348,18 @@ export default function AssetTypes({assetTypeState}) {
             <div class="row">
                 <div class="col-md-12 ">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Asset Type</a>
+                    <li class="nav-item">
+                            <a class="nav-link active" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Asset Types</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Asset Types</a>
+                            <a class="nav-link " id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Asset Type</a>
                         </li>
                         
                     </ul>
 
                 
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
+                        <div class="tab-pane fade show" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
                             <h3 class="register-heading">Register Asset Type</h3>
                             <br/>
@@ -413,7 +413,7 @@ export default function AssetTypes({assetTypeState}) {
                             <br/> <br/>
                         </div>
 
-                        <div class="tab-pane fade show" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
                             <br/>
                             <h3  class="register-heading">Manage Asset Types</h3>
                             <br/>

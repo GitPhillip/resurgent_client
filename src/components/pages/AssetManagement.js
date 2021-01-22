@@ -200,7 +200,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
         for(var k =  0; k < dataRows.length;k++){
             
             if(dataRows[k]['asset_id'] === assetId)
-                deviceHtml += `<p><i class='fa fa-cog'></i> Packet Structure: ${dataRows[k]['device_pac']}.  Sigfox Id: ${dataRows[k]['sigfox_id']} </p>`;
+                deviceHtml += `<p><i class='fa fa-cog'></i> Device Name: ${dataRows[k]['device_name']}.  Serial Number: ${dataRows[k]['device_serial']} </p>`;
         }
         
         //Send the axios request
@@ -250,19 +250,14 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 else if(assetDevices[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
                 else if(assetDevices[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
                 
-                //loop through all the assets dataRows(assets)
-                for(var k = 0; k <dataRows.length; k++ ){
-        
-                    if(dataRows[k]['asset_id']===assetDevices[i]['asset_id'] ){
-                        assetDevices[i]['asset_id'] = (
-                            <div>
-                                <a type='button' data-id={assetDevices[i]['device_id']} onClick={viewPacketData} href>
-                                    {circleColour}{dataRows[k]['asset_name']} Device {k}
-                                </a>
-                            </div>
-                        );
-                    }
-                }
+                assetDevices[i]['device_name'] = (
+                    <div>
+                        <a type='button' data-id={assetDevices[i]['device_id']} onClick={viewPacketData} href>
+                            {circleColour}{assetDevices[i]['device_name']}
+                        </a>
+                    </div>
+                );
+                
                 
             }
             //Update the state
@@ -278,12 +273,12 @@ export default function AssetManagement({customerState,assetState,deviceState, a
         columns: [
           {
             label: 'Device Name',
-            field: 'asset_id',
+            field: 'device_name',
             sort: 'asc',
           },
           {
             label: 'Serial Number',
-            field: 'asset_name',
+            field: 'device_serial',
             sort: 'asc',
           },
           
@@ -630,17 +625,36 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 <div class="col-md-12 ">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Asset</a>
+                            <a class="nav-link active" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Assets</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Assets</a>
+                            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Asset</a>
                         </li>
-                        
                     </ul>
 
                 
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
+
+                        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                            <br/>
+                            <h3  class="register-heading">Manage Assets</h3>
+                            <br/>
+                            
+                            {/*<!-- DataTales Example -->*/}
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">All Assets</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <MDBDataTable striped bordered data={data} />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="tab-pane fade show" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
                             <h3 class="register-heading">Register Asset</h3>
                             <br/>
@@ -725,25 +739,6 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                 </div>
                             </form>
                             <br/> <br/>
-                        </div>
-
-                        <div class="tab-pane fade show" id="manage" role="tabpanel" aria-labelledby="manage-tab">
-                            <br/>
-                            <h3  class="register-heading">Manage Assets</h3>
-                            <br/>
-                            
-                            {/*<!-- DataTales Example -->*/}
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">All Assets</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <MDBDataTable striped bordered data={data} />
-                                    </div>
-                                </div>
-                            </div>
-                            
                         </div>
 
                     </div>

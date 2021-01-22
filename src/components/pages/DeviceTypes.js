@@ -391,15 +391,36 @@ export default function DeviceTypes({deviceTypeState}) {
                 <div class="col-md-12 ">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Device Type</a>
+                            <a class="nav-link active" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Device Types</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Device Types</a>
+                            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Device Type</a>
                         </li>
+                        
                     </ul>
 
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
+
+                        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                            <br/>
+                            <h3  class="register-heading">Manage Device Types</h3>
+                            <br/>
+                            
+                            {/*<!-- DataTales Example -->*/}
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Device Types Table</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <MDBDataTable striped bordered data={data} />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="tab-pane fade show" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
                             <h3 class="register-heading">Register Device Type</h3>
                             <br/>
@@ -475,31 +496,12 @@ export default function DeviceTypes({deviceTypeState}) {
                             <br/> <br/>
                         </div>
 
-                        <div class="tab-pane fade show" id="manage" role="tabpanel" aria-labelledby="manage-tab">
-                            <br/>
-                            <h3  class="register-heading">Manage Device Types</h3>
-                            <br/>
-                            
-                            {/*<!-- DataTales Example -->*/}
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Device Types Table</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <MDBDataTable striped bordered data={data} />
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-
                     </div>
                 </div>
             </div>
 
             {/* Device Type Details Modal */}
-            <div class="modal fade" id="deviceTypeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            <div class="modal fade active" id="deviceTypeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">

@@ -7,7 +7,7 @@ export const deviceTypeSlice = createSlice({
     initialState: {
 
         deviceTypes: [
-            {
+            /*{
             type_id: 0,
             type_alias: 'placeholder',
             type_description: 'placeholder',
@@ -18,7 +18,7 @@ export const deviceTypeSlice = createSlice({
             //data_types: 'placeholder'
             //type_conversion: 'placeholder',
 
-            }
+            }*/
         ],
         isLoading: false,
         error: false

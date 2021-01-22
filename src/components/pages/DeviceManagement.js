@@ -327,11 +327,22 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
 
                 }).catch(function(error){
                     if(error.response && error.response.data){
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: `${error.response.data.error}`
-                        });
+
+                        //Handle the array
+                        if(error.response.data.error.length>1){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error.errors.message}`
+                            });
+                        }else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                        
                     }
                 });
             } 
@@ -667,7 +678,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     let changeDeviceStatus = (e) => {
         
         //Get the device id
-        var deviceId = e.target.getAttribute('data-id');
+        var deviceId = parseInt(e.target.getAttribute('data-id'));
 
         var deviceStatus = e.target.value;
 
@@ -687,7 +698,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 text: `Please try again.`
             });
         }else{
-            alert(deviceStatus)
+
             //Trigger the SWAL
             Swal.fire({
                 icon: 'question',
@@ -697,9 +708,12 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 confirmButtonText: `Yes`,
             }).then((result) => {
                 if (result.isConfirmed) {
+
+                    //Get the device 
+                    const deviceLogged =devicesState.find(device => device.device_id === deviceId);
                 
-                    let route;
-                    let logStatus;
+                    let route = '';
+                    let logStatus = '';
                     //Have a switch case for the device status
                     switch(deviceStatus){
 
@@ -735,19 +749,19 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     //Send the api request
                     api.put(`/devices/${route}/${deviceId}`)
                     .then( response =>{
+
                         //Update the state
                         dispatch(
                             updateDevice({
                                 device_id: deviceId,
-                                device_status: logStatus
+                                device_status: logStatus,
+                                asset_id: null
                             })
                         )
-                        //Get the device 
-                        let device = devicesState.find(device => device.device_id ===  deviceId);
-                        
+
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
-                        let entry_content = `Device Status Change: User (ID: ${user.user_id}) changed the status of the device with name ${device.device_name} (ID: ${device.device_id}) to ${logStatus}.`;
+                        let entry_content = `Device Status Change: User (ID: ${user.user_id}) changed the status of the device with name ${deviceLogged.device_name} (ID: ${deviceLogged.device_id}) to ${logStatus}.`;
                         api.post('/systemlog',{
                             user_id: user.user_id,
                             entry_content})
@@ -763,6 +777,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                         });
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
+                        
 
                         //Trigger the swal
                         Swal.fire({
@@ -813,7 +828,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
         e.preventDefault();
 
         //Get the device id
-        var deviceId  = document.getElementById('btnDeviceAttachAsset').getAttribute('data-id');
+        var deviceId  = parseInt(document.getElementById('btnDeviceAttachAsset').getAttribute('data-id'));
 
         //check if the device id is a valid number
         if(isNaN(deviceId)){
@@ -835,8 +850,9 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
 
                 //Get the asset and device involved
 
-                let asset = assetsState.find(asset => asset.asset_id === attachAssetId);
-                let device = devicesState.find(device => device.device_id === deviceId);
+                const assetLogged = assetsState.find(asset => asset.asset_id === parseInt(attachAssetId));
+                //Get the device 
+                const deviceLogged =devicesState.find(device => device.device_id === deviceId);
 
                 //Send the api request to update the device
                 api.put(`/devices/${deviceId}/attach/${attachAssetId}`)
@@ -853,7 +869,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Device Asset Attach: User (ID: ${user.user_id}) attached the device with name ${device.device_name} (ID: ${device.device_id}) to ${asset.asset_name} (ID: ${asset.asset_id}).`;
+                    let entry_content = `Device Asset Attach: User (ID: ${user.user_id}) attached the device with name ${deviceLogged.device_name} (ID: ${deviceLogged.device_id}) to ${assetLogged.asset_name} (ID: ${assetLogged.asset_id}).`;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})
@@ -912,6 +928,45 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 dataRows[i]['device_type_id'] = deviceTypeRows[k]['type_alias'];
             
         }
+
+        //Handle the IDLE device
+        if(dataRows[i]['device_status'] === "IDLE")
+        {
+            //append the action key value pair to the end of each object
+            dataRows[i]['action'] = (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
+                            <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Details
+                    </button>{' '}
+                    <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].device_id} data-toggle="modal" data-target="#attachAssetModal" onClick={viewAssetsToAttach} title='Attach the device to an asset'>
+                            <i class="fas fa-plus fa-sm fa-fw mr-2"></i>
+                            Attach
+                    </button>
+                    <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].device_id} onClick={deleteOneDevice}>
+                            <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
+                            Delete
+                    </button>
+                </div>
+            )
+        }
+        else{
+
+            //append the action key value pair to the end of each object
+            dataRows[i]['action'] = (
+                <div>
+                    <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
+                            <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Details
+                    </button>{' '}
+                    <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].device_id} onClick={deleteOneDevice}>
+                            <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
+                            Delete
+                    </button>
+                </div>
+            )
+        }
+
         //Change the device status display
         //append the action key value pair to the end of each object
         dataRows[i]['device_status'] = (
@@ -924,32 +979,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 <option value='IDLE'>Idle</option>
             </select>
         )
-
-        //Handle the IDLE device
-        let attachDeviceHtml;
-        if(dataRows[i]['device_status'] === "IDLE")
-        {
-            attachDeviceHtml = <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].device_id} data-toggle="modal" data-target="#attachAssetModal" onClick={viewAssetsToAttach} title='Attach the device to an asset'>
-                                    <i class="fas fa-plus fa-sm fa-fw mr-2"></i>
-                                    Attach
-                                </button>
-        }
-        else attachDeviceHtml = '';
         
-        //append the action key value pair to the end of each object
-        dataRows[i]['action'] = (
-            <div>
-                <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
-                        <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Details
-                </button>{' '}
-                <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].device_id} onClick={deleteOneDevice}>
-                        <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
-                        Delete
-                </button>
-                {attachDeviceHtml}
-            </div>
-        )
     }
 
     data = {
@@ -991,16 +1021,37 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 <div class="col-md-12 ">
                     <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Device</a>
+                            <a class="nav-link active" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Devices</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="manage-tab" data-toggle="tab" href="#manage" role="tab" aria-controls="manage" aria-selected="false">Manage Devices</a>
+                            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="true">Register Device</a>
                         </li>
+                        
                         
                     </ul>
 
                     <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="register" role="tabpanel" aria-labelledby="register-tab">
+
+                        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                            <br/>
+                            <h3  class="register-heading">Manage Devices</h3>
+                            <br/>
+                            
+                            {/*<!-- DataTales Example -->*/}
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">All Devices</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                         <MDBDataTable striped bordered data={data} />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="tab-pane fade show" id="register" role="tabpanel" aria-labelledby="register-tab">
                             <br/>
                             <h3 class="register-heading">Register Device</h3>
                             <br/>
@@ -1050,8 +1101,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Asset</label>
                                                     {!isAssetLoading ? (
-                                                        <select required='required' class='form-control' id='assetId'
-                                                         name='assetId'
+                                                        <select required='required' class='form-control'
                                                          value={asset_id}
                                                          onChange={onAssetIdChange}>
                                                             <option hidden selected >Please choose an asset.</option>
@@ -1069,6 +1119,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <label class='label'>Device Packet</label>
+                                                    <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
                                                     <input class='form-control' id='devicePac' required='required'
                                                      name='devicePac' placeholder='Device Packet*'
                                                      value={device_pac}
@@ -1163,25 +1214,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                             <br/> <br/>
                         </div>
 
-                        <div class="tab-pane fade show" id="manage" role="tabpanel" aria-labelledby="manage-tab">
-                            <br/>
-                            <h3  class="register-heading">Manage Devices</h3>
-                            <br/>
-                            
-                            {/*<!-- DataTales Example -->*/}
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">All Devices</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                         <MDBDataTable striped bordered data={data} />
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        
                     </div>
                 </div>
 
@@ -1438,8 +1470,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                             </div>
                             <div class="modal-body">
                             {!isAssetLoading ? (
-                                <select required='required' class='form-control' id='assetId'
-                                    name='assetId'
+                                <select required='required' class='form-control'
                                     value={attachAssetId}
                                     onChange={onAttachAssetChange}>
                                     <option hidden selected >Please choose an asset.</option>
@@ -1458,6 +1489,60 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 </div>
             </div>
             {/*<!-- Attach Asset Modal-->*/}
+
+
+            {/*<!-- Device Packet Guide-->*/}
+            <div class="modal fade" id="packetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Custom message type decoding grammar?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body bg-gray-300">
+
+                                <div class='col-md-12'>
+                                    <h6>The "custom format" grammar is as follows :</h6>
+                                    <div class='col-md-2'></div>
+                                    <div class='col-md-8 bg-white'>
+
+                                        format = field_def [" " field_def]* ;<br/>
+                                        field_def = field_name ":" byte_index ":" type_def ;<br/>
+                                        field_name = (alpha | digit | "#" | "_")* ;<br/>
+                                        byte_index = [digit*] ;<br/>type_def = bool_def | char_def | float_def |  uint_def ;<br/>
+                                        bool_def = "bool:" ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7") ;<br/>
+                                        char_def = "char:" length ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
+                                        float_def = "float:" ("32" | "64") [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
+                                        uint_def = "uint:" ["1" - "64"] [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
+                                        int_def = "int:" ["1" - "64"] [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
+                                        length = number* ;<br/>digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+                                    </div>
+                                    <div class='col-md-2'></div>
+                                </div>
+                                <div class='col-md-12'><br/><br/>
+                                A field is defined by its name, its position in the message bytes, its length and its type :<br/>
+                                the field name is an identifier including letters, digits and the '-' and '_' characters.
+                                the byte index is the offset in the message buffer where the field is to be read from, starting at zero. If omitted, the position used is the current byte for boolean fields, the next byte for all other types if the previous element has no bit offset and the last byte used if the previous element has a bit offset. For the first field, an omitted position means zero (start of the message buffer)
+                                Next comes the type name and parameters, which varies depending on the type :<br/>
+                                <i class="fas fa-square"></i><strong> boolean</strong>: parameter is the bit position in the target byte <br/>
+                                <i class="fas fa-square"></i><strong> char</strong> : parameter is the number of bytes to gather in a string, and optionally the bit offset where to start the reading of the first byte, Default value is 7 for the offset <br/>
+                                <i class="fas fa-square"></i><strong> float</strong> : parameters are the length in bits of the value, which can be either 32 or 64 bits, optionally the endianness for multi-bytes floats, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset. Decoding is done according to the IEEE 754 standard.<br/>
+                                <i class="fas fa-square"></i><strong> uint</strong> (unsigned integer) : parameters are the number of bits to include in the value, optionally the endianness for multi-bytes integers, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset.<br/>
+                                <i class="fas fa-square"></i><strong> int</strong> (signed integer) : parameters are the number of bits to include in the value, optionally the endianness for multi-bytes integers, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset.<br/>
+                                </div>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            {/*<!-- Device Packet Guide-->*/}
 
         </React.Fragment>
     )

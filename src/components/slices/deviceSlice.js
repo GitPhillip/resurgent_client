@@ -6,7 +6,7 @@ export const deviceSlice = createSlice({
     initialState:{
 
         devices: [
-            {
+            /*{
                 //This is just a placeholder to ensure code doesn't break before we update the state.
                 device_id: 0,
                 device_name: 'placeholder',
@@ -19,7 +19,7 @@ export const deviceSlice = createSlice({
                 product_certificate: 'placeholder',
                 is_prototype: 'placeholder',
                 deleted:false
-            }
+            }*/
         ],
         isLoading: false,
         error: false,
@@ -111,8 +111,7 @@ export const fetchDevices = () => async dispatch => {
     try{
         await api
         .get('/devices')
-        .then(response => dispatch(getAllDevices(response.data.data))
-        );
+        .then(response => dispatch(getAllDevices(response.data.data)));
 
     }catch(error){
         dispatch(hasError(error.message))

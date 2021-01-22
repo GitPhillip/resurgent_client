@@ -91,6 +91,92 @@ export default function Header({userState}) {
         //Reroute to login
         window.location='/';
     }
+
+    //View notification
+    let viewNotification = (e) =>{
+
+        //Get the notifcation id
+        var notificationId = parseInt(e.target.getAttribute('data-id'));
+
+        if(isNaN(notificationId)){
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oopss...',
+                text: `Something went wrong`,
+                timer: 1000,
+            });
+
+            //Close the modal
+            document.getElementById('notificationModal').click();
+             
+        }
+        else{
+            //send the api request to get the notification details
+            api.put(`/notifications/${notificationId}`,{
+                notification_viewed: true
+            })
+            .then(response =>{
+
+                //Populate the modal body
+                document.getElementById('notificationDate').innerHTML = response.data.data.notification_date.substring(0,16);
+                document.getElementById('notificationContent').innerHTML = response.data.data.notification_content;
+
+            })
+            .catch(error =>{
+                if(error.response && error.response.data){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${error.response.data.error}`
+                    });
+                }
+            });
+        }
+        
+    }
+
+    //Delete notification
+    let deleteNotification = (e) =>{
+
+        //Get the notifcation id
+        var notificationId = parseInt(e.target.getAttribute('data-id'));
+
+        if(isNaN(notificationId)){
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oopss...',
+                text: `Something went wrong`,
+                timer: 1000,
+            });
+             
+        }
+        else{
+            //send the api request to get the notification details
+            api.put(`/notifications/${notificationId}`, {
+            notification_dismissed: true})
+            .then(response =>{
+                
+                //Lets update the state
+                const nots = notifications.filter(notification => notification.notification_id !== notificationId);
+
+                //Update the state
+                setNotifications(nots)
+            })
+            .catch(error =>{
+                if(error.response && error.response.data){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${error.response.data.error}`
+                    });
+                }
+            });
+        }
+
+    }
+
     return (
 
         <React.Fragment>
@@ -126,16 +212,33 @@ export default function Header({userState}) {
                                     (   
                                         notifications.map(notification => 
                                             <React.Fragment>
-
                                             <a class="dropdown-item d-flex align-items-center" href>
                                                 <div class='col-md-12'>
                                                     <div class="font-weight-bold">
                                                         <div class="small text-gray-500">{notification.notification_date.substring(0,16)}</div>
                                                         <div class="row">
                                                             <span class=" text-truncate">
-                                                                {notification.notification_content}                                                        </span>
+                                                                {notification.notification_content}
+                                                           </span>
+                                                           <div class="dropdown-list-image mr-2">
+                                                                <button title='View notification' data-id={notification.notification_id} type='button' onClick={viewNotification} data-toggle="modal" data-target="#notificationModal" class='float-right btn-circle btn-sm btn-success'>
+                                                                    <i class='fas fa-eye'></i>
+                                                                </button>{' '}
+                                                           </div>
                                                             <div class="dropdown-list-image mr-2">
-                                                                <div class="status-indicator bg-success"></div>{' '} <button class = 'float-right btn-circle btn-sm btn-danger'><i class='fas fa-trash'></i></button>
+                                                                {
+                                                                    notification.notification_viewed === false ? 
+                                                                    (
+                                                                        <div title='Never opened' class="status-indicator bg-success"></div>
+                                                                    )
+                                                                    :
+                                                                    (
+                                                                        <div title='Notification opened' class="status-indicator bg-default"></div>
+                                                                    )
+                                                                }
+                                                                <button data-id={notification.notification_id} title='Dismiss notification' type='button' onClick={deleteNotification} class='float-right btn-circle btn-sm btn-danger'>
+                                                                    <i class='fas fa-trash'></i>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -203,6 +306,30 @@ export default function Header({userState}) {
                 </div>
             </div>
             {/*<!-- End of Logout Modal-->*/}
+
+            {/*<!-- Notification Modal -->*/}
+            <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="notificationDate">Date</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id='notificationContent'>
+
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/*<!-- End of Notification Modal-->*/}
 
         </React.Fragment>
     )

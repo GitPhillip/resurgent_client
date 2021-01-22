@@ -6,13 +6,13 @@ export const typeSlice = createSlice({
     initialState: {
 
         assetTypes: [
-            {
+            /*{
                 //This is just a placeholder to ensure code doesn't break before we update the state.
                 type_id: 0,
                 type_alias:"placeholder",
                 type_description:"placeholder",
                 deleted:false
-            }
+            }*/
         ],
         isLoading: false,
         error: false
