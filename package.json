@@ -53,6 +53,6 @@
   },
   "devDependencies": {
     "css-loader": "^5.0.1"
-  }
-  
+  },
+  "proxy": "http://localhost:3000"
 }
