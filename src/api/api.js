@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const api = axios.create({
-    baseURL: `${process.env.PROXY}/api`,
+    baseURL: `/api`,
     headers: {
         'Content-Type': 'application/json'
     },
