@@ -600,7 +600,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     let deleteOneDevice = (e) =>{
         
         //Get the device id
-        var deviceId = e.target.getAttribute('data-id');
+        var deviceId = parseInt(e.target.getAttribute('data-id'));
 
         if(isNaN(deviceId)){
             Swal.fire({
@@ -619,7 +619,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             }).then((result) => {
                 if (result.isConfirmed) {
                 
-                    //send the api
+                    //send the api .get('/customers')
                     api.delete(`/devices/${deviceId}`)
                     .then(response =>{
 
@@ -942,7 +942,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].device_id} data-toggle="modal" data-target="#attachAssetModal" onClick={viewAssetsToAttach} title='Attach the device to an asset'>
                             <i class="fas fa-plus fa-sm fa-fw mr-2"></i>
                             Attach
-                    </button>
+                    </button>{' '}
                     <button  type="button" class="btn btn-danger btn-sm" data-id={dataRows[i].device_id} onClick={deleteOneDevice}>
                             <i class="fas fa-trash fa-sm fa-fw mr-2"></i>
                             Delete
@@ -1118,10 +1118,9 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <label class='label'>Device Packet</label>
-                                                    <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
+                                                    <label class='label'>Device PAC</label>
                                                     <input class='form-control' id='devicePac' required='required'
-                                                     name='devicePac' placeholder='Device Packet*'
+                                                     name='devicePac' placeholder='Device PAC*'
                                                      value={device_pac}
                                                      onChange={onDevicePacChange}
                                                      />
@@ -1309,9 +1308,9 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                 <div class="form-group">
                                                     <div class="row">
                                                         <div class="col-md-6">
-                                                            <label class='label'>Device packet</label>
+                                                            <label class='label'>Device PAC</label>
                                                             <input type="text" readOnly='readonly' class='form-control' id='devicePacModal' 
-                                                             name='devicePacModal' placeholder='Device Packet* '
+                                                             name='devicePacModal' placeholder='Device PAC* '
                                                              value={device_pacModal}
                                                              onChange={onDevicePacChangeModal}/>
                                                         </div>
@@ -1489,60 +1488,6 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 </div>
             </div>
             {/*<!-- Attach Asset Modal-->*/}
-
-
-            {/*<!-- Device Packet Guide-->*/}
-            <div class="modal fade" id="packetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Custom message type decoding grammar?</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body bg-gray-300">
-
-                                <div class='col-md-12'>
-                                    <h6>The "custom format" grammar is as follows :</h6>
-                                    <div class='col-md-2'></div>
-                                    <div class='col-md-8 bg-white'>
-
-                                        format = field_def [" " field_def]* ;<br/>
-                                        field_def = field_name ":" byte_index ":" type_def ;<br/>
-                                        field_name = (alpha | digit | "#" | "_")* ;<br/>
-                                        byte_index = [digit*] ;<br/>type_def = bool_def | char_def | float_def |  uint_def ;<br/>
-                                        bool_def = "bool:" ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7") ;<br/>
-                                        char_def = "char:" length ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
-                                        float_def = "float:" ("32" | "64") [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
-                                        uint_def = "uint:" ["1" - "64"] [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
-                                        int_def = "int:" ["1" - "64"] [ ":little-endian" | ":big-endian" ] ("0" | "1" | "2" | "3" | "4" | "5" | "6" | "7");<br/>
-                                        length = number* ;<br/>digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-                                    </div>
-                                    <div class='col-md-2'></div>
-                                </div>
-                                <div class='col-md-12'><br/><br/>
-                                A field is defined by its name, its position in the message bytes, its length and its type :<br/>
-                                the field name is an identifier including letters, digits and the '-' and '_' characters.
-                                the byte index is the offset in the message buffer where the field is to be read from, starting at zero. If omitted, the position used is the current byte for boolean fields, the next byte for all other types if the previous element has no bit offset and the last byte used if the previous element has a bit offset. For the first field, an omitted position means zero (start of the message buffer)
-                                Next comes the type name and parameters, which varies depending on the type :<br/>
-                                <i class="fas fa-square"></i><strong> boolean</strong>: parameter is the bit position in the target byte <br/>
-                                <i class="fas fa-square"></i><strong> char</strong> : parameter is the number of bytes to gather in a string, and optionally the bit offset where to start the reading of the first byte, Default value is 7 for the offset <br/>
-                                <i class="fas fa-square"></i><strong> float</strong> : parameters are the length in bits of the value, which can be either 32 or 64 bits, optionally the endianness for multi-bytes floats, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset. Decoding is done according to the IEEE 754 standard.<br/>
-                                <i class="fas fa-square"></i><strong> uint</strong> (unsigned integer) : parameters are the number of bits to include in the value, optionally the endianness for multi-bytes integers, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset.<br/>
-                                <i class="fas fa-square"></i><strong> int</strong> (signed integer) : parameters are the number of bits to include in the value, optionally the endianness for multi-bytes integers, and optionally the bit offset where to start the reading of the first byte. Default is big endian and 7 for the offset.<br/>
-                                </div>
-
-
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            </div>
-                    </div>
-                </div>
-            </div>
-            {/*<!-- Device Packet Guide-->*/}
 
         </React.Fragment>
     )

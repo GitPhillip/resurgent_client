@@ -27,8 +27,11 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     let devicesState = deviceState.devices;
 
     //Make deep copies of the states
-    let dataRows = JSON.parse(JSON.stringify(assetsState));
-    let customerRows = JSON.parse(JSON.stringify(customersState));
+    const [dataRows, setDataRows] = useState(JSON.parse(JSON.stringify(assetsState)));
+    const [customerRows, setCustomerRows] = useState(JSON.parse(JSON.stringify(customersState)));
+
+    //let dataRows = JSON.parse(JSON.stringify(assetsState));
+    //let customerRows = JSON.parse(JSON.stringify(customersState));
     let assetTypeRows = JSON.parse(JSON.stringify(assetTypesState));
 
     //On page load and other
@@ -126,6 +129,30 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                             customer_id
                         })
                     )
+
+                    let tempData = dataRows;
+                    //For Every object in the JSON object
+                    for(var i = 0; i<tempData.length;i++){
+
+                        //Replace the customer id with the customer name
+                        //loop through all the customers
+                        for(var k = 0; k <customerRows.length; k++ ){
+
+                            if(customerRows[k]['customer_id']===tempData[i]['customer_id'] )
+                                tempData[i]['customer_id'] = customerRows[k]['customer_name'];
+                            
+                        }
+                        
+                        //loop through all the asset types
+                        for(var j = 0; j <assetTypeRows.length; j++ ){
+
+                            if(assetTypeRows[j]['type_id']===tempData[i]['asset_type_id'] )
+                                tempData[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+                            
+                        }
+                    }
+                    //set the data rows
+                    setDataRows(tempData);
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
@@ -407,6 +434,32 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                             })
                         )
 
+                        let tempData = dataRows;
+                        let customers = customerRows;
+                        //For Every object in the JSON object
+                        for(var i = 0; i<tempData.length;i++){
+
+                            //Replace the customer id with the customer name
+                            //loop through all the customers
+                            for(var k = 0; k <customers.length; k++ ){
+
+                                if(customers[k]['customer_id']===tempData[i]['customer_id'] )
+                                    tempData[i]['customer_id'] = customers[k]['customer_name'];
+                                
+                            }
+                            
+                            //loop through all the asset types
+                            for(var j = 0; j <assetTypeRows.length; j++ ){
+
+                                if(assetTypeRows[j]['type_id']===tempData[i]['asset_type_id'] )
+                                    tempData[i]['asset_type_id'] = assetTypeRows[j]['type_alias'];
+                                
+                            }
+                        }
+                        //set the data rows
+                        setDataRows(tempData);
+                        setCustomerRows(customers);
+
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
                         let entry_content = `Asset Update: User (ID: ${user.user_id}) edited an asset with name ${asset_nameModal} (ID '${assetId}).`;
@@ -433,21 +486,6 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                             text: `${response.data.message}`
                         });
 
-                        //Just change the id to the alias
-                        //get the state again
-                        dataRows = JSON.parse(JSON.stringify(assetsState));
-
-                        const existingAsset = dataRows.find(asset => asset.asset_id ===assetId);
-
-                        //loop through all the customers
-                        for(var k = 0; k <customerRows.length; k++ ){
-
-                            if(existingAsset.customer_id===customerRows[k]['customer_id'] )
-                            {
-                                existingAsset.customer_id = customerRows[k]['customer_name'];
-                            }
-                                
-                        }
 
                         //clear all the input fields
                         setAssetTypeIdModal('');
@@ -542,8 +580,6 @@ export default function AssetManagement({customerState,assetState,deviceState, a
             })
     }
     
-
-        
     //For Every object in the JSON object
     for(var i = 0; i<dataRows.length;i++){
 

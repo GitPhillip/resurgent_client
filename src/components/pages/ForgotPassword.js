@@ -1,6 +1,71 @@
-import React from 'react'
+import React, {useState} from 'react';
+
+import Swal from 'sweetalert2';
+//Import the api
+import api from '../../api/api';
 
 export default function ForgotPassword() {
+
+    //Need to have the local states
+    const [email, setEmail] = useState('');
+
+    //set the onchange listener
+    const onEmailChange = e => setEmail(e.target.value);
+
+    //Function to send the api request
+    let forgotPassword = (e) =>{
+
+        //Prevent the form from submitting
+        e.preventDefault();
+
+        //Send the api request
+        api.post('/auth/reset_password',{
+            email,
+        }).then(response =>{
+
+            //***************SYSTEM LOG********************* */
+            //********************************************** */
+            let entry_content = `Forgot Password Reset: User (Names: ${response.data.user.user_firstname} ${response.data.user.user_surname} ID: ${response.data.user.user_id}) forgot their password and reset it. New password sent to their email`;
+            api.post('/systemlog',{
+                user_id: response.data.user.user_id,
+                entry_content})
+            .then()
+            .catch(error =>{
+                if(error.response && error.response.data){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${error.response.data.error}`
+                    });
+                }
+            });
+            //***************SYSTEM LOG********************* */
+            //********************************************** */
+
+            //Trigger the swal
+            Swal.fire({
+                icon: 'success',
+                title: 'Password Reset!',
+                text: `${response.data.message}`
+            });
+
+            //Clear the inputs
+            setEmail('');
+
+        })
+        .catch(error =>{
+            if(error.response && error.response.data){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `${error.response.data.error}`
+                });
+            }
+        });
+
+
+    }
+
     return (
         <div class="bg-gradient-primary">
             
@@ -23,15 +88,16 @@ export default function ForgotPassword() {
                                                 <p class="mb-4">We get it, stuff happens. Just enter your email address below
                                                     and we'll send you a link to reset your password!</p>
                                             </div>
-                                            <form class="user">
+                                            <form class='user' method='post' onSubmit={forgotPassword}>
                                                 <div class="form-group">
-                                                    <input type="email" class="form-control form-control-user"
-                                                        id="exampleInputEmail" aria-describedby="emailHelp"
-                                                        placeholder="Enter Email Address..." />
+                                                    <input type="email" class="form-control form-control-user" required='required'
+                                                        id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." 
+                                                        value={email}
+                                                        onChange={onEmailChange}/>
                                                 </div>
-                                                <a href="login.html" class="btn btn-primary btn-user btn-block">
+                                                <button type='submit' class="btn btn-primary btn-user btn-block">
                                                     Reset Password
-                                                </a>
+                                                </button>
                                             </form>
                                             <hr />
                                             <div class="text-center">
@@ -48,7 +114,7 @@ export default function ForgotPassword() {
                 </div>
 
             </div>
-
+            <br/><br/><br/><br/><br/><br/><br/>
         </div>
     )
 }

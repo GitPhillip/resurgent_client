@@ -1,6 +1,9 @@
-import React, {useEffect} from 'react'
+import React, {useState} from 'react'
 import { Redirect} from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
+
+//Swal
+import Swal from 'sweetalert2'
 
 //global fetches
 import {useSelector} from 'react-redux';
@@ -8,19 +11,58 @@ import {useSelector} from 'react-redux';
 //api import
 import api from '../../api/api';
 
+//Maps
+import GoogleMapReact from 'google-map-react';
+
 export default function CustomerAssets({customerState,assetState,deviceState, assetTypeState}) {
 
     let data;
-    //***********Functions************ */
 
     let IsLoadingAssestTypes = assetTypeState.isLoading;
 
-    //On page load
-    useEffect(() => {
-       
-        
-    }, [])
+    //set the center of the map - Centre is set to the center of South Africa
+    const center = {
+        lat: -28.4792625,
+        lng: 24.6727135
+    };
+    //How far in to zoom
+    const zoom = 6;
 
+    //google api key
+    const GoogleMapAPIKey= 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas';//'AIzaSyA5N9f2NrFQbQwtXVVBmmWldkhJ40U03Vg';
+
+    //state to hold the live devices (we want their live packet data)
+    const [liveDevices, setLiveDevices] = useState();
+
+    //Truck icon to be displayed
+    const [truckIcon, setTruckIcon] = useState();
+
+    //for all the columns in the payload
+    const [columns, setColumns] = useState([]);
+
+    //Array to put the columns
+    var columnsArray = [];
+
+    //data packet payload
+    const [payload, setPayload] = useState([]);
+
+    const user = useSelector(state => state.user.user);
+    //if the company id is not there
+    if(user.user_company_id ===undefined){
+        return <Redirect to='/' />
+    }
+
+    //loop through the assets and return those thaat belong to the session company
+    const customerAssets = assetState.assets.filter(asset => asset.customer_id === user.user_company_id);
+
+    //Make deep copies of the states
+    let dataRows = JSON.parse(JSON.stringify(customerAssets));
+    let customerRows = JSON.parse(JSON.stringify(customerState.customers));
+    let assetTypeRows = JSON.parse(JSON.stringify(assetTypeState.assetTypes));
+
+    let devicesState = deviceState.devices;
+
+    
     //Function to view customer assets
     let viewAssetDetails = (e) =>{
         
@@ -49,19 +91,185 @@ export default function CustomerAssets({customerState,assetState,deviceState, as
         });
     }
 
-    const user = useSelector(state => state.user.user);
-    //if the company id is not there
-    if(user.user_company_id ===undefined){
-        return <Redirect to='/' />
+    //
+    let circleColour;
+
+    //Function to view the live data of assets
+    let viewLiveData = (e) =>{
+
+        //Get the asset id
+        var assetId = parseInt(e.target.getAttribute('data-id'));
+        
+        if(isNaN(assetId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
+
+            //find all the devices that contain this asset it and put them in an array
+            let stateDevices = JSON.parse(JSON.stringify(devicesState));
+            let assetDevices = stateDevices.filter(device => device.asset_id === assetId);
+
+            for(var i = 0; i< assetDevices.length; i++){
+
+                //Change the colour of the circles according to device states
+                if(assetDevices[i]['device_status'].includes("IN USE")) circleColour = <i class="fas fa-circle text-success"></i>
+                else if(assetDevices[i]['device_status'].includes("BEING REPAIRED")) circleColour = <i class="fas fa-circle text-warning"></i>
+                else if(assetDevices[i]['device_status'].includes("DECOMMISSIONED")) circleColour = <i class="fas fa-circle text-danger"></i>
+                
+                assetDevices[i]['device_name'] = (
+                    <div>
+                        <a type='button' data-id={assetDevices[i]['device_id']} onClick={viewPacketData} href>
+                            {circleColour}{assetDevices[i]['device_name']}
+                        </a>
+                    </div>
+                );
+                
+                
+            }
+            //Update the state
+            setLiveDevices(assetDevices);
+
+        }
+
     }
 
-    //loop through the assets and return those thaat belong to the session company
-    const customerAssets = assetState.assets.filter(asset => asset.customer_id === user.user_company_id);
+    //Live devices data table details
+    let liveData = {
 
-    //Make deep copies of the states
-    let dataRows = JSON.parse(JSON.stringify(customerAssets));
-    let customerRows = JSON.parse(JSON.stringify(customerState.customers));
-    let assetTypeRows = JSON.parse(JSON.stringify(assetTypeState.assetTypes));
+        columns: [
+          {
+            label: 'Device Name',
+            field: 'device_name',
+            sort: 'asc',
+          },
+          {
+            label: 'Serial Number',
+            field: 'device_serial',
+            sort: 'asc',
+          },
+          
+        ],
+        rows: liveDevices
+    };
+
+    //Function to populate the packet data table
+    let viewPacketData = (e) => { 
+
+        //Get the asset id
+        var deviceId = parseInt(e.target.getAttribute('data-id'));
+        if(isNaN(deviceId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
+
+            let tempData = [];
+            let latestRecordIndex;
+
+            //get the device that has just been clicked on
+            const deviceClicked = devicesState.find(device => device.device_id === parseInt(deviceId));
+
+            //Send the API request to get the device packet data
+            api.get(`/datapackets/device/${deviceId}`)
+            .then(response =>{
+
+                //Populate the device packet data rows
+                for(var i = 0; i< response.data.data.length; i++){
+                    //Parse each object as a JSON object
+                    tempData.push(JSON.parse(response.data.data[i].payload));
+
+                    //replace the true/false with a string
+                    if(tempData[i]['MPPT_Load_Current']===false) tempData[i]['MPPT_Load_Current'] = 'No';
+                    else tempData[i]['MPPT_Load_Current'] = 'True';
+
+                    //Add the date of each payload to the actual payload for the device
+                    tempData[i]['packet_date'] = response.data.data[i].packet_date.substring(0,16);
+
+                }
+                //Set the data to the local state payload
+                setPayload(tempData); 
+
+                latestRecordIndex = 0;
+                let array;
+                Object.keys(tempData[latestRecordIndex]).forEach(key =>{
+                    //put the keys in an array
+                    columnsArray.push({
+                        label: key,
+                        field: key,
+                        sort: 'asc'
+                    });
+
+                    //Check if the GPS Coordinate key is there
+                    if(key==='GPS'){
+                        array = tempData[latestRecordIndex][key].toString().split(',');
+                    }
+                });
+
+                //set the columns
+                setColumns(columnsArray);
+
+                //Change the colour of the trucks for the map
+                if(deviceClicked.device_status.includes("IN USE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
+                if(deviceClicked.device_status.includes("BEING REPAIRED")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
+                if(deviceClicked.device_status.includes("DECOMMISSIONED")) setTruckIcon(<i class='fa fa-truck fa-2x text-danger' lat={array[0]} lng={array[1]} />)
+                
+            })
+            .catch(error =>{
+                if(error.response && error.response.data){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `${error.response.data.error}`
+                    });
+                }
+            })
+        }
+    }
+
+    //Populate the datatable with all the device data packets
+    let devicePacketData = {
+
+        columns,
+        rows: payload
+    };
+
+
+    data = {
+
+        columns: [
+          {
+            label: 'Asset ID',
+            field: 'asset_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Name',
+            field: 'asset_name',
+            sort: 'asc',
+          },
+          {
+            label: 'Customer Name',
+            field: 'customer_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Asset Type',
+            field: 'asset_type_id',
+            sort: 'asc',
+          },
+          {
+            label: 'Action',
+            field: 'action'
+          },
+          
+        ],
+        rows: dataRows
+      };
 
     //Add the action column
     //For Every object in the JSON object
@@ -91,6 +299,10 @@ export default function CustomerAssets({customerState,assetState,deviceState, as
                 <button type="button" class="btn btn-success btn-sm" onClick={viewAssetDetails} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#assetDetailsModal">
                     <i class="fas fa-truck fa-sm fa-fw mr-2 text-gray-400"></i>
                     View Details
+                </button>{' '}
+                <button  type="button" class="btn btn-primary btn-sm" onClick={viewLiveData} data-id={dataRows[i]['asset_id']} data-toggle="modal" data-target="#liveDataModal">
+                    <i class="fas fa-globe-africa fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Live Data 
                 </button>
             </div>
         )
@@ -234,6 +446,53 @@ export default function CustomerAssets({customerState,assetState,deviceState, as
             </div>
         </div>
         {/* End Asset Details Modal */}
+
+        {/* Live Data Modal */}
+        <div class="modal fade" id="liveDataModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Live Asset Details</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class='col-md-12'>
+                            <div class='row'>
+                                <div class='col-md-6'>
+                                    <GoogleMapReact
+                                        bootstrapURLKeys={{ key: GoogleMapAPIKey }}
+                                        defaultCenter={center}
+                                        defaultZoom={zoom}>
+
+                                        {truckIcon}
+
+                                    </GoogleMapReact>
+                                </div>
+                                <div class='col-md-6'>
+                                    <div class="table-responsive">
+                                        <MDBDataTable size="sm" striped bordered data={liveData} />
+                                    </div>
+                                </div>
+                            </div><br/><br/>
+                            <div class='row'>
+                                <div class="table-responsive">
+                                    <MDBDataTable striped bordered data={devicePacketData} />
+                                </div>        
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/* End Live Data Modal */}
 
     </React.Fragment>
     )
