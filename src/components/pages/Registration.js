@@ -159,8 +159,8 @@ export default function Registration() {
                 //***************SYSTEM LOG********************* */
                 //********************************************** */
                 let entry_content = ``;
-                if(user_type_id===1) entry_content = `Employee Reg: User (ID: ${user.user_id}) registered an admin with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
-                else entry_content = `Employee Reg: User (ID: ${user.user_id}) registered a technician with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
+                if(parseInt(user_type_id)===1) entry_content = `Employee Reg: User (ID: ${user.user_id}) registered an admin with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
+                if(parseInt(user_type_id)===2) entry_content = `Employee Reg: User (ID: ${user.user_id}) registered a technician with name(s) ${user_firstname} ${user_surname} (ID: ${response.data.data.user_id}).`;
                 
                 api.post('/systemlog',{
                     user_id: user.user_id,
