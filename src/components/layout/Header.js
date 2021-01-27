@@ -288,7 +288,7 @@ export default function Header({userState}) {
                         <li class="nav-item dropdown no-arrow">
                             <Link class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-md-none d-lg-inline text-gray-600 small"><i class='fa fa-edit fa-xs'></i></span>
+                                <span class="mr-2 d-xl-none d-lg-none d-lg-inline text-gray-600 "><i class='fa fa-sign-out-alt fa-sm'></i></span>
                             </Link>
                             {/*<!-- Dropdown - User notification-->*/}
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
