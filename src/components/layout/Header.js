@@ -184,8 +184,8 @@ export default function Header({userState}) {
                 {/*<!-- Topbar -->*/}
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                    {/*<!-- Sidebar Toggle (Topbar) -->*/}
-                    <a href class="btn btn-link d-md-none rounded-circle mr-3 navbar-toggle" data-toggle="collapse" data-target="#accordionSidebar" aria-expanded="false">
+                    {/*<!-- Sidebar Toggle (Topbar) d-md-none -->*/}
+                    <a href class="btn btn-link rounded-circle mr-3 navbar-toggle" data-toggle="collapse" data-target="#accordionSidebar" aria-expanded="false">
                         <i class="fa fa-bars"></i>
                     </a>
 

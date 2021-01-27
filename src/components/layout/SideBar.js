@@ -4,8 +4,7 @@ export default function SideBar() {
 
     return (
 
-        <div class=' navbar-toggleable'>
-            {/*<!-- Sidebar -->*/}
+           // {/*<!-- Sidebar -->*/}
             <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                 {/*<!-- Sidebar - Brand --> "images/favicon.ico"*/}
@@ -134,8 +133,7 @@ export default function SideBar() {
                 <hr class="sidebar-divider d-none d-md-block" />
 
             </ul>
-           {/*<!-- End of Sidebar -->*/}
+          // {/*<!-- End of Sidebar -->*/}
 
-        </div>
     )
 }
