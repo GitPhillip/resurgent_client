@@ -265,13 +265,13 @@ export default function Header({userState}) {
                     
                     </ul>
                     <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                        <div class="topbar-divider d-none d-sm-block"></div>
+                        <div class="topbar-divider d-md-none d-sm-block"></div>
 
                         {/*<!-- Nav Item - User Information-->*/}
                         <li class="nav-item dropdown no-arrow">
                             <Link class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{usersState.user_firstname+ " "+ usersState.user_surname}</span>
+                                <span class="mr-2 d-md-none d-lg-inline text-gray-600 small">{usersState.user_firstname+ " "+ usersState.user_surname}</span>
                             </Link>
                             {/*<!-- Dropdown - User notification-->*/}
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
