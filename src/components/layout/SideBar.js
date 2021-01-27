@@ -6,7 +6,7 @@ export default function SideBar() {
     return (
 
             //{/*<!-- Sidebar -->*/}
-            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion  " id="accordionSidebar">
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion navbar-toggleable " id="accordionSidebar">
 
                 {/*<!-- Sidebar - Brand --> "images/favicon.ico"*/}
                 <Link class="sidebar-brand d-flex align-items-center justify-content-center" to="/admin/dashboard">
