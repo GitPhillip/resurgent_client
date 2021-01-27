@@ -181,15 +181,13 @@ export default function Header({userState}) {
 
         <React.Fragment>
 
-            <header>
-
                 {/*<!-- Topbar -->*/}
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                     {/*<!-- Sidebar Toggle (Topbar) -->*/}
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <a href class="btn btn-link d-md-none rounded-circle mr-3 navbar-toggle" data-toggle="collapse" data-target="#accordionSidebar" aria-expanded="false">
                         <i class="fa fa-bars"></i>
-                    </button>
+                    </a>
 
                     {/*<!-- Topbar Navbar  -->*/}
                     <ul class="navbar-nav ml-auto ">
@@ -289,7 +287,6 @@ export default function Header({userState}) {
                 </nav>
                 {/*<!--  End of Topbar-->*/}
 
-            </header>
 
             {/*<!--  Logout Modal-->*/}
             <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

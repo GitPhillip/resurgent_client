@@ -361,7 +361,7 @@ export default function Registration() {
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <label class='label'>Admin User Type</label>
+                                                <label class='label'>Employee User Type</label>
                                                 <select required='required' class="form-control" id='userType' name='userType'
                                                  value={user_type_id}
                                                  onChange={onEmployeeTypeChange}>
