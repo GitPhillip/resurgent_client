@@ -42,7 +42,7 @@ export default function ForgotPassword() {
             //***************SYSTEM LOG********************* */
             //********************************************** */
 
-            alert(JSON.stringify(response.data.user))
+            alert(JSON.stringify(response.data))
 
             //Trigger the swal
             Swal.fire({
