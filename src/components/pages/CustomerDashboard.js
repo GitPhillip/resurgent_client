@@ -294,9 +294,6 @@ export default function Dashboard() {
                                     <span class="mr-2">
                                         <i class="fas fa-circle text-danger"></i> Decommissioned
                                     </span>
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-default"></i> Idle
-                                    </span>
                                 </div>
                             </div>
                         </div>
