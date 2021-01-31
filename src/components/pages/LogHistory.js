@@ -13,7 +13,7 @@ export default function LogHistory() {
     const [systemLogs, setSystemLog] = useState([]);//The initial state of systemLog is empty
     const [allUsers, setAllUsers] = useState([]);//The initial state of systemLog is empty
 
-    let data;
+    let columns;
 
     //On page load
     useEffect(()=>{
@@ -41,29 +41,23 @@ export default function LogHistory() {
                 setAllUsers(response.data.data);
             });
 
-            data = {
-
-                columns: [
-                  {
-                    label: 'Entry Date',
-                    field: 'entry_date',
-                    sort: 'desc',
-                  },
-                  {
-                    label: 'Entry Content',
-                    field: 'entry_content',
-                    sort: 'asc',
-                  },
-                  {
-                    label: 'Name & Surname',
-                    field: 'names',
-                    sort: 'asc',
-                  },
-                  
-                  
-                ],
-                rows: dataRows
-              };
+            columns= [
+                {
+                  label: 'Entry Date',
+                  field: 'entry_date',
+                  sort: 'desc',
+                },
+                {
+                  label: 'Entry Content',
+                  field: 'entry_content',
+                  sort: 'asc',
+                },
+                {
+                  label: 'Name & Surname',
+                  field: 'names',
+                  sort: 'asc',
+                },
+              ]
         }
         //else if it is a technician
         else if(user.user_type === 'TECHNICIAN'){
@@ -82,24 +76,18 @@ export default function LogHistory() {
                 setAllUsers(response.data.data);
             });
 
-            data = {
-
-                columns: [
-                  {
-                    label: 'Entry Date',
-                    field: 'entry_date',
-                    sort: 'desc',
-                  },
-                  {
-                    label: 'Entry Content',
-                    field: 'entry_content',
-                    sort: 'asc',
-                  }
-                  
-                  
-                ],
-                rows: dataRows
-              };
+            columns= [
+                {
+                  label: 'Entry Date',
+                  field: 'entry_date',
+                  sort: 'desc',
+                },
+                {
+                  label: 'Entry Content',
+                  field: 'entry_content',
+                  sort: 'asc',
+                },
+            ]
         }
         
 
@@ -108,7 +96,7 @@ export default function LogHistory() {
 
     let dataRows = JSON.parse(JSON.stringify(systemLogs));
     let userRows = JSON.parse(JSON.stringify(allUsers));
-   
+    
     for(var i = 0; i<dataRows.length;i++){
 
         //loop through all the users
@@ -124,6 +112,12 @@ export default function LogHistory() {
 
         }
     }
+
+    let data = {
+
+        columns: columns,
+        rows: dataRows
+      };
 
     return (
         <div class="container mt-8 mb-8">
