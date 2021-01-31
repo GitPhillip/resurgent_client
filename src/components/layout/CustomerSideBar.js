@@ -34,12 +34,12 @@ export default function CustomerSideBar() {
                 </div>
 
                 {/*<!-- Personal Profile Management -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/customer/profile" >
                         <i class="fas fa-fw fa-user"></i>
                         <span> Company & Personal Profile</span>
                     </Link>
-                </li>
+                </div>
 
 
                  {/*<!-- Divider -->*/}
