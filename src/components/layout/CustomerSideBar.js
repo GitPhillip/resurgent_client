@@ -5,8 +5,9 @@ export default function CustomerSideBar() {
 
     return (
 
-            //{/*<!-- Sidebar -->*/}
-            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <nav class="nav" id="accordionSidebar" role="navigation">
+            {/*<!-- Sidebar --> bg-gradient-primary navbar-nav  sidebar-dark accordion*/}
+            <ul class="bg-gradient-primary sidebar-nav sidebar-dark accordion" >
 
                 {/*<!-- Sidebar - Brand --> "images/favicon.ico"*/}
                 <Link class="sidebar-brand d-flex align-items-center justify-content-center"to="/customer/dashboard">
@@ -21,7 +22,7 @@ export default function CustomerSideBar() {
                 <li class="nav-item active">
                     <Link class="nav-link" to="/customer/dashboard">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
-                        <span>Dashboard</span></Link>
+                        <span> Dashboard</span></Link>
                 </li>
 
                 {/*<!-- Divider -->*/}
@@ -36,7 +37,7 @@ export default function CustomerSideBar() {
                 <li class="nav-item">
                     <Link class="nav-link" to="/customer/profile" >
                         <i class="fas fa-fw fa-user"></i>
-                        <span>Company & Personal Profile</span>
+                        <span> Company & Personal Profile</span>
                     </Link>
                 </li>
 
@@ -54,14 +55,14 @@ export default function CustomerSideBar() {
                 <li class="nav-item">
                     <Link class="nav-link" to="/customer/assets">
                         <i class="fas fa-fw fa-truck"></i>
-                        <span>Assets</span></Link>
+                        <span> Assets</span></Link>
                 </li>
 
                 {/*<!-- Nav Item - Charts -->*/}
                 <li class="nav-item">
                     <Link class="nav-link" to="/customer/devices">
                         <i class="fas fa-fw fa-cog"></i>
-                        <span>Devices</span></Link>
+                        <span> Devices</span></Link>
                 </li>
 
                 {/*<!-- Divider -->*/}
@@ -76,14 +77,16 @@ export default function CustomerSideBar() {
                 <li class="nav-item">
                     <Link class="nav-link" to="/customer/log_history">
                         <i class="fas fa-fw fa-clock"></i>
-                        <span>Log History</span></Link>
+                        <span> Log History</span></Link>
                 </li>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />
 
             </ul>
-           // {/*<!-- End of Sidebar -->*/}
+           {/*<!-- End of Sidebar -->*/}
+
+        </nav>
 
     )
 }
