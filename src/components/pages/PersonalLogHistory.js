@@ -60,7 +60,13 @@ export default function PersonalLogHistory() {
             label: 'Entry Content',
             field: 'entry_content',
             sort: 'asc',
-          }          
+          },
+          {
+            label: 'User Name',
+            field: 'names',
+            sort: 'asc',
+          },
+          
           
         ],
         rows: dataRows
