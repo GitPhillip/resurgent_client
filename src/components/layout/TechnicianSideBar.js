@@ -5,10 +5,10 @@ export default function TechnicianSideBar() {
 
     return (
 
-        <nav class="nav" id="accordionSidebar" role="navigation">
+        <nav class="nav" id="accordionSidebar" role="navigation" style={background}>
             
             {/*<!-- Sidebar --> bg-gradient-primary navbar-nav  sidebar-dark accordion*/}
-            <ul class="bg-gradient-primary sidebar-nav sidebar-dark accordion" >
+            <ul class="sidebar-nav sidebar-dark accordion" >
 
                 {/*<!-- Sidebar - Brand --> "images/favicon.ico"*/}
                 <Link class="sidebar-brand d-flex align-items-center justify-content-center" to="/technician/dashboard">
@@ -109,4 +109,9 @@ export default function TechnicianSideBar() {
         </nav>
 
     )
+}
+
+
+const background ={
+    backgroundColor: '#014375'
 }

@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { Link} from 'react-router-dom';
 
 import Swal from 'sweetalert2';
 //Import the api
@@ -67,7 +68,7 @@ export default function ForgotPassword() {
     }
 
     return (
-        <div class="bg-gradient-primary">
+        <div class="" style={background}><br/><br/>
             
             <div class="container">
 
@@ -101,7 +102,7 @@ export default function ForgotPassword() {
                                             </form>
                                             <hr />
                                             <div class="text-center">
-                                                <a class="small" href="/">Know your password? Login!</a>
+                                                <Link class="small" to="/">Know your password? Login!</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -117,4 +118,9 @@ export default function ForgotPassword() {
             <br/><br/><br/><br/><br/><br/><br/>
         </div>
     )
+}
+
+
+const background ={
+    backgroundColor: '#014375'
 }
