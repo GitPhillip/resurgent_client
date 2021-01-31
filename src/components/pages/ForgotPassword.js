@@ -25,7 +25,7 @@ export default function ForgotPassword() {
 
             //***************SYSTEM LOG********************* */
             //********************************************** */
-            /*let entry_content = `Forgot Password Reset: User (Names: ${response.data.user.user_firstname} ${response.data.user.user_surname} ID: ${response.data.user.user_id}) forgot their password and reset it. New password sent to their email`;
+            let entry_content = `Forgot Password Reset: User (Names: ${response.data.updatedUser.user_firstname} ${response.data.updatedUser.user_surname} ID: ${response.data.updatedUser.user_id}) forgot their password and reset it. New password sent to their email`;
             api.post('/systemlog',{
                 user_id: response.data.user.user_id,
                 entry_content})
@@ -42,7 +42,7 @@ export default function ForgotPassword() {
             //***************SYSTEM LOG********************* */
             //********************************************** */
 
-            alert(JSON.stringify(response.data))
+            alert(JSON.stringify(response.data.updatedUser))
 
             //Trigger the swal
             Swal.fire({
