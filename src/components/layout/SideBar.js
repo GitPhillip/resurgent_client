@@ -8,7 +8,7 @@ export default function SideBar() {
 
         <nav class="nav" id="accordionSidebar" role="navigation" style={background}>
             {/*<!-- Sidebar --> bg-gradient-primary navbar-nav  sidebar-dark accordion*/}
-            <ul class=" sidebar-nav sidebar-dark accordion" >
+            <ul class="sidebar-nav sidebar-dark accordion" >
 
                 {/*<!-- Sidebar - Brand --> "images/favicon.ico"*/}
                 <Link class="sidebar-brand d-flex align-items-center justify-content-center" to="/admin/dashboard">
