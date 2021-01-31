@@ -87,7 +87,7 @@ export default function ForgotPassword() {
                                             <div class="text-center">
                                                 <h1 class="h4 text-gray-900 mb-2">Forgot Your Password?</h1>
                                                 <p class="mb-4">Enter your email address below
-                                                    and we'll send you a new password</p>
+                                                    and we'll send you a new password.</p>
                                             </div>
                                             <form class='user' method='post' onSubmit={forgotPassword}>
                                                 <div class="form-group">
