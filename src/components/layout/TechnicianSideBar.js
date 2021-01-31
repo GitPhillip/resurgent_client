@@ -20,11 +20,11 @@ export default function TechnicianSideBar() {
                 <hr class="sidebar-divider my-0" />
 
                 {/*<!-- Nav Item - Dashboard -->*/}
-                <li class="nav-item active">
+                <div class="nav-item active">
                     <Link class="nav-link" to="/technician/dashboard">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span> Dashboard</span></Link>
-                </li>
+                </div>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider" />
@@ -35,12 +35,12 @@ export default function TechnicianSideBar() {
                 </div>
 
                 {/*<!-- Personal Profile Management -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/technician/profile" >
                         <i class="fas fa-fw fa-user"></i>
                         <span> Personal Profile</span>
                     </Link>
-                </li>
+                </div>
 
                  {/*<!-- Divider -->*/}
                  <hr class="sidebar-divider"/>
@@ -52,7 +52,7 @@ export default function TechnicianSideBar() {
                 </div>
 
                 {/*<!-- Nav Item - Assets -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link collapsed" to="#" data-toggle="collapse" data-target="#collapseAssets"
                         aria-expanded="true" aria-controls="collapseAssets">
                         <i class="fas fa-fw fa-truck"></i>
@@ -66,10 +66,10 @@ export default function TechnicianSideBar() {
                         </div>
                     </div>
 
-                </li>
+                </div>
 
                 {/*<!-- Nav Item - Pages Collapse Menu -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link collapsed" to="#" data-toggle="collapse" data-target="#collapseDevices"
                         aria-expanded="true" aria-controls="collapseDevices">
                         <i class="fas fa-fw fa-cog"></i>
@@ -82,7 +82,7 @@ export default function TechnicianSideBar() {
                             <Link class="collapse-item" to="/technician/device_management">Device Management</Link>
                         </div>
                     </div>
-                </li>
+                </div>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />
@@ -93,11 +93,11 @@ export default function TechnicianSideBar() {
                 </div>
 
                 {/*<!-- Nav Item - Charts -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/technician/log_history">
                         <i class="fas fa-fw fa-clock"></i>
                         <span> Log History</span></Link>
-                </li>
+                </div>
 
 
                 {/*<!-- Divider -->*/}

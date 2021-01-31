@@ -19,11 +19,11 @@ export default function CustomerSideBar() {
                 <hr class="sidebar-divider my-0" />
 
                 {/*<!-- Nav Item - Dashboard -->*/}
-                <li class="nav-item active">
+                <div class="nav-item active">
                     <Link class="nav-link" to="/customer/dashboard">
                         <i class="fas fa-fw fa-tachometer-alt"></i>
                         <span> Dashboard</span></Link>
-                </li>
+                </div>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider" />
@@ -52,18 +52,18 @@ export default function CustomerSideBar() {
                 </div>
 
                 {/*<!-- Nav Item - Charts -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/customer/assets">
                         <i class="fas fa-fw fa-truck"></i>
                         <span> Assets</span></Link>
-                </li>
+                </div>
 
                 {/*<!-- Nav Item - Charts -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/customer/devices">
                         <i class="fas fa-fw fa-cog"></i>
                         <span> Devices</span></Link>
-                </li>
+                </div>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />
@@ -74,11 +74,11 @@ export default function CustomerSideBar() {
                 </div>
 
                 {/*<!-- Nav Item - Charts -->*/}
-                <li class="nav-item">
+                <div class="nav-item">
                     <Link class="nav-link" to="/customer/log_history">
                         <i class="fas fa-fw fa-clock"></i>
                         <span> Log History</span></Link>
-                </li>
+                </div>
 
                 {/*<!-- Divider -->*/}
                 <hr class="sidebar-divider d-none d-md-block" />
