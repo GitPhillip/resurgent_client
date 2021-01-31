@@ -24,6 +24,25 @@ export default function ForgotPassword() {
         }).then(response =>{
 
             //***************SYSTEM LOG********************* */
+                    //********************************************** */
+                    let entry_content = `Device Reg: User (ID: ${user.user_id}) registered a device with name ${device_name} (ID: ${response.data.data.device_id}).`;
+                    api.post('/systemlog',{
+                        user_id: user.user_id,
+                        entry_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
+            //***************SYSTEM LOG********************* */
             //********************************************** */
             /*let entry_content = `Forgot Password Reset: User (Names: ${response.data.user.user_firstname} ${response.data.user.user_surname} ID: ${response.data.user.user_id}) forgot their password and reset it. New password sent to their email`;
             api.post('/systemlog',{
@@ -41,6 +60,8 @@ export default function ForgotPassword() {
             });
             //***************SYSTEM LOG********************* */
             //********************************************** */
+
+            alert(JSON.stringify(response.data.user))
 
             //Trigger the swal
             Swal.fire({
