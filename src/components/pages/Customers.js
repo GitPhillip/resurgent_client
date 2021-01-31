@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, {useState} from 'react';
 import { MDBDataTable, MDBBtn } from 'mdbreact';
 import Swal from 'sweetalert2';
 import {useDispatch, useSelector} from 'react-redux'

@@ -27,7 +27,7 @@ export default function CustotmerLogHistory() {
 
         //get the company users that belong to this company
         api.get(`/customerusers/customer/${user.user_company_id}`)
-        .then( response =>{
+        .then(response =>{
 
             //for all the customer users, get their system logs
             for(var  i = 0; i < response.data.data.length; i++){

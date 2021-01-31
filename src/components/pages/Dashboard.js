@@ -89,7 +89,7 @@ export default function Dashboard() {
             }
         });
 
-    }, []);
+    }, [activeUsersCount]);
       
     //***********Function to view device details**************
     let viewDeviceDetails = (e) => {

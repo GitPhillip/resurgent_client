@@ -48,7 +48,7 @@ export default function UserManagement() {
             }
         });
 
-    },[admins, technicians]);//only rerender if the admins change
+    }, [user]);//only rerender if the admins change
 
     let data;  
 

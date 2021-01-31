@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import {useSelector} from 'react-redux';
 import { MDBDataTable } from 'mdbreact';
@@ -57,10 +57,6 @@ export default function Dashboard() {
     
     //Array to put the columns
     var columnsArray = [];
-
-    useEffect(() => {
-       
-    }, [])
 
     //***********Function to view device details**************
     let viewDeviceDetails = (e) => {
