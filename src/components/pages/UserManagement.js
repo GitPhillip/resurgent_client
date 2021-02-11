@@ -57,7 +57,7 @@ export default function UserManagement() {
     let viewEmployeeDetails = (e) =>{
         
         //Get the customer id
-        var employeeId = praseInt(e.target.getAttribute('data-id'));
+        var employeeId = parseInt(e.target.getAttribute('data-id'));
         let userTypeDescription ='';
 
         if(isNaN(employeeId)){
