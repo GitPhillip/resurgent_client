@@ -218,38 +218,46 @@ export default function AssetManagement({customerState,assetState,deviceState, a
         {
             //Adjust the update button data-id of the button 
             document.getElementById('btnUpdateAsset').setAttribute('data-id', assetId);
-        }
 
-        //find all the devices that contain this asset it and put them in an array
-        let dataRows = JSON.parse(JSON.stringify(devicesState));
+            //find all the devices that contain this asset it and put them in an array
+            let dataRows = JSON.parse(JSON.stringify(devicesState));
 
-        let deviceHtml = ``;
-        for(var k =  0; k < dataRows.length;k++){
+            let deviceHtml = ``;
+            for(var k =  0; k < dataRows.length;k++){
+                
+                if(dataRows[k]['asset_id'] === assetId)
+                    deviceHtml += `<p><i class='fa fa-cog'></i> Device Name: ${dataRows[k]['device_name']}.  Serial Number: ${dataRows[k]['device_serial']} </p>`;
+            }
             
-            if(dataRows[k]['asset_id'] === assetId)
-                deviceHtml += `<p><i class='fa fa-cog'></i> Device Name: ${dataRows[k]['device_name']}.  Serial Number: ${dataRows[k]['device_serial']} </p>`;
+            //Send the axios request
+            api.get('/assets/'+assetId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('assetNameModal').value = response.data.data.asset_name;
+                document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
+                document.getElementById('customerIDModal').value = response.data.data.customer_id;
+                document.getElementById('deviceIdModal').innerHTML = deviceHtml;
+                document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
+
+                //update the state
+                setAssetNameModal(response.data.data.asset_name);
+                setAssetTypeIdModal(response.data.data.asset_type_id);
+                setCustomerIdModal(response.data.data.customer_id);
+                setAssetDescriptionModal(response.data.data.asset_description);
+
+            });
+
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
         }
-        
-        //Send the axios request
-        api.get('/assets/'+assetId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('assetNameModal').value = response.data.data.asset_name;
-            document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
-            document.getElementById('customerIDModal').value = response.data.data.customer_id;
-            document.getElementById('deviceIdModal').innerHTML = deviceHtml;
-            document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
 
-            //update the state
-            setAssetNameModal(response.data.data.asset_name);
-            setAssetTypeIdModal(response.data.data.asset_type_id);
-            setCustomerIdModal(response.data.data.customer_id);
-            setAssetDescriptionModal(response.data.data.asset_description);
-
-        });
     }
 
-    //
+    //For the device status colours
     let circleColour;
 
     //Function to view the live data of assets

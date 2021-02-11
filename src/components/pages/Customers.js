@@ -370,14 +370,24 @@ export default function Customers({customerState}) {
         
         //Get the customer id
         e.preventDefault();
-        var customerId = e.target.getAttribute('data-id');
+        var customerId = parseInt(e.target.getAttribute('data-id'));
 
-        //Send the axios request
-        api.get('/customerusers/customer/'+customerId)
-        .then(response => {
-            //update the state
-            setCustomerAdmins(response.data.data);
-        });
+        if(isNaN(customerId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
+
+            //Send the axios request
+            api.get('/customerusers/customer/'+customerId)
+            .then(response => {
+                //update the state
+                setCustomerAdmins(response.data.data);
+            });
+        }
+
     }
 
     let dataRows = JSON.parse(JSON.stringify(customersState));

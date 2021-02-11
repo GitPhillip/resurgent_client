@@ -57,28 +57,40 @@ export default function UserManagement() {
     let viewEmployeeDetails = (e) =>{
         
         //Get the customer id
-        var employeeId = e.target.getAttribute('data-id');
+        var employeeId = praseInt(e.target.getAttribute('data-id'));
         let userTypeDescription ='';
 
-        //get the specific user type
-        //Send the axios request
-        api.get('/usertypes/1')
-        .then(response =>{
-            userTypeDescription = response.data.data.user_type_description;
-        });
+        if(isNaN(employeeId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
 
-        //Send the axios request
-        api.get('/users/'+employeeId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('usernameHeading').innerText = response.data.data.username;
-            document.getElementById('firstName').value = response.data.data.user_firstname;
-            document.getElementById('surname').value = response.data.data.user_surname;
-            document.getElementById('email').value = response.data.data.user_email;
-            document.getElementById('cellphone').value = response.data.data.user_cellphone;
-            document.getElementById('userTypeDescription').value = userTypeDescription;
+            //get the specific user type
+            //Send the axios request
+            api.get('/usertypes/1')
+            .then(response =>{
+                userTypeDescription = response.data.data.user_type_description;
+            });
 
-        });
+            //Send the axios request
+            api.get('/users/'+employeeId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('usernameHeading').innerText = response.data.data.username;
+                document.getElementById('firstName').value = response.data.data.user_firstname;
+                document.getElementById('surname').value = response.data.data.user_surname;
+                document.getElementById('email').value = response.data.data.user_email;
+                document.getElementById('cellphone').value = response.data.data.user_cellphone;
+                document.getElementById('userTypeDescription').value = userTypeDescription;
+
+            });
+
+
+        }
+
     }
 
     //Delete Admin

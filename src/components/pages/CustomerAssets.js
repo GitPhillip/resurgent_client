@@ -73,22 +73,34 @@ export default function CustomerAssets({customerState,assetState,deviceState, as
         let dataRows = JSON.parse(JSON.stringify(deviceState.devices));
 
         let deviceHtml = ``;
-        for(var k =  0; k < dataRows.length;k++){
-            
-            if(dataRows[k]['asset_id'] === assetId)
-                deviceHtml += `<p><i class='fa fa-cog'></i> Packet Structure: ${dataRows[k]['device_pac']}.  Sigfox Id: ${dataRows[k]['sigfox_id']} </p>`;
-        }
-        
-        //Send the axios request
-        api.get('/assets/'+assetId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('assetNameModal').value = response.data.data.asset_name;
-            document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
-            document.getElementById('deviceIdModal').innerHTML = deviceHtml;
-            document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
 
-        });
+        if(isNaN(assetId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
+
+            for(var k =  0; k < dataRows.length;k++){
+            
+                if(dataRows[k]['asset_id'] === assetId)
+                    deviceHtml += `<p><i class='fa fa-cog'></i> Packet Structure: ${dataRows[k]['device_pac']}.  Sigfox Id: ${dataRows[k]['sigfox_id']} </p>`;
+            }
+
+            //Send the axios request
+            api.get('/assets/'+assetId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('assetNameModal').value = response.data.data.asset_name;
+                document.getElementById('assetTypeIdModal').value = response.data.data.asset_type_id;
+                document.getElementById('deviceIdModal').innerHTML = deviceHtml;
+                document.getElementById('assetDescriptionModal').value = response.data.data.asset_description;
+
+            });
+
+        }
+
     }
 
     //
@@ -160,6 +172,7 @@ export default function CustomerAssets({customerState,assetState,deviceState, as
 
         //Get the asset id
         var deviceId = parseInt(e.target.getAttribute('data-id'));
+        
         if(isNaN(deviceId)){
             Swal.fire({
                 icon: 'warning',

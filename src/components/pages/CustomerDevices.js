@@ -27,49 +27,58 @@ export default function CustomerDevices({customerState,assetState,deviceState,de
         //Get the customer id
         var deviceId = e.target.getAttribute('data-id');
 
-        //let assetId;
-        let deviceHistory;
-        let strDeviceHistory = "";
+         //let assetId;
+         let deviceHistory;
+         let strDeviceHistory = "";
 
-        //Will need to get this specific device history
-        //Send the axios request
-        api.get('/devicehistory/device/'+deviceId)
-        .then(response =>{
-            deviceHistory = response.data.data;
-            deviceHistory.map(history =>{
-               return strDeviceHistory += history.entry_content +'\n';
-            })
-            document.getElementById('deviceHistoryModal').value = strDeviceHistory;
-        });
-        
-        //Send the axios request
-        api.get('/devices/'+deviceId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('deviceIDModal').value = `Device pac: ${response.data.data.device_pac}`;
-            document.getElementById('assetIdModal').value =  response.data.data.asset_id;
-            document.getElementById('deviceTypeIdModal').value = response.data.data.device_type_id;
-            document.getElementById('sigfoxIdModal').value = response.data.data.sigfox_id;
-            document.getElementById('deviceStatusModal').value = response.data.data.device_status;
-            document.getElementById('packetDataModal').value = response.data.data.device_pac;
+        if(isNaN(deviceId)){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
+        }else{
 
-            //Sort out the customer name and device match
-            //assetId = response.data.data.asset_id;
-            /*customerState.customers.map(customer => { 
-
-                assetState.assets.map(asset =>{
-                    if(asset.asset_id ===assetId)
-                    {
-                        if(asset.customer_id === customer.customer_id){
-                         document.getElementById('customerIdModal').value = customer.customer_name;
-                        }
-                    }return 'success'
+            //Will need to get this specific device history
+            //Send the axios request
+            api.get('/devicehistory/device/'+deviceId)
+            .then(response =>{
+                deviceHistory = response.data.data;
+                deviceHistory.map(history =>{
+                return strDeviceHistory += history.entry_content +'\n';
                 })
-                return 'success'
-            })*/
+                document.getElementById('deviceHistoryModal').value = strDeviceHistory;
+            });
             
+            //Send the axios request
+            api.get('/devices/'+deviceId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('deviceIDModal').value = `Device pac: ${response.data.data.device_pac}`;
+                document.getElementById('assetIdModal').value =  response.data.data.asset_id;
+                document.getElementById('deviceTypeIdModal').value = response.data.data.device_type_id;
+                document.getElementById('sigfoxIdModal').value = response.data.data.sigfox_id;
+                document.getElementById('deviceStatusModal').value = response.data.data.device_status;
+                document.getElementById('packetDataModal').value = response.data.data.device_pac;
 
-        });
+                //Sort out the customer name and device match
+                //assetId = response.data.data.asset_id;
+                /*customerState.customers.map(customer => { 
+
+                    assetState.assets.map(asset =>{
+                        if(asset.asset_id ===assetId)
+                        {
+                            if(asset.customer_id === customer.customer_id){
+                            document.getElementById('customerIdModal').value = customer.customer_name;
+                            }
+                        }return 'success'
+                    })
+                    return 'success'
+                })*/
+                
+
+            });
+        }
        
     }
 

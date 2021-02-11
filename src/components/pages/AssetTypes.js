@@ -125,23 +125,31 @@ export default function AssetTypes({assetTypeState}) {
         {
             //Adjust the update button data-id of the button 
             document.getElementById('btnUpdateAssetType').setAttribute('data-id', assetTypeId);
+
+            //const existingAssetType = assetTypesState.find(assetType => assetType.type_id ===assetTypeId)
+
+            //Send the axios request
+            api.get('/assettypes/'+assetTypeId)
+            .then(response => {
+                //populate the html elements accordingly
+                document.getElementById('assetTypeAliasModal').value = response.data.data.type_alias;
+                document.getElementById('assetDescriptionModal').value = response.data.data.type_description;
+
+                //set the state of the inputs
+                setAssetTypeAliasModal(response.data.data.type_alias);
+                setTypeDescriptionModal(response.data.data.type_description)
+
+
+            });
+            
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: `Please try again.`
+            });
         }
 
-        //const existingAssetType = assetTypesState.find(assetType => assetType.type_id ===assetTypeId)
-
-        //Send the axios request
-        api.get('/assettypes/'+assetTypeId)
-        .then(response => {
-            //populate the html elements accordingly
-            document.getElementById('assetTypeAliasModal').value = response.data.data.type_alias;
-            document.getElementById('assetDescriptionModal').value = response.data.data.type_description;
-
-            //set the state of the inputs
-            setAssetTypeAliasModal(response.data.data.type_alias);
-            setTypeDescriptionModal(response.data.data.type_description)
-
-
-        });
     }
 
     //Update Asset Function
