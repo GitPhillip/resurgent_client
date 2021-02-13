@@ -18,7 +18,7 @@ export default function DeviceTypes({deviceTypeState}) {
     //Local states
     const [type_alias, setDeviceTypeAlias] = useState('');
     const [type_description, setDeviceTypeDescription] = useState('');
-    //const [packet_structure,setPacketStructure] = useState('');
+    const [packet_structure,setPacketStructure] = useState('');
     
 
     //Onchange handlers
