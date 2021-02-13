@@ -18,22 +18,22 @@ export default function DeviceTypes({deviceTypeState}) {
     //Local states
     const [type_alias, setDeviceTypeAlias] = useState('');
     const [type_description, setDeviceTypeDescription] = useState('');
-    const [packet_structure,setPacketStructure] = useState('');
+    //const [packet_structure,setPacketStructure] = useState('');
     
 
     //Onchange handlers
     const onTypeAliasChange = e => setDeviceTypeAlias(e.target.value);
     const onTypeDescriptionChange = e => setDeviceTypeDescription(e.target.value);
-    const onPacketStructureChange = e => setPacketStructure(e.target.value);
+    //const onPacketStructureChange = e => setPacketStructure(e.target.value);
 
     //--------------Device Type Updates------------------
     const [type_aliasModal, setDeviceTypeAliasModal] = useState('');
     const [type_descriptionModal, setDeviceTypeDescriptionModal] = useState('');
     
-    const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
+    //const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
     const onTypeAliasModalChange = e => setDeviceTypeAliasModal(e.target.value);
     const onTypeDescriptionModalChange = e => setDeviceTypeDescriptionModal(e.target.value);
-    const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
+    //const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
 
     //******Device Type Conversion Removed for this version */
     //const [type_conversion, setTypeConversion] = useState('');
@@ -62,7 +62,7 @@ export default function DeviceTypes({deviceTypeState}) {
                 api.post('/devicetypes',{
                     type_alias,
                     type_description,
-                    packet_structure,
+                    //packet_structure,
                     //data_types: packet_structure,
                     //type_variables: packet_structure
                     //type_conversion,
@@ -74,7 +74,7 @@ export default function DeviceTypes({deviceTypeState}) {
                             type_id: response.data.data.type_id,
                             type_alias,
                             type_description,
-                            packet_structure,
+                            //packet_structure,
                             sigfox_id: response.data.data.sigfox_id,
                             deleted: response.data.data.deleted,
                             //type_conversion,
@@ -111,7 +111,7 @@ export default function DeviceTypes({deviceTypeState}) {
 
                     //Clear all the inputs
                     setDeviceTypeAlias('');
-                    setPacketStructure('');
+                    //setPacketStructure('');
                     setDeviceTypeDescription('');
                     //setTypeConversion('');
 
@@ -192,7 +192,7 @@ export default function DeviceTypes({deviceTypeState}) {
               api.put(`/devicetypes/${deviceTypeId}`,{
                 type_alias: type_aliasModal,
                 type_description: type_descriptionModal,
-                packet_structure: type_packet_structureModal,
+                //packet_structure: type_packet_structureModal,
                 //data_types: type_packet_structureModal
                 //type_conversion: type_conversionModal,
                 }).then(function (response){
@@ -203,7 +203,7 @@ export default function DeviceTypes({deviceTypeState}) {
                             type_id: deviceTypeId,
                             type_alias: type_aliasModal,
                             type_description: type_descriptionModal,
-                            packet_structure: type_packet_structureModal
+                            //packet_structure: type_packet_structureModal
                             //type_conversion: type_conversionModal,
                             
                         })
@@ -238,7 +238,7 @@ export default function DeviceTypes({deviceTypeState}) {
                     //clear all the input fields
                     setDeviceTypeAliasModal('');
                     setDeviceTypeDescription('');
-                    setTypePacketStructureModal('');
+                    //setTypePacketStructureModal('');
                     //setTypeConversionModal('');
 
                     //Close the modal
@@ -441,7 +441,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-12">
+                                    {/*<div class="col-md-12">
                                         <div class="form-group">
                                             <div class="row">
                                                 {/*<div class="col-md-6">
@@ -450,7 +450,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                                      name='deviceTypeConversion' placeholder="Device Type Conversion*"
                                                      value={type_conversion}
                                                      onChange={onTypeConversionChange}/>
-                                                </div>*/}
+                                                </div>
                                                 <div class="col-md-12">
                                                     <label class='label'>Packet Structure</label>
                                                     <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
@@ -462,7 +462,7 @@ export default function DeviceTypes({deviceTypeState}) {
 
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>*/}
 
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -529,7 +529,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                {/*<div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row">
                                             {/*<div class="col-md-6">
@@ -538,7 +538,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                                  name='deviceTypeConversionModal' placeholder="Device Type Conversion *" 
                                                  value={type_conversionModal}
                                                  onChange={onTypeConversionModalChange}/>
-                                            </div>*/}
+                                            </div>
                                             <div class="col-md-12">
                                                 <label class='label'>Packet Structure</label>
                                                 <input required='required' type="text" class="form-control" id="packetStructureModal"
@@ -548,7 +548,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>*/}
 
                                 <div class="col-md-12">
                                     <div class="form-group">

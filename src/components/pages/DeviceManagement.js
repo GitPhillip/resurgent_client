@@ -231,10 +231,15 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
 
         // prepare parameters to be passed
         let params;
+
         //Check if it is a prototype or not
         if(is_prototype===true){ //meaning product certificate is not required
-            params = {
-                device_name,
+
+            //Check if  the device has an asset attached to it
+            if(parseInt(asset_id)!==0){
+
+                params = {
+                    device_name,
                     device_serial,
                     device_type_id,
                     asset_id,
@@ -242,10 +247,25 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     device_pac,
                     sigfox_id,
                     is_prototype,
+                }
+            }else{
+                params = {
+                    device_name,
+                    device_serial,
+                    device_type_id,
+                    device_status,
+                    device_pac,
+                    sigfox_id,
+                    is_prototype,
+                }
             }
+
         }else{//false meaning prod certificate is required
-            params = {
-                device_name,
+
+            //Check if the device is assigned to an asset
+            if(parseInt(asset_id)!==0){
+                params = {
+                    device_name,
                     device_serial,
                     device_type_id,
                     asset_id,
@@ -254,6 +274,18 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     sigfox_id,
                     is_prototype,
                     product_certificate
+                }
+            }else{
+                params = {
+                    device_name,
+                    device_serial,
+                    device_type_id,
+                    device_status,
+                    device_pac,
+                    sigfox_id,
+                    is_prototype,
+                    product_certificate
+                }
             }
         }
 
@@ -1105,7 +1137,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                          value={asset_id}
                                                          onChange={onAssetIdChange}>
                                                             <option hidden selected >Please choose an asset.</option>
-                                                            <option title='If not assigned, device status will be idle' >NOT ASSIGNED</option>
+                                                            <option title='If not assigned, device status will be idle' value="0" >NOT ASSIGNED</option>
                                                             {assetsState.map(asset => <option value={asset.asset_id} >{asset.asset_name}</option>)}
                                                         </select>
                                                         
