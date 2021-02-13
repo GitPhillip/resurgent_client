@@ -539,8 +539,9 @@ export default function DeviceTypes({deviceTypeState}) {
                                                  value={type_conversionModal}
                                                  onChange={onTypeConversionModalChange}/>
                                             </div>*/}
-                                            <div class="col-md-12" title="title='This is defaulted to the solar tracking device packet structure for version 1.0'">
+                                            <div class="col-md-12" title="This is defaulted to the solar tracking device packet structure for version 1.0">
                                                 <label class='label'>Packet Structure</label>
+                                                <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
                                                 <input readOnly='true' type="text" class="form-control" id="packetStructureModal"
                                                  name="packetStructureModal" placeholder="Packet Structure *"
                                                  value={type_packet_structureModal}
