@@ -236,7 +236,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
         if(is_prototype===true){ //meaning product certificate is not required
 
             //Check if  the device has an asset attached to it
-            if(parseInt(asset_id)!==0){
+            if(asset_id!== "NOT ASSIGNED"){
 
                 params = {
                     device_name,
@@ -263,7 +263,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
         }else{//false meaning prod certificate is required
 
             //Check if the device is assigned to an asset
-            if(parseInt(asset_id)!==0){
+            if(asset_id !== "NOT ASSIGNED"){
                 params = {
                     device_name,
                     device_serial,
@@ -1137,7 +1137,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                                          value={asset_id}
                                                          onChange={onAssetIdChange}>
                                                             <option hidden selected >Please choose an asset.</option>
-                                                            <option title='If not assigned, device status will be idle' value="0" >NOT ASSIGNED</option>
+                                                            <option title='If not assigned, device status will be idle' >NOT ASSIGNED</option>
                                                             {assetsState.map(asset => <option value={asset.asset_id} >{asset.asset_name}</option>)}
                                                         </select>
                                                         
