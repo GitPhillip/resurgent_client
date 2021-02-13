@@ -24,16 +24,16 @@ export default function DeviceTypes({deviceTypeState}) {
     //Onchange handlers
     const onTypeAliasChange = e => setDeviceTypeAlias(e.target.value);
     const onTypeDescriptionChange = e => setDeviceTypeDescription(e.target.value);
-    //const onPacketStructureChange = e => setPacketStructure(e.target.value);
+    const onPacketStructureChange = e => setPacketStructure(e.target.value);
 
     //--------------Device Type Updates------------------
     const [type_aliasModal, setDeviceTypeAliasModal] = useState('');
     const [type_descriptionModal, setDeviceTypeDescriptionModal] = useState('');
     
-    //const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
+    const [type_packet_structureModal, setTypePacketStructureModal] = useState('');
     const onTypeAliasModalChange = e => setDeviceTypeAliasModal(e.target.value);
     const onTypeDescriptionModalChange = e => setDeviceTypeDescriptionModal(e.target.value);
-    //const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
+    const onPacketStructureModalChange = e => setTypePacketStructureModal(e.target.value);
 
     //******Device Type Conversion Removed for this version */
     //const [type_conversion, setTypeConversion] = useState('');
@@ -441,7 +441,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                         </div>
                                     </div>
 
-                                    {/*<div class="col-md-12">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <div class="row">
                                                 {/*<div class="col-md-6">
@@ -450,11 +450,11 @@ export default function DeviceTypes({deviceTypeState}) {
                                                      name='deviceTypeConversion' placeholder="Device Type Conversion*"
                                                      value={type_conversion}
                                                      onChange={onTypeConversionChange}/>
-                                                </div>
-                                                <div class="col-md-12">
+                                                </div>*/}
+                                                <div class="col-md-12" title='This is defaulted to the solar tracking device packet structure for version 1.0'>
                                                     <label class='label'>Packet Structure</label>
                                                     <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
-                                                    <input required='required' class='form-control' id='deviceTypePacketStructure' 
+                                                    <input readOnly='true' class='form-control' id='deviceTypePacketStructure' 
                                                      name='deviceTypePacketStructure' placeholder="Device Type Packet Structure*"
                                                      value={packet_structure}
                                                      onChange={onPacketStructureChange}/>
@@ -462,7 +462,7 @@ export default function DeviceTypes({deviceTypeState}) {
 
                                             </div>
                                         </div>
-                                    </div>*/}
+                                    </div>
 
                                     <div class="col-md-12">
                                         <div class="form-group">
@@ -529,7 +529,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                     </div>
                                 </div>
 
-                                {/*<div class="col-md-12">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <div class="row">
                                             {/*<div class="col-md-6">
@@ -538,17 +538,17 @@ export default function DeviceTypes({deviceTypeState}) {
                                                  name='deviceTypeConversionModal' placeholder="Device Type Conversion *" 
                                                  value={type_conversionModal}
                                                  onChange={onTypeConversionModalChange}/>
-                                            </div>
-                                            <div class="col-md-12">
+                                            </div>*/}
+                                            <div class="col-md-12" title="title='This is defaulted to the solar tracking device packet structure for version 1.0'">
                                                 <label class='label'>Packet Structure</label>
-                                                <input required='required' type="text" class="form-control" id="packetStructureModal"
+                                                <input readOnly='true' type="text" class="form-control" id="packetStructureModal"
                                                  name="packetStructureModal" placeholder="Packet Structure *"
                                                  value={type_packet_structureModal}
                                                  onChange={onPacketStructureModalChange}/>
                                             </div>
                                         </div>
                                     </div>
-                                </div>*/}
+                                </div>
 
                                 <div class="col-md-12">
                                     <div class="form-group">
