@@ -453,7 +453,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                                 </div>*/}
                                                 <div class="col-md-12" title='This is defaulted to the solar tracking device packet structure for version 1.0'>
                                                     <label class='label'>Packet Structure</label>
-                                                    <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
+                                                    <button data-toggle="modal" data-target="#packetModal" type='button' class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
                                                     <input readOnly='true' class='form-control' id='deviceTypePacketStructure' 
                                                      name='deviceTypePacketStructure' placeholder="Device Type Packet Structure*"
                                                      value={packet_structure}
@@ -541,7 +541,7 @@ export default function DeviceTypes({deviceTypeState}) {
                                             </div>*/}
                                             <div class="col-md-12" title="This is defaulted to the solar tracking device packet structure for version 1.0">
                                                 <label class='label'>Packet Structure</label>
-                                                <button data-toggle="modal" data-target="#packetModal" class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
+                                                <button data-toggle="modal" data-target="#packetModal" type='button' class='btn'><i class="fas fa-question text-info" title='Custom message type decoding grammar.'></i></button>
                                                 <input readOnly='true' type="text" class="form-control" id="packetStructureModal"
                                                  name="packetStructureModal" placeholder="Packet Structure *"
                                                  value={type_packet_structureModal}
