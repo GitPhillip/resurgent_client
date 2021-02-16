@@ -105,14 +105,17 @@ export default function Dashboard() {
                 //Check if the GPS Coordinate key is there
                 if(key==='GPS'){
                     array = tempData[latestRecordIndex][key].toString().split(',');
-                }else{
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No GPS Coordinates',
-                        text: `The device did not send GPS coordinates the latest time it sent data.`
-                    });
                 }
             });
+
+            //Check if there are GPS Coordinates coming through
+            if(!tempData[latestRecordIndex]['GPS']){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No GPS Coordinates',
+                    text: `The device did not send GPS coordinates the latest time it sent data.`
+                });
+            }
 
             //set the columns
             setColumns(columnsArray);
