@@ -390,13 +390,13 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 });
 
                 //Check if there are GPS Coordinates coming through
-            if(!tempData[latestRecordIndex]['GPS']){
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'No GPS Coordinates',
-                    text: `The device did not send GPS coordinates the latest time it sent data.`
-                });
-            }
+                if(!tempData[latestRecordIndex]['GPS']){
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No GPS Coordinates',
+                        text: `The device did not send GPS coordinates the latest time it sent data.`
+                    });
+                }
 
                 //set the columns
                 setColumns(columnsArray);
