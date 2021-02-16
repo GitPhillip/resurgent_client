@@ -170,7 +170,7 @@ export default function CustomerProfile() {
 
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
-                    let entry_content = `Customer Edit: User (ID '${user.user_id}) edited their company's profile (ID: ${customer_name}). `;
+                    let entry_content = `Customer Edit: User (ID ${user.user_id}) edited their company's profile (ID: ${customer_name}). `;
                     api.post('/systemlog',{
                         user_id: user.user_id,
                         entry_content})

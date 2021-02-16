@@ -152,16 +152,16 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     const onAssetIdChangeModal = e =>{ 
                                     //Handle the No Asset case
                                     //if value is No Asset
-                                    if(e.target.value==='NOT ASSIGNED'){
+                                    if(e.target.value ==='NOT ASSIGNED'){
                                         //Set the device Status
                                         setDeviceStatusModal('IDLE');
                                         //Make device Status readonly
-                                        document.getElementById("deviceStatus").setAttribute("readOnly", true);
+                                        document.getElementById("deviceStatusModal").setAttribute("readOnly", true);
                                         //Set the asset_id to null
                                         setAssetIdModal(null);
                                     }else{
                                         //Make device Status !readonly
-                                        document.getElementById("deviceStatus").removeAttribute("readonly");
+                                        document.getElementById("deviceStatusModal").removeAttribute("readonly");
                                         //Take the asset value as it is
                                         setAssetIdModal(e.target.value);
                                     }
@@ -169,9 +169,9 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                 }
     const onDeviceStatusChangeModal = e =>{
                                         //Check if the asset is not assigned
-                                        if(asset_id===null || asset_id==='NOT ASSIGNED'){
+                                        if(asset_idModal===null || asset_idModal==='NOT ASSIGNED'){
                                             //Make device Status readonly
-                                            document.getElementById("deviceStatus").setAttribute("readOnly", true);
+                                            document.getElementById("deviceStatusModal").setAttribute("readOnly", true);
                                             
                                         }else{
                                             //Set the state to target value
@@ -187,7 +187,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                         if(e.target.value === 'true'){
 
                                             //Make device prod certificate readonly
-                                            document.getElementById("productCertificate").setAttribute("readOnly", true);
+                                            document.getElementById("productCertificateModal").setAttribute("readOnly", true);
 
                                             //Set the state to the target value
                                             setIsPrototypeModal(true);
@@ -200,7 +200,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                         else if(e.target.value === 'false'){
 
                                             //Make device Status !readonly
-                                            document.getElementById("productCertificate").removeAttribute("readOnly");
+                                            document.getElementById("productCertificateModal").removeAttribute("readOnly");
 
                                             //Set the state to the target value
                                             setIsPrototypeModal(false);
@@ -511,6 +511,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
         columns: payloadAndColumns.columns,
         rows: payloadAndColumns.payload
     };
+
 
     //Update Device Function
     let updateOneDevice = (e) =>{
