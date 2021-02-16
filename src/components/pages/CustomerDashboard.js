@@ -88,15 +88,6 @@ export default function Dashboard() {
                 //Add the date of each payload to the actual payload for the device
                 tempData[i]['packet_date'] = response.data.data[i].packet_date.substring(0,16);
 
-                //Check if there are GPS Coordinates coming through
-                if(!tempData[i]['GPS']){
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'No GPS Coordinates',
-                        text: `The device did not send GPS coordinates the latest time it sent data.`
-                    });
-                }
-
             }
             //Set the data to the local state payload
             setPayload(tempData); 
@@ -114,6 +105,12 @@ export default function Dashboard() {
                 //Check if the GPS Coordinate key is there
                 if(key==='GPS'){
                     array = tempData[latestRecordIndex][key].toString().split(',');
+                }else{
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No GPS Coordinates',
+                        text: `The device did not send GPS coordinates the latest time it sent data.`
+                    });
                 }
             });
 
@@ -173,7 +170,7 @@ export default function Dashboard() {
             }
 
         }
-        
+
         //Make the device serial number a button
         dataRows[i]['device_name'] = (
             <div>
