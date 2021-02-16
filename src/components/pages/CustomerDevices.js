@@ -2,6 +2,8 @@ import React from 'react'
 import { MDBDataTable } from 'mdbreact';
 import {Redirect} from 'react-router-dom'
 
+import Swal from 'sweetalert2';
+
 //Reducers
 import {useSelector} from 'react-redux';
 

@@ -292,6 +292,15 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                         </a>
                     </div>
                 );
+
+                //Make the device serial number a button
+                assetDevices[i]['device_serial'] = (
+                    <div>
+                        <a type='button' data-id={assetDevices[i]['device_id']} onClick={viewPacketData} href>
+                            {assetDevices[i]['device_serial']}
+                        </a>
+                    </div>
+                );
                 
                 
             }
@@ -326,6 +335,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
         //Get the asset id
         var deviceId = parseInt(e.target.getAttribute('data-id'));
+        
         if(isNaN(deviceId)){
             Swal.fire({
                 icon: 'warning',
@@ -339,6 +349,9 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
             //get the device that has just been clicked on
             const deviceClicked = devicesState.find(device => device.device_id === parseInt(deviceId));
+
+            //Clear the map
+            setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={0} lng={0} />)
 
             //Send the API request to get the device packet data
             api.get(`/datapackets/device/${deviceId}`)
@@ -355,6 +368,15 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
                     //Add the date of each payload to the actual payload for the device
                     tempData[i]['packet_date'] = response.data.data[i].packet_date.substring(0,16);
+
+                    //Check if there are GPS Coordinates coming through
+                    if(!tempData[i]['GPS']){
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'No GPS Coordinates',
+                            text: `The device did not send GPS coordinates the latest time it sent data.`
+                        });
+                    }
 
                 }
                 //Set the data to the local state payload
@@ -380,9 +402,10 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 setColumns(columnsArray);
 
                 //Change the colour of the trucks for the map
-                if(deviceClicked.device_status.includes("IN USE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
-                if(deviceClicked.device_status.includes("BEING REPAIRED")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
+                if(deviceClicked.device_status.includes("ACTIVE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
+                if(deviceClicked.device_status.includes("REPAIRING")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
                 if(deviceClicked.device_status.includes("DECOMMISSIONED")) setTruckIcon(<i class='fa fa-truck fa-2x text-danger' lat={array[0]} lng={array[1]} />)
+                if(deviceClicked.device_status.includes("IDLE")) setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={array[0]} lng={array[1]} />)
                 
             })
             .catch(error =>{
@@ -932,6 +955,20 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                 <div class='col-md-6'>
                                     <div class="table-responsive">
                                         <MDBDataTable size="sm" striped bordered data={liveData} />
+                                    </div>
+                                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Active
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-warning"></i> Repairing
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-danger"></i> Decommissioned
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-default"></i> Idle
+                                        </span>
                                     </div>
                                 </div>
                             </div><br/><br/>

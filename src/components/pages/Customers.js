@@ -368,8 +368,6 @@ export default function Customers({customerState}) {
     //Function to view the company admins
     let viewCompanyAdmins = (e) =>{
         
-        //Get the customer id
-        e.preventDefault();
         var customerId = parseInt(e.target.getAttribute('data-id'));
 
         if(isNaN(customerId)){

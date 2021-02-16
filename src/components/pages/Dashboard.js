@@ -102,6 +102,9 @@ export default function Dashboard() {
         //get the device that has just been clicked on
         const deviceClicked = devices.find(device => device.device_id === parseInt(deviceId));
 
+        //Clear the map
+        setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={0} lng={0} />)
+
         //Send the API request to get the device packet data
         api.get(`/datapackets/device/${deviceId}`)
         .then(response =>{
@@ -117,6 +120,15 @@ export default function Dashboard() {
 
                 //Add the date of each payload to the actual payload for the device
                 tempData[i]['packet_date'] = response.data.data[i].packet_date.substring(0,16);
+
+                //Check if there are GPS Coordinates coming through
+                if(!tempData[i]['GPS']){
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No GPS Coordinates',
+                        text: `The device did not send GPS coordinates the latest time it sent data.`
+                    });
+                }
 
             }
             //Set the data to the local state payload
@@ -192,8 +204,17 @@ export default function Dashboard() {
                     </div>
                 );
             }
-            
+
         }
+
+        //Make the device serial number a button
+        dataRows[i]['device_serial'] = (
+            <div>
+                <a type='button' data-id={dataRows[i]['device_id']} onClick={viewDeviceDetails} href>
+                    {dataRows[i]['device_serial']}
+                </a>
+            </div>
+        );
         
     }
 

@@ -185,6 +185,7 @@ export default function DeviceTypes({deviceTypeState}) {
             showCancelButton: true,
             confirmButtonText: `Update`,
           }).then((result) => {
+              
             if (result.isConfirmed) {
               //Handle axios request
 

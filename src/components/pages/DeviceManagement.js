@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MDBDataTable } from 'mdbreact';
+import { MDBDataTable, MDBBtn } from 'mdbreact';
 import Swal from 'sweetalert2'
 import api from '../../api/api';
 
@@ -149,6 +149,8 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     const onDeviceNameChangeModal = e => setDeviceNameModal(e.target.value);
     const onDeviceSerialChangeModal = e => setDeviceSerialModal(e.target.value);
     const onDeviceTypeIdChangeModal = e => setDeviceTypeIdModal(e.target.value);
+
+    
     const onAssetIdChangeModal = e =>{ 
                                     //Handle the No Asset case
                                     //if value is No Asset
@@ -168,20 +170,22 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                         
                                 }
     const onDeviceStatusChangeModal = e =>{
-                                        //Check if the asset is not assigned
-                                        if(asset_idModal===null || asset_idModal==='NOT ASSIGNED'){
-                                            //Make device Status readonly
-                                            document.getElementById("deviceStatusModal").setAttribute("readOnly", true);
-                                            
-                                        }else{
-                                            //Set the state to target value
-                                            setDeviceStatusModal(e.target.value);
-                                        }
+
+                                            //Check if the asset is not assigned
+                                            if(asset_idModal===null || asset_idModal==='NOT ASSIGNED'){
+                                                //Make device Status readonly
+                                                document.getElementById("deviceStatusModal").setAttribute("readOnly", true);
+                                                
+                                            }else{
+                                                //Set the state to target value
+                                                setDeviceStatusModal(e.target.value);
+                                            }
                                     
-                                    }
+                                        }
+                                     
     const onSigfoxIdChangeModal = e => setSigfoxIdModal(e.target.value);
     const onDevicePacChangeModal = e => setDevicePacModal(e.target.value);
-    const onIsPrototypeChangeModal = e =>{
+    const onIsPrototypeChangeModal = e => {
                                         //Handle the is prototype cases
                                         //if it is a prototype, we don't require a product certificate
                                         if(e.target.value === 'true'){
@@ -209,7 +213,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                                     
     const onProductCertificateChangeModal = e =>{
                                                 //cross check the is_prototype state
-                                                if(is_prototype===false || is_prototype==='false'){
+                                                if(is_prototypeModal===false || is_prototypeModal==='false'){
                                                     setProductCertificateModal({
                                                         key: e.target.value
                                                     });
@@ -422,6 +426,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             //Send the axios request
             api.get('/devices/'+deviceId)
             .then(response => {
+
                 //populate the html elements accordingly
                 document.getElementById('deviceNameModal').value = response.data.data.device_name;
                 document.getElementById('deviceSerialModal').value = response.data.data.device_serial;
@@ -435,6 +440,16 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 
                 //Handle the packet data
                 //document.getElementById('packetDataModal').value = response.data.data.device_pac;
+
+                //Set the states
+                setDeviceNameModal(response.data.data.device_name);
+                setDeviceSerialModal(response.data.data.device_serial);
+                setDeviceTypeIdModal(response.data.data.device_type_id);
+                setDevicePacModal(response.data.data.device_pac);
+                setSigfoxIdModal(response.data.data.sigfox_id);
+                setIsPrototypeModal(response.data.data.is_prototype);
+                setProductCertificateModal({key: response.data.data.product_certificate });
+                setDeviceStatusModal(response.data.data.device_status);
 
                 //Sort out the customer name and device match
                 assetId = response.data.data.asset_id;
@@ -968,10 +983,9 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             //append the action key value pair to the end of each object
             dataRows[i]['action'] = (
                 <div>
-                    <button  type="button" class="btn btn-success btn-sm" data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
-                            <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Details
-                    </button>{' '}
+                    <MDBBtn size="sm" color='success' data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
+                        <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i> Details 
+                    </MDBBtn> {' '}
                     <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].device_id} data-toggle="modal" data-target="#attachAssetModal" onClick={viewAssetsToAttach} title='Attach the device to an asset'>
                             <i class="fas fa-plus fa-sm fa-fw mr-2"></i>
                             Attach
@@ -1252,9 +1266,8 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             </div>
 
             {/* Device Details Modal */}
-            <div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal fade" id="deviceModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
 
                 <div class="modal-content">
 
@@ -1265,6 +1278,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
+                    
                     <div class="modal-body">
 
                         <form method='post' onSubmit={updateOneDevice}>
@@ -1489,7 +1503,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
         {/* Device Details Modal */}
 
         {/*<!-- Attach Asset Modal-->*/}
-        <div class="modal fade" id="attachAssetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        <div class="modal fade" id="attachAssetModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
