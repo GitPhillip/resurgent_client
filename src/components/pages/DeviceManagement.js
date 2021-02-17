@@ -343,6 +343,25 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
 
+                    //***************DEVICE LOG********************* */
+                    //********************************************** */
+                    let history_content = `Device Reg: User (ID: ${user.user_id}) registered this device with name ${device_name} (ID: ${response.data.data.device_id}).`;
+                    api.post('/devicehistory',{
+                        device_id: response.data.data.device_id,
+                        entry_content: history_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************DEVICE LOG********************* */
+                    //********************************************** */
+
                     //Trigger the swal
                     Swal.fire({
                         icon: 'success',
@@ -390,7 +409,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
     let viewDeviceDetails = (e) =>{
         //Prevent form from submitting to the actual file
         //Get the device id
-        var deviceId = e.target.getAttribute('data-id');
+        var deviceId = parseInt(e.target.getAttribute('data-id')) || parseInt(e.target.getAttribute('id'));
 
         let tempData = [];
         let latestRecordIndex;
@@ -399,7 +418,8 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             Swal.fire({
                 icon: 'warning',
                 title: 'Oops...',
-                text: `Please try again.`
+                text: `Please try again.`,
+                timer: 2000
             });
         }else{
 
@@ -558,18 +578,18 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                 // prepare parameters to be passed
                 let params;
                 //Check if it is a prototype or not
-                if(is_prototype===true){ //meaning product certificate is not required
+                if(is_prototypeModal===true){ //meaning product certificate is not required
                     params = {
-                        device_nameModal,
-                        device_serialModal,
-                        is_prototypeModal,
+                        device_name: device_nameModal,
+                        device_serial: device_serialModal,
+                        is_prototype: is_prototypeModal,
                     }
                 }else{//false meaning prod certificate is required
                     params = {
-                        device_nameModal,
-                        device_serialModal,
-                        is_prototypeModal,
-                        product_certificateModal
+                        device_name: device_nameModal,
+                        device_serial: device_serialModal,
+                        is_prototype: is_prototypeModal,
+                        product_certificate: product_certificateModal
                     }
                 }
 
@@ -605,6 +625,26 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                         }
                     });
                     //***************SYSTEM LOG********************* */
+                    //********************************************** */
+
+
+                    //***************DEVICE LOG********************* */
+                    //********************************************** */
+                    let history_content = `Device Update: User (ID: ${user.user_id}) updated this device (ID: ${response.data.data.device_id}).`;
+                    api.post('/devicehistory',{
+                        device_id: response.data.data.device_id,
+                        entry_content: history_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************DEVICE LOG********************* */
                     //********************************************** */
 
                     //Trigger the swal
@@ -681,7 +721,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                         //Log the action
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
-                        let entry_content = `Device Delete: User (ID: ${user.user_id}) delete a device with name (ID: ${response.data.data.device_id}).`;
+                        let entry_content = `Device Delete: User (ID: ${user.user_id}) deleted a device with name (ID: ${response.data.data.device_id}).`;
                         api.post('/systemlog',{
                             user_id: user.user_id,
                             entry_content})
@@ -696,6 +736,25 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                             }
                         });
                         //***************SYSTEM LOG********************* */
+                        //********************************************** */
+
+                        //***************DEVICE LOG********************* */
+                        //********************************************** */
+                        let history_content = `Device Delete: User (ID: ${user.user_id}) deleted this device (ID: ${response.data.data.device_id}).`;
+                        api.post('/devicehistory',{
+                            device_id: response.data.data.device_id,
+                            entry_content: history_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************DEVICE LOG********************* */
                         //********************************************** */
 
                         //Trigger the swal
@@ -825,6 +884,25 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                         });
                         //***************SYSTEM LOG********************* */
                         //********************************************** */
+
+                        //***************DEVICE LOG********************* */
+                        //********************************************** */
+                        let history_content = `Device Status Change: User (ID: ${user.user_id}) changed the status of this device (ID: ${deviceLogged.device_id}) to ${logStatus}.`;
+                        api.post('/devicehistory',{
+                            device_id: deviceLogged.device_id,
+                            entry_content: history_content})
+                        .then()
+                        .catch(error =>{
+                            if(error.response && error.response.data){
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: `${error.response.data.error}`
+                                });
+                            }
+                        });
+                        //***************DEVICE LOG********************* */
+                        //********************************************** */
                         
 
                         //Trigger the swal
@@ -934,6 +1012,27 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
                     //***************SYSTEM LOG********************* */
                     //********************************************** */
 
+
+                    //***************DEVICE LOG********************* */
+                    //********************************************** */
+                    let history_content = `Device Asset Attach: User (ID: ${user.user_id}) attached this device (ID: ${deviceLogged.device_id}) to ${assetLogged.asset_name} (ID: ${assetLogged.asset_id}).`;
+                    api.post('/devicehistory',{
+                        device_id: deviceLogged.device_id,
+                        entry_content: history_content})
+                    .then()
+                    .catch(error =>{
+                        if(error.response && error.response.data){
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: `${error.response.data.error}`
+                            });
+                        }
+                    });
+                    //***************DEVICE LOG********************* */
+                    //********************************************** */
+
+
                     //Trigger the swal
                     Swal.fire({
                         icon: 'success',
@@ -983,7 +1082,7 @@ export default function DeviceManagement({customerState,assetState,deviceState,d
             //append the action key value pair to the end of each object
             dataRows[i]['action'] = (
                 <div>
-                    <MDBBtn size="sm" color='success' data-id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
+                    <MDBBtn size="sm" color='success' data-id={dataRows[i].device_id} id={dataRows[i].device_id} onClick={viewDeviceDetails} data-toggle="modal" data-target="#deviceModal">
                         <i class="fas fa-edit fa-sm fa-fw mr-2 text-gray-400"></i> Details 
                     </MDBBtn> {' '}
                     <button  type="button" class="btn btn-primary btn-sm" data-id={dataRows[i].device_id} data-toggle="modal" data-target="#attachAssetModal" onClick={viewAssetsToAttach} title='Attach the device to an asset'>
