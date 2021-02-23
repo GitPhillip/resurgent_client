@@ -6,7 +6,7 @@ import api from '../../api/api';
 import { addAsset, deleteAsset, updateOneAsset } from '../slices/assetSlice';
 
 //Maps
-import GoogleMapReact from 'google-map-react';
+import { withScriptjs, withGoogleMap, GoogleMap, Polyline, Marker } from "react-google-maps";
 
 export default function AssetManagement({customerState,assetState,deviceState, assetTypeState}) {
 
@@ -76,16 +76,22 @@ export default function AssetManagement({customerState,assetState,deviceState, a
     const zoom = 6;
 
     //google api key
-    const GoogleMapAPIKey= 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas';//'AIzaSyA5N9f2NrFQbQwtXVVBmmWldkhJ40U03Vg';
+    //const GoogleMapAPIKey= 'AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas';//'AIzaSyA5N9f2NrFQbQwtXVVBmmWldkhJ40U03Vg';
 
     //state to hold the live devices (we want their live packet data)
     const [liveDevices, setLiveDevices] = useState();
 
     //Truck icon to be displayed
-    const [truckIcon, setTruckIcon] = useState();
+    //const [truckIcon, setTruckIcon] = useState();
 
     //for all the columns in the payload
     const [columns, setColumns] = useState([]);
+
+    //Latest waypoints
+    const [latestWaypoints, setLatestWaypoints] = useState([]);
+
+    //truck location
+    const [truckLocation, setTruckLocation] = useState({});
 
     //Array to put the columns
     var columnsArray = [];
@@ -197,7 +203,6 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                 });
               
             } else if (result.isDismissed) {
-
               Swal.fire('Asset was not registered.', '', 'info')
             }
           }).catch(function(error){
@@ -209,6 +214,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
         });
     }
 
+    
     //View Asset details
     let viewAssetDetails = (e) =>{
         
@@ -259,12 +265,44 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
     //For the device status colours
     let circleColour;
+    
+    const MyMapComponent = withScriptjs(withGoogleMap((props) =>
+        <GoogleMap
+            defaultZoom={zoom}
+            defaultCenter={center}
+        >
+            
+            <Polyline 
+                options={{
+                    strokeColor: "#ff2527",
+                    strokeOpacity: 0.75,
+                    strokeWeight: 4
+                }}
+                path={latestWaypoints}
+            />
+
+            <Marker 
+                position={truckLocation} 
+                label={""}
+            > 
+            </Marker>
+        </GoogleMap>
+    ));
 
     //Function to view the live data of assets
     let viewLiveData = (e) =>{
 
         //Get the asset id
         var assetId = parseInt(e.target.getAttribute('data-id'));
+
+        //Remove the marker
+        setTruckLocation({
+            lat: 0,
+            lng: 0
+        });
+
+        //remove the path drawn
+        setLatestWaypoints([]);
         
         if(isNaN(assetId)){
             Swal.fire({
@@ -301,6 +339,8 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                         </a>
                     </div>
                 );
+
+
                 
                 
             }
@@ -346,12 +386,19 @@ export default function AssetManagement({customerState,assetState,deviceState, a
 
             let tempData = [];
             let latestRecordIndex;
+            let latestWaypointsCount;
 
             //get the device that has just been clicked on
-            const deviceClicked = devicesState.find(device => device.device_id === parseInt(deviceId));
+            //const deviceClicked = devicesState.find(device => device.device_id === parseInt(deviceId));
 
-            //Clear the map
-            setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={0} lng={0} />)
+            //Remove the marker
+            setTruckLocation({
+                lat: 0,
+                lng: 0
+            });
+
+            //remove the path drawn
+            setLatestWaypoints([]);
 
             //Send the API request to get the device packet data
             api.get(`/datapackets/device/${deviceId}`)
@@ -396,17 +443,54 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                         title: 'No GPS Coordinates',
                         text: `The device did not send GPS coordinates the latest time it sent data.`
                     });
+
+                    //Remove the marker
+                    setTruckLocation({
+                        lat: 0,
+                        lng: 0
+                    });
+
+                    //remove the path drawn
+                    setLatestWaypoints([]);
+
                 }
 
                 //set the columns
                 setColumns(columnsArray);
 
                 //Change the colour of the trucks for the map
-                if(deviceClicked.device_status.includes("ACTIVE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
-                if(deviceClicked.device_status.includes("REPAIRING")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
-                if(deviceClicked.device_status.includes("DECOMMISSIONED")) setTruckIcon(<i class='fa fa-truck fa-2x text-danger' lat={array[0]} lng={array[1]} />)
-                if(deviceClicked.device_status.includes("IDLE")) setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={array[0]} lng={array[1]} />)
+                //if(deviceClicked.device_status.includes("ACTIVE")) setTruckIcon(<i class='fa fa-truck fa-2x text-success' lat={array[0]} lng={array[1]} />)
+                //if(deviceClicked.device_status.includes("REPAIRING")) setTruckIcon(<i class='fa fa-truck fa-2x text-warning' lat={array[0]} lng={array[1]} />)
+                //if(deviceClicked.device_status.includes("DECOMMISSIONED")) setTruckIcon(<i class='fa fa-truck fa-2x text-danger' lat={array[0]} lng={array[1]} />)
+                //if(deviceClicked.device_status.includes("IDLE")) setTruckIcon(<i class='fa fa-truck fa-2x text-default' lat={array[0]} lng={array[1]} />)
                 
+
+                //Set the current truck location
+                setTruckLocation({
+                    lat: parseFloat(array[0]),
+                    lng: parseFloat(array[1])
+                });
+
+                //Now draw the waypoints of the the latest 8
+                latestWaypointsCount = 8;
+                let stringCoords;
+                let tempArray = [];
+                var j = 0;
+
+                //loop through the latest waypoints count (8 of them)
+                for(j; j < latestWaypointsCount; j++){
+                    
+                    stringCoords = tempData[j]['GPS'].toString().split(',',2);
+                    tempArray.push(
+                        {
+                            lat:parseFloat(stringCoords[0]), 
+                            lng:parseFloat(stringCoords[1])
+                        }
+
+                    );
+                }
+                setLatestWaypoints(tempArray);
+
             })
             .catch(error =>{
                 if(error.response && error.response.data){
@@ -943,20 +1027,21 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                         <div class='col-md-12'>
                             <div class='row'>
                                 <div class='col-md-6'>
-                                    <GoogleMapReact
-                                        bootstrapURLKeys={{ key: GoogleMapAPIKey }}
-                                        defaultCenter={center}
-                                        defaultZoom={zoom}>
-
-                                        {truckIcon}
-
-                                    </GoogleMapReact>
+                                    
+                                    <MyMapComponent
+                                        googleMapURL='https://maps.googleapis.com/maps/api/js?key=AIzaSyCAOP2cEf7DWpGCIJeRo8ds8V1JwKnHQas&v=3.exp&libraries=geometry,drawing,places'
+                                        loadingElement={<div style={{ height:`100%`}} />}
+                                        containerElement={<div style={{ height:`100%`}} />}
+                                        mapElement={<div style={{height:`100%`}} />}
+                                    >
+                                    </MyMapComponent>
+                                    
                                 </div>
                                 <div class='col-md-6'>
                                     <div class="table-responsive">
                                         <MDBDataTable size="sm" striped bordered data={liveData} />
                                     </div>
-                                    <div class="mt-4 text-center small">
+                                    {/*<div class="mt-4 text-center small">
                                         <span class="mr-2">
                                             <i class="fas fa-circle text-success"></i> Active
                                         </span>
@@ -969,7 +1054,7 @@ export default function AssetManagement({customerState,assetState,deviceState, a
                                         <span class="mr-2">
                                             <i class="fas fa-circle text-default"></i> Idle
                                         </span>
-                                    </div>
+                                    </div>*/}
                                 </div>
                             </div><br/><br/>
                             <div class='row'>
