@@ -214,7 +214,7 @@ export default function Dashboard() {
             });
 
             //Now draw the waypoints of the the latest 8
-            latestWaypointsCount = 8;
+            latestWaypointsCount = 20;
             let stringCoords;
             let tempArray = [];
             var j = 0;
@@ -223,13 +223,18 @@ export default function Dashboard() {
             for(j; j < latestWaypointsCount; j++){
                 
                 stringCoords = tempData[j]['GPS'].toString().split(',',2);
-                tempArray.push(
-                    {
-                        lat:parseFloat(stringCoords[0]), 
-                        lng:parseFloat(stringCoords[1])
-                    }
 
-                );
+                //Check that the device has not sent a wrong GPS location due to signal loss.
+                if( !(stringCoords[0].toString().includes(5.877471754111438)) && !(stringCoords[1].toString().includes(5.877471754111438)) ){
+                    tempArray.push(
+                        {
+                            lat:parseFloat(stringCoords[0]), 
+                            lng:parseFloat(stringCoords[1])
+                        }
+    
+                    );
+                }
+                
             }
             setLatestWaypoints(tempArray);
 
